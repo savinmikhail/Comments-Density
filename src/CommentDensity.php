@@ -7,7 +7,7 @@ namespace Savinmikhail\CommentsDensity;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 
-use function print_r;
+use function array_sum;
 
 final readonly class CommentDensity
 {
@@ -19,7 +19,7 @@ final readonly class CommentDensity
     {
         $comments = $this->getCommentsFromFile();
         $lineCounts = $this->countCommentLines($comments);
-        $totalLines = $this->countTotalLines($this->filename);
+        $linesOfCode = $this->countTotalLines($this->filename);
 
         $table = new Table($this->output);
         $table
@@ -29,8 +29,9 @@ final readonly class CommentDensity
             }, array_keys($lineCounts), $lineCounts));
 
         $table->render();
-
-        $this->output->writeln("<info>Total lines in file: $totalLines</info>");
+        $totalComments = array_sum($lineCounts);
+        $ratio = round($totalComments / $linesOfCode, 2);
+        $this->output->writeln(["<info>Com/LoC: $ratio </info>"]);
     }
 
     private function getCommentsFromFile(): array
@@ -47,15 +48,7 @@ final readonly class CommentDensity
             'license'    => '/\/\*\*.*?\b(license|copyright|permission)\b.*?\*\//is' // Matches license information within docblocks
         ];
 
-        // Array to store results
-        $comments = [
-            'singleLine' => [],
-            'multiLine'  => [],
-            'docBlock'   => [],
-            'todo'       => [],
-            'fixme'      => [],
-            'license'    => [],
-        ];
+        $comments = [];
 
         // Apply regex patterns to find comments
         foreach ($patterns as $type => $pattern) {
@@ -76,7 +69,6 @@ final readonly class CommentDensity
                 $lineCounts[$type] += substr_count($comment, "\n") + 1;
             }
         }
-        $lineCounts['total'] = array_sum($lineCounts);
         return $lineCounts;
     }
 
