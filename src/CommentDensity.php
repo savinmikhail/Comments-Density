@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Savinmikhail\CommentsDensity;
 
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\Table;
+
 use function print_r;
 
 final readonly class CommentDensity
 {
-    public function __construct(private string $filename)
+    public function __construct(private string $filename, private OutputInterface $output)
     {
     }
 
@@ -17,6 +20,17 @@ final readonly class CommentDensity
         $comments = $this->getCommentsFromFile();
         $lineCounts = $this->countCommentLines($comments);
         $totalLines = $this->countTotalLines($this->filename);
+
+        $table = new Table($this->output);
+        $table
+            ->setHeaders(['Comment Type', 'Lines'])
+            ->setRows(array_map(function ($type, $count) {
+                return [$type, $count];
+            }, array_keys($lineCounts), $lineCounts));
+
+        $table->render();
+
+        $this->output->writeln("<info>Total lines in file: $totalLines</info>");
     }
 
     private function getCommentsFromFile(): array
