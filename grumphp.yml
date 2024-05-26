@@ -1,0 +1,52 @@
+grumphp:
+    stop_on_failure: false
+    ignore_unstaged_changes: false
+    tasks:
+#        phpcs:
+#            standard: [PSR12]
+#            severity: ~
+#            error_severity: ~
+#            warning_severity: ~
+#            tab_width: ~
+#            report: full
+#            report_width: ~
+#            whitelist_patterns:
+#                - /^src\/.*\.php$/
+#                - /^tests\/.*\.php$/
+#            encoding: ~
+#            ignore_patterns: []
+#            sniffs: []
+#            triggered_by: [php]
+#            exclude: []
+#            show_sniffs_error_path: true
+
+#        phpmd:
+#            whitelist_patterns:
+#                - /^src\/.*\.php$/
+#            exclude:
+#                - /^vendor\/
+#            report_format: text
+#            ruleset: [
+#                'cleancode',
+#                'codesize',
+#                'naming',
+#                'unusedcode',
+#                'design',
+#                'controversial'
+#            ]
+#            triggered_by: ['php']
+#
+#        phpunit:
+#            config_file: ~
+#            testsuite: ~
+#            group: [ ]
+#            exclude_group: [ ]
+#            always_execute: false
+#            order: null
+
+#        phan:
+#         config_file: .phan/config.php
+#         output_mode: text
+#         output: null
+#         triggered_by: [php]
+

@@ -16,7 +16,6 @@
  * @link http://phpmd.org/
  */
 
- 
 //some comment
 $a = 1 + 2; //inline comment
 
@@ -30,8 +29,8 @@ $a = 1 + 2; //inline comment
 
 # hash comment
 
-/** 
- * class dockblock 
+/**
+ * class dockblock
  * @SuppressWarnings(PHPMD)
  * @see https://www.example.com
  */
