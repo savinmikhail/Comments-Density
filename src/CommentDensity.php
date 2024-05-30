@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Savinmikhail\CommentsDensity;
+namespace SavinMikhail\CommentsDensity;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;

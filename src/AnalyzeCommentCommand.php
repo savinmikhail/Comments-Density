@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Savinmikhail\CommentsDensity;
+namespace SavinMikhail\CommentsDensity;
 
 require __DIR__ . '/../vendor/autoload.php';
 

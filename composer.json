@@ -5,7 +5,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Savinmikhail\\CommentsDensity\\": "src/"
+            "SavinMikhail\\CommentsDensity\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SavinMikhail\\Tests\\CommentsDensity\\": "tests/"
         }
     },
     "authors": [
