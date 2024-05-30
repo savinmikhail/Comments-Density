@@ -6,31 +6,42 @@ namespace SavinMikhail\CommentsDensity;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Yaml\Yaml;
 
 class AnalyzeCommentCommand extends Command
 {
     protected function configure(): void
     {
-        $this->setName('analyze:comments'); // Explicitly setting the command name here.
-
-        $this
-        ->setDescription('Analyzes the comment density in a given file.')
-        ->setHelp('This command allows you to analyze the comments in a PHP file.')
-        ->addArgument('filename', InputArgument::REQUIRED, 'The filename to analyze');
+        $this->setName('analyze:comments')
+            ->setDescription('Analyzes the comment density in files within a directory.')
+            ->setHelp('This command allows you to analyze the comments in PHP files within a specified directory.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $filename = $input->getArgument('filename');
-        $analyzer = new CommentDensity($filename, $output);
-        $analyzer->printStatistics();
+        $configFile = $this->getProjectRoot() . '/comments_density.yaml';
+        $config = Yaml::parseFile($configFile);
+
+        $directory = $this->getProjectRoot() . '/' . $config['directory'];
+        $thresholds = $config['thresholds'];
+
+        $files = glob("$directory/*.php");
+
+        foreach ($files as $filename) {
+            $output->writeln("<info>Analyzing $filename</info>");
+            $analyzer = new CommentDensity($filename, $output, $thresholds);
+            $analyzer->printStatistics();
+        }
 
         return Command::SUCCESS;
+    }
+
+    private function getProjectRoot(): string
+    {
+        return dirname(__DIR__, 2);
     }
 }
 
