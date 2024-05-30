@@ -20,29 +20,29 @@ grumphp:
             exclude: []
             show_sniffs_error_path: true
 
-#        phpmd:
-#            whitelist_patterns:
-#                - /^src\/.*\.php$/
-#            exclude:
-#                - /^vendor\/
-#            report_format: text
-#            ruleset: [
-#                'cleancode',
-#                'codesize',
-#                'naming',
-#                'unusedcode',
-#                'design',
-#                'controversial'
-#            ]
-#            triggered_by: ['php']
-#
-#        phpunit:
-#            config_file: ~
-#            testsuite: ~
-#            group: [ ]
-#            exclude_group: [ ]
-#            always_execute: false
-#            order: null
+        phpmd:
+            whitelist_patterns:
+                - /^src\/.*\.php$/
+            exclude:
+                - /^vendor\/
+            report_format: text
+            ruleset: [
+                'cleancode',
+                'codesize',
+                'naming',
+                'unusedcode',
+                'design',
+                'controversial'
+            ]
+            triggered_by: ['php']
+
+        phpunit:
+            config_file: ~
+            testsuite: ~
+            group: [ ]
+            exclude_group: [ ]
+            always_execute: false
+            order: null
 
 #        phan:
 #         config_file: .phan/config.php
