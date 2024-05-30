@@ -1,0 +1,9 @@
+directory: "Comments-Density/src"
+thresholds:
+  docBlock: 10
+  regular: 20
+  todo: 5
+  fixme: 5
+  license: 15
+  Com/LoC: 0.76
+
