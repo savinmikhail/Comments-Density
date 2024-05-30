@@ -6,6 +6,9 @@ insights into their effectiveness and appropriateness.
 We can say, that licences in the code files doesn't matter. 
 But the commented out code does. And lack of docblock comments to classes or methods too
 
+
+At this moment works only for php files.
+
 ## Features
 
 - **Multiple Comment Types**: Supports identification and analysis of several comment types including regular, 
@@ -20,7 +23,7 @@ with the report
 To install CommentDensityAnalyzer, run the following command in your terminal:
 
 ```bash
-composer require savinmikhail/comment-density
+composer require savinmikhail/comments-density
 ```
 
 ### Usage
