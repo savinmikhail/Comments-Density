@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace SavinMikhail\CommentsDensity;
 
 enum CommentType: string
@@ -12,5 +11,4 @@ enum CommentType: string
     case TODO = 'todo';
     case FIXME = 'fixme';
     case REGULAR = 'regular';
-
 }

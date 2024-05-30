@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 
 use function array_sum;
+use function round;
 
 final readonly class CommentDensity
 {
@@ -21,53 +22,63 @@ final readonly class CommentDensity
     {
         $files = glob("$directory/*.php");
 
-        $totalLineCounts = [];
+        $commentStatistics = [];
         $totalLinesOfCode = 0;
 
         foreach ($files as $filename) {
             $this->output->writeln("<info>Analyzing $filename</info>");
             $statistics = $this->getStatistics($filename);
 
-            foreach ($statistics['lineCounts'] as $type => $count) {
-                if (!isset($totalLineCounts[$type])) {
-                    $totalLineCounts[$type] = 0;
+            foreach ($statistics['commentStatistic'] as $type => $count) {
+                if (! isset($commentStatistics[$type])) {
+                    $commentStatistics[$type] = 0;
                 }
-                $totalLineCounts[$type] += $count;
+                $commentStatistics[$type] += $count;
             }
 
             $totalLinesOfCode += $statistics['linesOfCode'];
         }
 
-        $this->printStatistics($totalLineCounts, $totalLinesOfCode);
+        $this->printStatistics($commentStatistics, $totalLinesOfCode);
     }
 
     private function getStatistics(string $filename): array
     {
         $comments = $this->getCommentsFromFile($filename);
-        $lineCounts = $this->countCommentLines($comments);
+        $commentStatistic = $this->countCommentLines($comments);
         $linesOfCode = $this->countTotalLines($filename);
         return [
-            'lineCounts' => $lineCounts,
+            'commentStatistic' => $commentStatistic,
             'linesOfCode' => $linesOfCode,
         ];
     }
 
-    public function printStatistics(array $lineCounts, int $linesOfCode): void
+    /**
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     */
+    private function printStatistics(array $commentStatistics, int $linesOfCode): void
     {
         $table = new Table($this->output);
         $table
             ->setHeaders(['Comment Type', 'Lines'])
-            ->setRows(array_map(function (string $type, int $count): array {
-                $commentTypeColor = $this->getColorForCommentType(CommentType::tryFrom($type));
-                $color = $this->getColorForThresholds(CommentType::tryFrom($type), $count);
-                return ["<fg={$commentTypeColor}>{$type}</>", "<fg={$color}>{$count}</>"];
-            }, array_keys($lineCounts), $lineCounts));
+            ->setRows(
+                array_map(function (string $type, int $count): array {
+                    $commentTypeColor = $this->getColorForCommentType(CommentType::tryFrom($type));
+                    $color = $this->getColorForThresholds(CommentType::tryFrom($type), $count);
+                    return ["<fg={$commentTypeColor}>{$type}</>", "<fg={$color}>{$count}</>"];
+                }, array_keys($commentStatistics), $commentStatistics)
+            );
 
         $table->render();
-        $totalComments = array_sum($lineCounts);
-        $ratio = round($totalComments / $linesOfCode, 2);
+        $ratio = $this->getRatio($commentStatistics, $linesOfCode);
         $color = $this->getColorForRatio($ratio);
         $this->output->writeln(["<fg=$color>Com/LoC: $ratio</>"]);
+    }
+
+    private function getRatio(array $commentStatistics, int $linesOfCode): float
+    {
+        $totalComments = array_sum($commentStatistics);
+        return round($totalComments / $linesOfCode, 2);
     }
 
     private function getColorForRatio(float $ratio): string
@@ -105,12 +116,24 @@ final readonly class CommentDensity
 
         // Regex patterns for different types of comments
         $patterns = [
-            'singleLine' => '/\/\/(?!.*\b(?:todo|fixme)\b:?).*/i', // Matches // comments, excludes TODO/FIXME, case-insensitive
-            'multiLine'  => '/\/\*(?!\*|\s*\*.*\b(?:todo|fixme)\b:?).+?\*\//is', // Matches /* */ comments, excludes /** */ and those containing TODO/FIXME, case-insensitive
-            'docBlock'   => '/\/\*\*(?!\s*\*\/)(?![\s\S]*?\b(license|copyright|permission)\b).+?\*\//is', // Matches docblocks, excludes licenses
-            'todo'       => '/(?:\/\/|#|\/\*.*?\*\/).*\btodo\b:?.*/i', // Matches TODO comments, optional colon, case-insensitive
-            'fixme'      => '/(?:\/\/|#|\/\*.*?\*\/).*\bfixme\b:?.*/i', // Matches FIXME comments, optional colon, case-insensitive
-            'license'    => '/\/\*\*.*?\b(license|copyright|permission)\b.*?\*\//is' // Matches license information within docblocks
+            'singleLine' =>
+            // Matches // comments, excludes TODO/FIXME, case-insensitive
+                '/\/\/(?!.*\b(?:todo|fixme)\b:?).*/i',
+            'multiLine' =>
+            // Matches /* */ comments, excludes /** */ and those containing TODO/FIXME, case-insensitive
+                '/\/\*(?!\*|\s*\*.*\b(?:todo|fixme)\b:?).+?\*\//is',
+            'docBlock' =>
+            // Matches docblocks, excludes licenses
+                '/\/\*\*(?!\s*\*\/)(?![\s\S]*?\b(license|copyright|permission)\b).+?\*\//is',
+            'todo' =>
+            // Matches TODO comments, optional colon, case-insensitive
+                '/(?:\/\/|#|\/\*.*?\*\/).*\btodo\b:?.*/i',
+            'fixme' =>
+            // Matches FIXME comments, optional colon, case-insensitive
+                '/(?:\/\/|#|\/\*.*?\*\/).*\bfixme\b:?.*/i',
+            'license' =>
+            // Matches license information within docblocks
+                '/\/\*\*.*?\b(license|copyright|permission)\b.*?\*\//is'
         ];
 
         $comments = [];
