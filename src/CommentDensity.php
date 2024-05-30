@@ -24,14 +24,25 @@ final readonly class CommentDensity
         $table = new Table($this->output);
         $table
             ->setHeaders(['Comment Type', 'Lines'])
-            ->setRows(array_map(function ($type, $count) {
-                return [$type, $count];
+            ->setRows(array_map(function (string $type, int $count): array {
+                $color = $this->getColorForCommentType(CommentType::tryFrom($type));
+                return ["<fg={$color}>{$type}</>", "<fg={$color}>{$count}</>"];
             }, array_keys($lineCounts), $lineCounts));
 
         $table->render();
         $totalComments = array_sum($lineCounts);
         $ratio = round($totalComments / $linesOfCode, 2);
         $this->output->writeln(["<info>Com/LoC: $ratio </info>"]);
+    }
+
+    private function getColorForCommentType(CommentType $type): string
+    {
+        return match ($type->value) {
+            'docBlock' => 'green',
+            'regular' => 'red',
+            'todo', 'fixme' => 'yellow',
+            'license' => 'white',
+        };
     }
 
     private function getCommentsFromFile(): array
@@ -55,7 +66,9 @@ final readonly class CommentDensity
             preg_match_all($pattern, $code, $matches);
             $comments[$type] = $matches[0];
         }
-
+        $comments['regular'] = array_merge($comments['singleLine'], $comments['multiLine']);
+        unset($comments['singleLine']);
+        unset($comments['multiLine']);
         return $comments;
     }
 
