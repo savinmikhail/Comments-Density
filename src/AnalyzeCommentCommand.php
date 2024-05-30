@@ -28,13 +28,8 @@ class AnalyzeCommentCommand extends Command
         $directory = $this->getProjectRoot() . '/' . $config['directory'];
         $thresholds = $config['thresholds'];
 
-        $files = glob("$directory/*.php");
-
-        foreach ($files as $filename) {
-            $output->writeln("<info>Analyzing $filename</info>");
-            $analyzer = new CommentDensity($filename, $output, $thresholds);
-            $analyzer->printStatistics();
-        }
+        $analyzer = new CommentDensity($output, $thresholds);
+        $analyzer->analyzeDirectory($directory);
 
         return Command::SUCCESS;
     }

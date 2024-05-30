@@ -11,16 +11,49 @@ use function array_sum;
 
 final readonly class CommentDensity
 {
-    public function __construct(private string $filename, private OutputInterface $output)
-    {
+    public function __construct(
+        private OutputInterface $output,
+        private array $tresholds
+    ) {
     }
 
-    public function printStatistics(): void
+    public function analyzeDirectory(string $directory): void
     {
-        $comments = $this->getCommentsFromFile();
-        $lineCounts = $this->countCommentLines($comments);
-        $linesOfCode = $this->countTotalLines($this->filename);
+        $files = glob("$directory/*.php");
 
+        $totalLineCounts = [];
+        $totalLinesOfCode = 0;
+
+        foreach ($files as $filename) {
+            $this->output->writeln("<info>Analyzing $filename</info>");
+            $statistics = $this->getStatistics($filename);
+
+            foreach ($statistics['lineCounts'] as $type => $count) {
+                if (!isset($totalLineCounts[$type])) {
+                    $totalLineCounts[$type] = 0;
+                }
+                $totalLineCounts[$type] += $count;
+            }
+
+            $totalLinesOfCode += $statistics['linesOfCode'];
+        }
+
+        $this->printStatistics($totalLineCounts, $totalLinesOfCode);
+    }
+
+    private function getStatistics(string $filename): array
+    {
+        $comments = $this->getCommentsFromFile($filename);
+        $lineCounts = $this->countCommentLines($comments);
+        $linesOfCode = $this->countTotalLines($filename);
+        return [
+            'lineCounts' => $lineCounts,
+            'linesOfCode' => $linesOfCode,
+        ];
+    }
+
+    public function printStatistics(array $lineCounts, int $linesOfCode): void
+    {
         $table = new Table($this->output);
         $table
             ->setHeaders(['Comment Type', 'Lines'])
@@ -45,9 +78,9 @@ final readonly class CommentDensity
         };
     }
 
-    private function getCommentsFromFile(): array
+    private function getCommentsFromFile(string $filename): array
     {
-        $code = file_get_contents($this->filename);
+        $code = file_get_contents($filename);
 
         // Regex patterns for different types of comments
         $patterns = [
@@ -79,7 +112,7 @@ final readonly class CommentDensity
             $lineCounts[$type] = 0;
             foreach ($commentArray as $comment) {
                 // Count the number of newlines in each comment and add 1 for the line itself
-                $lineCounts[$type] += substr_count($comment, "\n") + 1;
+                $lineCounts[$type] += substr_count($comment, PHP_EOL) + 1;
             }
         }
         return $lineCounts;
