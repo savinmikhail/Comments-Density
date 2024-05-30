@@ -32,8 +32,13 @@ class AnalyzeCommentCommand extends Command
         $thresholds = $config['thresholds'];
 
         $analyzer = new CommentDensity($output, $thresholds);
-        $analyzer->analyzeDirectory($directory);
+        $limitExceeded = $analyzer->analyzeDirectory($directory);
 
+        if ($limitExceeded) {
+            $output->writeln('<error>Comment thresholds were exceeded!</error>');
+            return Command::FAILURE;
+        }
+        $output->writeln('<info>Comment thresholds are passed!</info>');
         return Command::SUCCESS;
     }
 

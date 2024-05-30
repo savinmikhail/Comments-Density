@@ -8,17 +8,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 
 use function array_sum;
+use function in_array;
 use function round;
 
-final readonly class CommentDensity
+final class CommentDensity
 {
+    private bool $exceedThreshold = false;
+
     public function __construct(
-        private OutputInterface $output,
-        private array $thresholds
+        private readonly OutputInterface $output,
+        private readonly array $thresholds
     ) {
     }
 
-    public function analyzeDirectory(string $directory): void
+    public function analyzeDirectory(string $directory): bool
     {
         $files = glob("$directory/*.php");
 
@@ -40,6 +43,7 @@ final readonly class CommentDensity
         }
 
         $this->printStatistics($commentStatistics, $totalLinesOfCode);
+        return $this->exceedThreshold;
     }
 
     private function getStatistics(string $filename): array
@@ -86,7 +90,11 @@ final readonly class CommentDensity
         if (! isset($this->thresholds['Com/LoC'])) {
             return 'white';
         }
-        return $ratio >= $this->thresholds['Com/LoC'] ? 'green' : 'red';
+        if ($ratio >= $this->thresholds['Com/LoC']) {
+            return 'green';
+        }
+        $this->exceedThreshold = true;
+        return 'red';
     }
 
     private function getColorForThresholds(CommentType $type, int $count): string
@@ -94,10 +102,22 @@ final readonly class CommentDensity
         if (! isset($this->thresholds[$type->value])) {
             return 'white';
         }
-        return match ($type->value) {
-            'docBlock', 'license' => $count >= $this->thresholds[$type->value] ? 'green' : 'red',
-            'regular', 'todo', 'fixme' => $count <= $this->thresholds[$type->value] ? 'green' : 'red',
-        };
+
+        if (in_array($type->value, ['docBlock', 'license'])) {
+            if ($count >= $this->thresholds[$type->value]) {
+                return 'green';
+            }
+            $this->exceedThreshold = true;
+            return 'red';
+        }
+
+        if (in_array($type->value, ['regular', 'todo', 'fixme'])) {
+            if ($count <= $this->thresholds[$type->value]) {
+                return 'green';
+            }
+            $this->exceedThreshold = true;
+            return 'red';
+        }
     }
 
     private function getColorForCommentType(CommentType $type): string
