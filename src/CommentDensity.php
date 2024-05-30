@@ -13,7 +13,7 @@ final readonly class CommentDensity
 {
     public function __construct(
         private OutputInterface $output,
-        private array $tresholds
+        private array $thresholds
     ) {
     }
 
@@ -58,14 +58,35 @@ final readonly class CommentDensity
         $table
             ->setHeaders(['Comment Type', 'Lines'])
             ->setRows(array_map(function (string $type, int $count): array {
-                $color = $this->getColorForCommentType(CommentType::tryFrom($type));
-                return ["<fg={$color}>{$type}</>", "<fg={$color}>{$count}</>"];
+                $commentTypeColor = $this->getColorForCommentType(CommentType::tryFrom($type));
+                $color = $this->getColorForThresholds(CommentType::tryFrom($type), $count);
+                return ["<fg={$commentTypeColor}>{$type}</>", "<fg={$color}>{$count}</>"];
             }, array_keys($lineCounts), $lineCounts));
 
         $table->render();
         $totalComments = array_sum($lineCounts);
         $ratio = round($totalComments / $linesOfCode, 2);
-        $this->output->writeln(["<info>Com/LoC: $ratio </info>"]);
+        $color = $this->getColorForRatio($ratio);
+        $this->output->writeln(["<fg=$color>Com/LoC: $ratio</>"]);
+    }
+
+    private function getColorForRatio(float $ratio): string
+    {
+        if (! isset($this->thresholds['Com/LoC'])) {
+            return 'white';
+        }
+        return $ratio >= $this->thresholds['Com/LoC'] ? 'green' : 'red';
+    }
+
+    private function getColorForThresholds(CommentType $type, int $count): string
+    {
+        if (! isset($this->thresholds[$type->value])) {
+            return 'white';
+        }
+        return match ($type->value) {
+            'docBlock', 'license' => $count >= $this->thresholds[$type->value] ? 'green' : 'red',
+            'regular', 'todo', 'fixme' => $count <= $this->thresholds[$type->value] ? 'green' : 'red',
+        };
     }
 
     private function getColorForCommentType(CommentType $type): string
