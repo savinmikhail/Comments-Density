@@ -34,6 +34,3 @@ class AnalyzeCommentCommand extends Command
     }
 }
 
-$app = new Application();
-$app->add(new AnalyzeCommentCommand());
-$app->run();

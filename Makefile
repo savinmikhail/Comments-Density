@@ -7,4 +7,4 @@ check:
 	php ./vendor/bin/grumphp run
 
 run:
-	php src/AnalyzeCommentCommand.php analyze:comments tests/sample.php
+	php ./bin/comments_density analyze:comments
