@@ -12,7 +12,7 @@ But the commented out code does. And lack of docblock comments to classes or met
 docblocks, TODOs, FIXMEs, and license information.
 - **Detailed Reporting**: Provides reports on comment density and quality, which can be used to guide code reviews and 
 maintainability assessments.
-- **Quality Check**: You can setup configuration file, and if the thresholds won't pass, the exit code will be returned 
+- **Quality Check**: You can set up configuration file, and if the thresholds won't pass, the exit code will be returned 
 with the report
 
 ### Installation
@@ -25,7 +25,7 @@ composer require savinmikhail/comment-density
 
 ### Usage
 ```bash
-php ./bin/comments_density analyze:comments
+php vendor/bin/comments_density analyze:comments
 ```
 
 ### Configuration
