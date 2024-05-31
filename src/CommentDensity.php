@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 
@@ -23,28 +25,33 @@ final class CommentDensity
 
     public function analyzeDirectory(string $directory): bool
     {
-        $files = glob("$directory/*.php");
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
 
         $commentStatistics = [];
         $totalLinesOfCode = 0;
 
-        foreach ($files as $filename) {
-            $this->output->writeln("<info>Analyzing $filename</info>");
-            $statistics = $this->getStatistics($filename);
+        foreach ($iterator as $file) {
+            // Check if the file is a PHP file
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $filename = $file->getRealPath();
+                $this->output->writeln("<info>Analyzing $filename</info>");
+                $statistics = $this->getStatistics($filename);
 
-            foreach ($statistics['commentStatistic'] as $type => $count) {
-                if (! isset($commentStatistics[$type])) {
-                    $commentStatistics[$type] = 0;
+                foreach ($statistics['commentStatistic'] as $type => $count) {
+                    if (!isset($commentStatistics[$type])) {
+                        $commentStatistics[$type] = 0;
+                    }
+                    $commentStatistics[$type] += $count;
                 }
-                $commentStatistics[$type] += $count;
-            }
 
-            $totalLinesOfCode += $statistics['linesOfCode'];
+                $totalLinesOfCode += $statistics['linesOfCode'];
+            }
         }
 
         $this->printStatistics($commentStatistics, $totalLinesOfCode);
         return $this->exceedThreshold;
     }
+
 
     private function getStatistics(string $filename): array
     {
