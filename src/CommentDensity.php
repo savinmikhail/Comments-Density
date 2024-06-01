@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
-use Exception;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
@@ -14,14 +13,10 @@ use Symfony\Component\Console\Helper\Table;
 use function array_keys;
 use function array_map;
 use function array_merge;
-use function array_search;
 use function array_sum;
 use function file;
-use function file_exists;
 use function file_get_contents;
 use function in_array;
-use function is_array;
-use function is_readable;
 use function preg_match_all;
 use function round;
 use function substr_count;
@@ -42,58 +37,44 @@ final class CommentDensity
     ) {
     }
 
-    /**
-     * @throws Exception
-     */
-    private function checkForDocBlocks(string $filePath): array
+    public function checkForDocBlocks(string $filename): array
     {
-        // Check if file exists and is readable
-        if (!file_exists($filePath) || !is_readable($filePath)) {
-            throw new Exception('The file "' . $filePath . '" does not exist or is not readable.');
-        }
-
-        $code = file_get_contents($filePath);
+        $code = file_get_contents($filename);
         $tokens = token_get_all($code);
+        return $this->analyzeTokens($tokens);
+    }
 
-        $classFound = false;
+    private function analyzeTokens(array $tokens): array
+    {
         $lastDocBlock = null;
-        $results = [];
+        $results = ['classes' => [], 'methods' => []];
 
         foreach ($tokens as $token) {
-            if (is_array($token)) {
-                switch ($token[0]) {
-                    case T_DOC_COMMENT:
-                        // Save the last seen DocBlock
-                        $lastDocBlock = $token[1];
-                        break;
-                    case T_CLASS:
-                        // Found a class, check for preceding DocBlock
-                        $classFound = true;
-                        // Assuming the class name follows 'class'
-                        $className = $tokens[array_search($token, $tokens) + 2][1];
-                        $results['classes'][$className] = [
-                            'hasDocBlock' => (bool) $lastDocBlock,
-                            'docBlock' => $lastDocBlock
-                        ];
-                        $lastDocBlock = null; // Reset last DocBlock after checking
-                        break;
-                    case T_FUNCTION:
-                        // Handle methods inside the class
-                        if ($classFound) {
-                            // Assuming the function name follows 'function'
-                            $functionName = $tokens[array_search($token, $tokens) + 2][1];
-                            $results['methods'][$functionName] = [
-                                'hasDocBlock' => (bool) $lastDocBlock,
-                                'docBlock' => $lastDocBlock
-                            ];
-                            $lastDocBlock = null; // Reset last DocBlock after checking
-                        }
-                        break;
-                }
+            if ($token[0] === T_DOC_COMMENT) {
+                $lastDocBlock = $token[1];
+            } elseif ($token[0] === T_CLASS) {
+                $name = $this->getNextNonWhitespaceToken($tokens, key($tokens));
+                $results['classes'][$name] = ['hasDocBlock' => !empty($lastDocBlock)];
+                $lastDocBlock = null;
+            } elseif ($token[0] === T_FUNCTION) {
+                $name = $this->getNextNonWhitespaceToken($tokens, key($tokens));
+                $results['methods'][$name] = ['hasDocBlock' => !empty($lastDocBlock)];
+                $lastDocBlock = null;
             }
         }
 
         return $results;
+    }
+
+    private function getNextNonWhitespaceToken(array $tokens, int $currentIndex): string
+    {
+        $count = count($tokens);
+        for ($i = $currentIndex + 1; $i < $count; $i++) {
+            if ($tokens[$i][0] !== T_WHITESPACE) {
+                return $tokens[$i][1];
+            }
+        }
+        return '';
     }
 
     public function analyzeDirectory(string $directory): bool
@@ -132,18 +113,14 @@ final class CommentDensity
     private function getMissingDocblockStatistics(array $docBlocs): int
     {
         $missing = 0;
-        if (isset($docBlocs['classes'])) {
-            foreach ($docBlocs['classes'] as $class) {
-                if (! $class['hasDocBlock']) {
-                    $missing++;
-                }
+        foreach ($docBlocs['classes'] as $class) {
+            if (! $class['hasDocBlock']) {
+                $missing++;
             }
         }
-        if (isset($docBlocs['methods'])) {
-            foreach ($docBlocs['methods'] as $method) {
-                if (!$method['hasDocBlock']) {
-                    $missing++;
-                }
+        foreach ($docBlocs['methods'] as $method) {
+            if (! $method['hasDocBlock']) {
+                $missing++;
             }
         }
         return $missing;
