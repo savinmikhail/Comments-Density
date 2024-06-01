@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use Exception;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,6 +22,61 @@ final class CommentDensity
         private readonly OutputInterface $output,
         private readonly array $thresholds
     ) {
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function checkForDocBlocks(string $filePath): array
+    {
+        // Check if file exists and is readable
+        if (!file_exists($filePath) || !is_readable($filePath)) {
+            throw new Exception('The file "' . $filePath . '" does not exist or is not readable.');
+        }
+
+        $code = file_get_contents($filePath);
+        $tokens = token_get_all($code);
+
+        $classFound = false;
+        $lastDocBlock = null;
+        $results = [];
+
+        foreach ($tokens as $token) {
+            if (is_array($token)) {
+                switch ($token[0]) {
+                    case T_DOC_COMMENT:
+                        // Save the last seen DocBlock
+                        $lastDocBlock = $token[1];
+                        break;
+                    case T_CLASS:
+                        // Found a class, check for preceding DocBlock
+                        $classFound = true;
+                        // Assuming the class name follows 'class'
+                        $className = $tokens[array_search($token, $tokens) + 2][1];
+                        $results['class'] = [
+                            'name' => $className,
+                            'hasDocBlock' => (bool) $lastDocBlock,
+                            'docBlock' => $lastDocBlock
+                        ];
+                        $lastDocBlock = null; // Reset last DocBlock after checking
+                        break;
+                    case T_FUNCTION:
+                        // Handle methods inside the class
+                        if ($classFound) {
+                            // Assuming the function name follows 'function'
+                            $functionName = $tokens[array_search($token, $tokens) + 2][1];
+                            $results['methods'][$functionName] = [
+                                'hasDocBlock' => (bool) $lastDocBlock,
+                                'docBlock' => $lastDocBlock
+                            ];
+                            $lastDocBlock = null; // Reset last DocBlock after checking
+                        }
+                        break;
+                }
+            }
+        }
+
+        return $results;
     }
 
     public function analyzeDirectory(string $directory): bool
