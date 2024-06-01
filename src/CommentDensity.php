@@ -29,12 +29,34 @@ use const T_FUNCTION;
 
 final class CommentDensity
 {
+    private const WEIGHTS = [
+        'docBlock' => 1,
+        'missingDocblock' => -1,
+        'regular' => -0.5,
+        'todo' => -0.3,
+        'fixme' => -0.3,
+        'license' => 0,
+    ];
+
     private bool $exceedThreshold = false;
 
     public function __construct(
         private readonly OutputInterface $output,
         private readonly array $thresholds
     ) {
+    }
+
+    private function calculateCDS(array $commentStatistics, int $totalLinesOfCode): float
+    {
+        $score = 0;
+
+        foreach ($commentStatistics as $type => $count) {
+            $weight = self::WEIGHTS[$type] ?? 0;
+            $score += $count * $weight;
+        }
+
+        // Calculate percentage of score over total lines of code
+        return round(($score / $totalLinesOfCode) * 100, 2);
     }
 
     public function checkForDocBlocks(string $filename): array
@@ -83,6 +105,7 @@ final class CommentDensity
 
         $commentStatistics = [];
         $totalLinesOfCode = 0;
+        $cds = 0;
 
         /** @var SplFileInfo $file */
         foreach ($iterator as $file) {
@@ -103,10 +126,10 @@ final class CommentDensity
                 }
 
                 $totalLinesOfCode += $statistics['linesOfCode'];
+                $cds += $statistics['CDS'];
             }
         }
-
-        $this->printStatistics($commentStatistics, $totalLinesOfCode);
+        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cds);
         return $this->exceedThreshold;
     }
 
@@ -133,16 +156,19 @@ final class CommentDensity
         $commentStatistic = $this->countCommentLines($comments);
         $commentStatistic['missingDocblock'] = $missingDocBlocks;
         $linesOfCode = $this->countTotalLines($filename);
+        $cds = $this->calculateCDS($commentStatistic, $linesOfCode);
+
         return [
             'commentStatistic' => $commentStatistic,
             'linesOfCode' => $linesOfCode,
+            'CDS' => $cds
         ];
     }
 
     /**
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
-    private function printStatistics(array $commentStatistics, int $linesOfCode): void
+    private function printStatistics(array $commentStatistics, int $linesOfCode, float $cds): void
     {
         $table = new Table($this->output);
         $table
@@ -159,12 +185,26 @@ final class CommentDensity
         $ratio = $this->getRatio($commentStatistics, $linesOfCode);
         $color = $this->getColorForRatio($ratio);
         $this->output->writeln(["<fg=$color>Com/LoC: $ratio</>"]);
+        $color = $this->getColorForCDS($cds);
+        $this->output->writeln(["<fg=$color>CDS: $cds</>"]);
     }
 
     private function getRatio(array $commentStatistics, int $linesOfCode): float
     {
         $totalComments = array_sum($commentStatistics);
         return round($totalComments / $linesOfCode, 2);
+    }
+
+    private function getColorForCDS(float $cds): string
+    {
+        if (! isset($this->thresholds['CDS'])) {
+            return 'white';
+        }
+        if ($cds >= $this->thresholds['CDS']) {
+            return 'green';
+        }
+        $this->exceedThreshold = true;
+        return 'red';
     }
 
     private function getColorForRatio(float $ratio): string

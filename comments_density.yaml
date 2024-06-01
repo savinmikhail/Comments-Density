@@ -5,4 +5,5 @@ thresholds:
   todo: 5
   fixme: 5
   Com/LoC: 0.76
+  CDS: 18
 
