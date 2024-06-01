@@ -1,4 +1,4 @@
-directory: "Comments-Density/src"
+directory: "Comments-Density/tests"
 thresholds:
   docBlock: 10
   regular: 20
