@@ -11,9 +11,6 @@ namespace SavinMikhail\Tests\CommentsDensity;
  */
 class ClassSample
 {
-    /**
-     * function docblock
-     */
     public function __construct()
     {
         //in function code

@@ -11,4 +11,5 @@ enum CommentType: string
     case TODO = 'todo';
     case FIXME = 'fixme';
     case REGULAR = 'regular';
+    case MISSING_DOCBLOCK = 'missingDocblock';
 }

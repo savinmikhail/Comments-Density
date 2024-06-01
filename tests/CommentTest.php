@@ -35,7 +35,7 @@ class CommentTest extends TestCase
     {
         $file = __DIR__ . DIRECTORY_SEPARATOR . 'ClassSample.php';
         $commentDensity = new CommentDensity(new ConsoleOutput(), []);
-        $res = $commentDensity->checkForDocBlocks($file);
+//        $res = $commentDensity->checkForDocBlocks($file);
 //        dd($res);
     }
 }
