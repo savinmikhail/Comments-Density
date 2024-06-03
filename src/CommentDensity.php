@@ -48,15 +48,27 @@ final class CommentDensity
 
     private function calculateCDS(array $commentStatistics, int $totalLinesOfCode): float
     {
-        $score = 0;
+        $rawScore = 0;
+        $maxScore = 0;
+        $minScore = 0;
 
         foreach ($commentStatistics as $type => $count) {
             $weight = self::WEIGHTS[$type] ?? 0;
-            $score += $count * $weight;
+            $rawScore += $count * $weight;
+            $maxScore += ($weight > 0 ? $count * $weight : 0);
+            $minScore += ($weight < 0 ? $count * $weight : 0);
         }
 
-        // Calculate percentage of score over total lines of code
-        return round(($score / $totalLinesOfCode) * 100, 2);
+        // Normalize rawScore: (rawScore - minScore) / (maxScore - minScore)
+        // Ensure no division by zero
+        if ($maxScore - $minScore != 0) {
+            $normalizedScore = ($rawScore - $minScore) / ($maxScore - $minScore);
+        } else {
+            $normalizedScore = 0; // Or handle as special case
+        }
+
+        // Ensure the score is between 0 and 1
+        return max(0, min(1, $normalizedScore));
     }
 
     public function checkForDocBlocks(string $filename): array
