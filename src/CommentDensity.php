@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use InvalidArgumentException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
@@ -46,32 +47,53 @@ final class CommentDensity
     ) {
     }
 
-    private function calculateCDS(array $commentStatistics, int $totalLinesOfCode): float
+    private function calculateCDS(array $commentStatistics): float
     {
         $rawScore = 0;
-        $maxScore = 0;
-        $minScore = 0;
 
         foreach ($commentStatistics as $type => $count) {
             $weight = self::WEIGHTS[$type] ?? 0;
             $rawScore += $count * $weight;
-            $maxScore += ($weight > 0 ? $count * $weight : 0);
-            $minScore += ($weight < 0 ? $count * $weight : 0);
         }
 
-        // Normalize rawScore: (rawScore - minScore) / (maxScore - minScore)
-        // Ensure no division by zero
-        if ($maxScore - $minScore != 0) {
-            $normalizedScore = ($rawScore - $minScore) / ($maxScore - $minScore);
-        } else {
-            $normalizedScore = 0; // Or handle as special case
-        }
+        $minPossibleScore = $this->getMinPossibleScore($commentStatistics);
+        $maxPossibleScore = $this->getMaxPossibleScore($commentStatistics);
 
-        // Ensure the score is between 0 and 1
-        return max(0, min(1, $normalizedScore));
+        return $this->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
     }
 
-    public function checkForDocBlocks(string $filename): array
+    private function getMinPossibleScore(array $commentStatistics): float
+    {
+        return self::WEIGHTS['regular'] * $commentStatistics['regular']
+            + self::WEIGHTS['todo'] * $commentStatistics['todo']
+            + self::WEIGHTS['fixme'] * $commentStatistics['fixme']
+            + self::WEIGHTS['missingDocblock'] * $commentStatistics['missingDocblock']
+            - self::WEIGHTS['docBlock'] * $commentStatistics['docBlock'];
+    }
+
+    private function getMaxPossibleScore(array $commentStatistics): float
+    {
+        return self::WEIGHTS['docBlock'] * (
+                $commentStatistics['docBlock'] + $commentStatistics['missingDocblock']
+            );
+    }
+
+    private function scaleToRange(float $value, float $min, float $max): float
+    {
+        if ($min >= $max) {
+            throw new InvalidArgumentException("Minimum value must be less than maximum value.");
+        }
+        $scaledValue = ($value - $min) / ($max - $min);
+        // Ensure the result is within the range [0, 1]
+        return $this->ensureInRange($scaledValue, 0, 1);
+    }
+
+    private function ensureInRange(float $value, float $min, float $max): float
+    {
+        return max($min, min($max, $value));
+    }
+
+    private function checkForDocBlocks(string $filename): array
     {
         $code = file_get_contents($filename);
         $tokens = token_get_all($code);
@@ -117,8 +139,8 @@ final class CommentDensity
 
         $commentStatistics = [];
         $totalLinesOfCode = 0;
-        $cds = 0;
-
+        $cdsSum = 0;
+        $filesAnalyzed = 0;
         /** @var SplFileInfo $file */
         foreach ($iterator as $file) {
             // Check if the file is a PHP file
@@ -138,10 +160,11 @@ final class CommentDensity
                 }
 
                 $totalLinesOfCode += $statistics['linesOfCode'];
-                $cds += $statistics['CDS'];
+                $cdsSum += $statistics['CDS'];
+                $filesAnalyzed++;
             }
         }
-        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cds);
+        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed);
         return $this->exceedThreshold;
     }
 
@@ -168,7 +191,7 @@ final class CommentDensity
         $commentStatistic = $this->countCommentLines($comments);
         $commentStatistic['missingDocblock'] = $missingDocBlocks;
         $linesOfCode = $this->countTotalLines($filename);
-        $cds = $this->calculateCDS($commentStatistic, $linesOfCode);
+        $cds = $this->calculateCDS($commentStatistic);
 
         return [
             'commentStatistic' => $commentStatistic,
@@ -189,7 +212,7 @@ final class CommentDensity
                 array_map(function (string $type, int $count): array {
                     $commentTypeColor = $this->getColorForCommentType(CommentType::tryFrom($type));
                     $color = $this->getColorForThresholds(CommentType::tryFrom($type), $count);
-                    return ["<fg={$commentTypeColor}>{$type}</>", "<fg={$color}>{$count}</>"];
+                    return ["<fg=$commentTypeColor>$type</>", "<fg=$color>$count</>"];
                 }, array_keys($commentStatistics), $commentStatistics)
             );
 
