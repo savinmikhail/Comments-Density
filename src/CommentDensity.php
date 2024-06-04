@@ -27,6 +27,9 @@ use const PHP_EOL;
 use const T_CLASS;
 use const T_DOC_COMMENT;
 use const T_FUNCTION;
+use const T_ENUM;
+use const T_INTERFACE;
+use const T_TRAIT;
 
 final class CommentDensity
 {
@@ -108,7 +111,7 @@ final class CommentDensity
         foreach ($tokens as $token) {
             if ($token[0] === T_DOC_COMMENT) {
                 $lastDocBlock = $token[1];
-            } elseif ($token[0] === T_CLASS) {
+            } elseif (in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM])) {
                 $name = $this->getNextNonWhitespaceToken($tokens, key($tokens));
                 $results['classes'][$name] = ['hasDocBlock' => !empty($lastDocBlock)];
                 $lastDocBlock = null;
