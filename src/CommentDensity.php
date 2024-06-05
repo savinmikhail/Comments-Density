@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
-use InvalidArgumentException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
@@ -21,119 +20,19 @@ use function in_array;
 use function preg_match_all;
 use function round;
 use function substr_count;
-use function token_get_all;
 
 use const PHP_EOL;
-use const T_CLASS;
-use const T_DOC_COMMENT;
-use const T_FUNCTION;
-use const T_ENUM;
-use const T_INTERFACE;
-use const T_TRAIT;
 
 final class CommentDensity
 {
-    private const WEIGHTS = [
-        'docBlock' => 1,
-        'missingDocblock' => -1,
-        'regular' => -0.5,
-        'todo' => -0.3,
-        'fixme' => -0.3,
-        'license' => 0,
-    ];
-
     private bool $exceedThreshold = false;
 
     public function __construct(
         private readonly OutputInterface $output,
-        private readonly array $thresholds
+        private readonly array $thresholds,
+        private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
+        private readonly StatisticCalculator $statisticCalculator
     ) {
-    }
-
-    private function calculateCDS(array $commentStatistics): float
-    {
-        $rawScore = 0;
-
-        foreach ($commentStatistics as $type => $count) {
-            $weight = self::WEIGHTS[$type] ?? 0;
-            $rawScore += $count * $weight;
-        }
-
-        $minPossibleScore = $this->getMinPossibleScore($commentStatistics);
-        $maxPossibleScore = $this->getMaxPossibleScore($commentStatistics);
-
-        return $this->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
-    }
-
-    private function getMinPossibleScore(array $commentStatistics): float
-    {
-        return self::WEIGHTS['regular'] * $commentStatistics['regular']
-            + self::WEIGHTS['todo'] * $commentStatistics['todo']
-            + self::WEIGHTS['fixme'] * $commentStatistics['fixme']
-            + self::WEIGHTS['missingDocblock'] * $commentStatistics['missingDocblock']
-            - self::WEIGHTS['docBlock'] * $commentStatistics['docBlock'];
-    }
-
-    private function getMaxPossibleScore(array $commentStatistics): float
-    {
-        return self::WEIGHTS['docBlock'] * (
-                $commentStatistics['docBlock'] + $commentStatistics['missingDocblock']
-            );
-    }
-
-    private function scaleToRange(float $value, float $min, float $max): float
-    {
-        if ($min >= $max) {
-            throw new InvalidArgumentException("Minimum value must be less than maximum value.");
-        }
-        $scaledValue = ($value - $min) / ($max - $min);
-        // Ensure the result is within the range [0, 1]
-        return $this->ensureInRange($scaledValue, 0, 1);
-    }
-
-    private function ensureInRange(float $value, float $min, float $max): float
-    {
-        return max($min, min($max, $value));
-    }
-
-    private function checkForDocBlocks(string $filename): array
-    {
-        $code = file_get_contents($filename);
-        $tokens = token_get_all($code);
-        return $this->analyzeTokens($tokens);
-    }
-
-    private function analyzeTokens(array $tokens): array
-    {
-        $lastDocBlock = null;
-        $results = ['classes' => [], 'methods' => []];
-
-        foreach ($tokens as $token) {
-            if ($token[0] === T_DOC_COMMENT) {
-                $lastDocBlock = $token[1];
-            } elseif (in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM])) {
-                $name = $this->getNextNonWhitespaceToken($tokens, key($tokens));
-                $results['classes'][$name] = ['hasDocBlock' => !empty($lastDocBlock)];
-                $lastDocBlock = null;
-            } elseif ($token[0] === T_FUNCTION) {
-                $name = $this->getNextNonWhitespaceToken($tokens, key($tokens));
-                $results['methods'][$name] = ['hasDocBlock' => !empty($lastDocBlock)];
-                $lastDocBlock = null;
-            }
-        }
-
-        return $results;
-    }
-
-    private function getNextNonWhitespaceToken(array $tokens, int $currentIndex): string
-    {
-        $count = count($tokens);
-        for ($i = $currentIndex + 1; $i < $count; $i++) {
-            if ($tokens[$i][0] !== T_WHITESPACE) {
-                return $tokens[$i][1];
-            }
-        }
-        return '';
     }
 
     public function analyzeDirectory(string $directory): bool
@@ -147,54 +46,44 @@ final class CommentDensity
         /** @var SplFileInfo $file */
         foreach ($iterator as $file) {
             // Check if the file is a PHP file
-            if ($file->isFile() && $file->getExtension() === 'php') {
-                $filename = $file->getRealPath();
-                if (! $file->isReadable()) {
-                    $this->output->writeln("<highlight>$filename is not readable</highlight>");
-                }
-                $this->output->writeln("<info>Analyzing $filename</info>");
-                $statistics = $this->getStatistics($filename);
-
-                foreach ($statistics['commentStatistic'] as $type => $count) {
-                    if (!isset($commentStatistics[$type])) {
-                        $commentStatistics[$type] = 0;
-                    }
-                    $commentStatistics[$type] += $count;
-                }
-
-                $totalLinesOfCode += $statistics['linesOfCode'];
-                $cdsSum += $statistics['CDS'];
-                $filesAnalyzed++;
+            if (!$file->isFile() || $file->getExtension() !== 'php') {
+                continue;
             }
+            $filename = $file->getRealPath();
+            if (! $file->isReadable()) {
+                $this->output->writeln("<highlight>$filename is not readable</highlight>");
+                continue;
+            }
+            $this->output->writeln("<info>Analyzing $filename</info>");
+            $statistics = $this->getStatistics($filename);
+
+            foreach ($statistics['commentStatistic'] as $type => $count) {
+                if (! isset($commentStatistics[$type])) {
+                    $commentStatistics[$type] = 0;
+                }
+                $commentStatistics[$type] += $count;
+            }
+
+            $totalLinesOfCode += $statistics['linesOfCode'];
+            $cdsSum += $statistics['CDS'];
+            $filesAnalyzed++;
         }
         $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed);
         return $this->exceedThreshold;
     }
 
-    private function getMissingDocblockStatistics(array $docBlocs): int
-    {
-        $missing = 0;
-        foreach ($docBlocs['classes'] as $class) {
-            if (! $class['hasDocBlock']) {
-                $missing++;
-            }
-        }
-        foreach ($docBlocs['methods'] as $method) {
-            if (! $method['hasDocBlock']) {
-                $missing++;
-            }
-        }
-        return $missing;
-    }
-
     private function getStatistics(string $filename): array
     {
         $comments = $this->getCommentsFromFile($filename);
-        $missingDocBlocks = $this->getMissingDocblockStatistics($this->checkForDocBlocks($filename));
+        $missingDocBlocks = $this
+            ->docBlockAnalyzer
+            ->getMissingDocblockStatistics($filename);
         $commentStatistic = $this->countCommentLines($comments);
         $commentStatistic['missingDocblock'] = $missingDocBlocks;
         $linesOfCode = $this->countTotalLines($filename);
-        $cds = $this->calculateCDS($commentStatistic);
+        $cds = $this
+            ->statisticCalculator
+            ->calculateCDS($commentStatistic);
 
         return [
             'commentStatistic' => $commentStatistic,

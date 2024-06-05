@@ -31,7 +31,7 @@ class AnalyzeCommentCommand extends Command
         $directory = $this->getProjectRoot() . '/' . $config['directory'];
         $thresholds = $config['thresholds'];
 
-        $analyzer = new CommentDensity($output, $thresholds);
+        $analyzer = new CommentDensity($output, $thresholds, new MissingDocBlockAnalyzer(), new StatisticCalculator());
         $limitExceeded = $analyzer->analyzeDirectory($directory);
 
         if ($limitExceeded) {
