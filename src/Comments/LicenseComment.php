@@ -11,7 +11,7 @@ class LicenseComment extends Comment implements CommentTypeInterface
 
     public function getColor(): string
     {
-       return 'white';
+        return 'white';
     }
 
     public function getStatColor(int $count, array $thresholds): string
