@@ -21,7 +21,6 @@ use function array_map;
 use function array_sum;
 use function file;
 use function file_get_contents;
-use function preg_match_all;
 use function round;
 use function substr_count;
 
@@ -77,10 +76,13 @@ final class CommentDensity
 
     private function getStatistics(string $filename): array
     {
-        $comments = $this->getCommentsFromFile($filename);
+        $code = file_get_contents($filename);
+        $tokens = token_get_all($code);
+
+        $comments = $this->getCommentsFromFile($tokens);
         $missingDocBlocks = $this
             ->docBlockAnalyzer
-            ->getMissingDocblockStatistics($filename);
+            ->getMissingDocblockStatistics($tokens);
         $commentStatistic = $this->countCommentLines($comments);
         $commentStatistic['missingDocblock'] = $missingDocBlocks;
         $linesOfCode = $this->countTotalLines($filename);
@@ -171,11 +173,8 @@ final class CommentDensity
         return 'white';
     }
 
-    private function getCommentsFromFile(string $filename): array
+    private function getCommentsFromFile(array $tokens): array
     {
-        $code = file_get_contents($filename);
-        $tokens = token_get_all($code);
-
         $commentTypes = Comment::getTypes();
         $patterns = [];
         foreach ($commentTypes as $commentType) {

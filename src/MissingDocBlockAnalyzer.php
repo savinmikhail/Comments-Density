@@ -7,19 +7,6 @@ namespace SavinMikhail\CommentsDensity;
 final class MissingDocBlockAnalyzer
 {
     /**
-     * Analyzes a file for missing docblocks.
-     *
-     * @param string $filename The filename to analyze.
-     * @return array The analysis results.
-     */
-    private function checkForDocBlocks(string $filename): array
-    {
-        $code = file_get_contents($filename);
-        $tokens = token_get_all($code);
-        return $this->analyzeTokens($tokens);
-    }
-
-    /**
      * Analyzes the tokens of a file for docblocks.
      *
      * @param array $tokens The tokens to analyze.
@@ -75,15 +62,9 @@ final class MissingDocBlockAnalyzer
         return '';
     }
 
-    /**
-     * Gets the count of missing docblocks in a file.
-     *
-     * @param string $filename The filename to analyze.
-     * @return int The count of missing docblocks.
-     */
-    public function getMissingDocblockStatistics(string $filename): int
+    public function getMissingDocblockStatistics(array $tokens): int
     {
-        $docBlocks = $this->checkForDocBlocks($filename);
+        $docBlocks = $this->analyzeTokens($tokens);
         $missing = 0;
         foreach ($docBlocks['classes'] as $class) {
             if (! $class['hasDocBlock']) {
