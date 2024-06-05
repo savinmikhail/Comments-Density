@@ -6,17 +6,16 @@ namespace SavinMikhail\CommentsDensity;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use SavinMikhail\CommentsDensity\Comments\Comment;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 
 use function array_keys;
 use function array_map;
-use function array_merge;
 use function array_sum;
 use function file;
 use function file_get_contents;
-use function in_array;
 use function preg_match_all;
 use function round;
 use function substr_count;
@@ -56,7 +55,6 @@ final class CommentDensity
             }
             $this->output->writeln("<info>Analyzing $filename</info>");
             $statistics = $this->getStatistics($filename);
-
             foreach ($statistics['commentStatistic'] as $type => $count) {
                 if (! isset($commentStatistics[$type])) {
                     $commentStatistics[$type] = 0;
@@ -148,62 +146,35 @@ final class CommentDensity
 
     private function getColorForThresholds(CommentType $type, int $count): string
     {
-        if (! isset($this->thresholds[$type->value])) {
-            return 'white';
-        }
-
-        if (in_array($type->value, ['docBlock', 'license'])) {
-            if ($count >= $this->thresholds[$type->value]) {
-                return 'green';
+        $commentTypes = Comment::getTypes();
+        foreach ($commentTypes as $commentType) {
+            if ($type->value === $commentType->getName()) {
+                return $commentType->getStatColor($count, $this->thresholds);
             }
-            $this->exceedThreshold = true;
-            return 'red';
         }
-
-        if (in_array($type->value, ['regular', 'todo', 'fixme'])) {
-            if ($count <= $this->thresholds[$type->value]) {
-                return 'green';
-            }
-            $this->exceedThreshold = true;
-            return 'red';
-        }
+        return 'white';
     }
 
     private function getColorForCommentType(CommentType $type): string
     {
-        return match ($type->value) {
-            'docBlock' => 'green',
-            'regular', 'missingDocblock' => 'red',
-            'todo', 'fixme' => 'yellow',
-            'license' => 'white',
-        };
+        $commentTypes = Comment::getTypes();
+        foreach ($commentTypes as $commentType) {
+            if ($commentType->getName() === $type->value) {
+                return $commentType->getColor();
+            }
+        }
+        return 'white';
     }
 
     private function getCommentsFromFile(string $filename): array
     {
         $code = file_get_contents($filename);
 
-        // Regex patterns for different types of comments
-        $patterns = [
-            'singleLine' =>
-            // Matches // comments, excludes TODO/FIXME, case-insensitive
-                '/\/\/(?!.*\b(?:todo|fixme)\b:?).*/i',
-            'multiLine' =>
-            // Matches /* */ comments, excludes /** */ and those containing TODO/FIXME, case-insensitive
-                '/\/\*(?!\*|\s*\*.*\b(?:todo|fixme)\b:?).+?\*\//is',
-            'docBlock' =>
-            // Matches docblocks, excludes licenses
-                '/\/\*\*(?!\s*\*\/)(?![\s\S]*?\b(license|copyright|permission)\b).+?\*\//is',
-            'todo' =>
-            // Matches TODO comments, optional colon, case-insensitive
-                '/(?:\/\/|#|\/\*.*?\*\/).*\btodo\b:?.*/i',
-            'fixme' =>
-            // Matches FIXME comments, optional colon, case-insensitive
-                '/(?:\/\/|#|\/\*.*?\*\/).*\bfixme\b:?.*/i',
-            'license' =>
-            // Matches license information within docblocks
-                '/\/\*\*.*?\b(license|copyright|permission)\b.*?\*\//is'
-        ];
+        $commentTypes = Comment::getTypes();
+        $patterns = [];
+        foreach ($commentTypes as $commentType) {
+            $patterns[$commentType->getName()] = $commentType->getPattern();
+        }
 
         $comments = [];
 
@@ -212,9 +183,7 @@ final class CommentDensity
             preg_match_all($pattern, $code, $matches);
             $comments[$type] = $matches[0];
         }
-        $comments['regular'] = array_merge($comments['singleLine'], $comments['multiLine']);
-        unset($comments['singleLine']);
-        unset($comments['multiLine']);
+
         return $comments;
     }
 
