@@ -117,6 +117,7 @@ final class CommentDensity
         $ratio = $this->getRatio($commentStatistics, $linesOfCode);
         $color = $this->getColorForRatio($ratio);
         $this->output->writeln(["<fg=$color>Com/LoC: $ratio</>"]);
+        $cds = round($cds, 2);
         $color = $this->getColorForCDS($cds);
         $this->output->writeln(["<fg=$color>CDS: $cds</>"]);
     }
