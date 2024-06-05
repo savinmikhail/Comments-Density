@@ -4,20 +4,30 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
-use InvalidArgumentException;
+use Mikhail\PrimitiveWrappers\Int\Integer;
 
 final readonly class StatisticCalculator
 {
     private const WEIGHTS = [
-        'docBlock' => 1,
-        'missingDocblock' => -1,
-        'regular' => -0.5,
-        'todo' => -0.3,
-        'fixme' => -0.3,
-        'license' => 0,
+        CommentType::DOCBLOCK->value => 1,
+        CommentType::MISSING_DOCBLOCK->value => -1,
+        CommentType::REGULAR->value => -1,
+        CommentType::TODO->value => -0.3,
+        CommentType::FIXME->value => -0.3,
+        CommentType::LICENSE->value => 0,
     ];
 
     public function calculateCDS(array $commentStatistics): float
+    {
+        $rawScore = $this->calculateRawScore($commentStatistics);
+        $minPossibleScore = $this->getMinPossibleScore($commentStatistics);
+        $maxPossibleScore = $this->getMaxPossibleScore($commentStatistics);
+
+        return (new Integer(0))
+            ->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
+    }
+
+    private function calculateRawScore(array $commentStatistics): float
     {
         $rawScore = 0;
 
@@ -26,39 +36,32 @@ final readonly class StatisticCalculator
             $rawScore += $count * $weight;
         }
 
-        $minPossibleScore = $this->getMinPossibleScore($commentStatistics);
-        $maxPossibleScore = $this->getMaxPossibleScore($commentStatistics);
-
-        return $this->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
+        return $rawScore;
     }
 
     private function getMinPossibleScore(array $commentStatistics): float
     {
-        return self::WEIGHTS['regular'] * $commentStatistics['regular']
-            + self::WEIGHTS['todo'] * $commentStatistics['todo']
-            + self::WEIGHTS['fixme'] * $commentStatistics['fixme']
-            + self::WEIGHTS['missingDocblock'] * $commentStatistics['missingDocblock']
-            - self::WEIGHTS['docBlock'] * $commentStatistics['docBlock'];
+        return self::WEIGHTS[CommentType::REGULAR->value]
+            * ($commentStatistics[CommentType::REGULAR->value] ?? 0)
+
+            + self::WEIGHTS[CommentType::TODO->value]
+            * ($commentStatistics[CommentType::TODO->value] ?? 0)
+
+            + self::WEIGHTS[CommentType::FIXME->value]
+            * ($commentStatistics[CommentType::FIXME->value] ?? 0)
+
+            + self::WEIGHTS[CommentType::MISSING_DOCBLOCK->value]
+            * ($commentStatistics[CommentType::MISSING_DOCBLOCK->value] ?? 0)
+
+            - self::WEIGHTS[CommentType::DOCBLOCK->value]
+            * ($commentStatistics[CommentType::DOCBLOCK->value] ?? 0);
     }
 
     private function getMaxPossibleScore(array $commentStatistics): float
     {
-        return self::WEIGHTS['docBlock'] * (
-                $commentStatistics['docBlock'] + $commentStatistics['missingDocblock']
+        return self::WEIGHTS[CommentType::DOCBLOCK->value] * (
+                ($commentStatistics[CommentType::DOCBLOCK->value] ?? 0)
+                + ($commentStatistics[CommentType::MISSING_DOCBLOCK->value] ?? 0)
             );
-    }
-
-    private function scaleToRange(float $value, float $min, float $max): float
-    {
-        if ($min >= $max) {
-            throw new InvalidArgumentException("Minimum value must be less than maximum value.");
-        }
-        $scaledValue = ($value - $min) / ($max - $min);
-        return $this->ensureInRange($scaledValue, 0, 1);
-    }
-
-    private function ensureInRange(float $value, float $min, float $max): float
-    {
-        return max($min, min($max, $value));
     }
 }

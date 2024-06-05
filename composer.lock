@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d92f5a38b551a1986e84a9c4d6b0ef1d",
+    "content-hash": "f4ded8c31667416268be3058c62922c8",
     "packages": [
         {
             "name": "psr/container",
@@ -58,6 +58,54 @@
                 "source": "https://github.com/php-fig/container/tree/2.0.2"
             },
             "time": "2021-11-05T16:47:00+00:00"
+        },
+        {
+            "name": "savinmikhail/primitive_wrappers",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/savinmikhail/primitive_wrappers.git",
+                "reference": "b626a0649a2bfad082a42d245c8f1ed8ec061aa0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/savinmikhail/primitive_wrappers/zipball/b626a0649a2bfad082a42d245c8f1ed8ec061aa0",
+                "reference": "b626a0649a2bfad082a42d245c8f1ed8ec061aa0",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phan/phan": "^5.4",
+                "phpmd/phpmd": "^2.15",
+                "phpro/grumphp": "^2.5",
+                "phpunit/phpunit": "^11.1",
+                "squizlabs/php_codesniffer": "^3.9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Mikhail\\PrimitiveWrappers\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Savin Mikhail",
+                    "email": "mikhail.d.savin@gmail.com"
+                }
+            ],
+            "description": "The object wrappers and static helpers for php primitive types",
+            "support": {
+                "issues": "https://github.com/savinmikhail/primitive_wrappers/issues",
+                "source": "https://github.com/savinmikhail/primitive_wrappers/tree/v1.1.0"
+            },
+            "time": "2024-06-05T01:58:26+00:00"
         },
         {
             "name": "symfony/console",
@@ -5621,5 +5669,5 @@
         "php": ">=8.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
