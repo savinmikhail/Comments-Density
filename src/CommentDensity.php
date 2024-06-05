@@ -7,6 +7,11 @@ namespace SavinMikhail\CommentsDensity;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Comments\Comment;
+use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
+use SavinMikhail\CommentsDensity\Comments\FixMeComment;
+use SavinMikhail\CommentsDensity\Comments\LicenseComment;
+use SavinMikhail\CommentsDensity\Comments\RegularComment;
+use SavinMikhail\CommentsDensity\Comments\TodoComment;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
@@ -45,7 +50,7 @@ final class CommentDensity
         /** @var SplFileInfo $file */
         foreach ($iterator as $file) {
             // Check if the file is a PHP file
-            if (!$file->isFile() || $file->getExtension() !== 'php') {
+            if (!$file->isFile() || $file->getExtension() !== 'php') { //test
                 continue;
             }
             $filename = $file->getRealPath();
@@ -169,6 +174,7 @@ final class CommentDensity
     private function getCommentsFromFile(string $filename): array
     {
         $code = file_get_contents($filename);
+        $tokens = token_get_all($code);
 
         $commentTypes = Comment::getTypes();
         $patterns = [];
@@ -177,13 +183,42 @@ final class CommentDensity
         }
 
         $comments = [];
-
-        // Apply regex patterns to find comments
-        foreach ($patterns as $type => $pattern) {
-            preg_match_all($pattern, $code, $matches);
-            $comments[$type] = $matches[0];
+        foreach ($tokens as $token) {
+            if (! is_array($token)) {
+                continue;
+            }
+            if (! in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
+                continue;
+            }
+            if ($token[0] === T_COMMENT) {
+                $todoComment = new TodoComment();
+                if ($todoComment->is($token[1])) {
+                    $comments[$todoComment->getName()][] = $token[1];
+                    continue;
+                }
+                $fixmeComment = new FixMeComment();
+                if ($fixmeComment->is($token[1])) {
+                    $comments[$fixmeComment->getName()][] = $token[1];
+                    continue;
+                }
+                $regularComment = new RegularComment();
+                if ($regularComment->is($token[1])) {
+                    $comments[$regularComment->getName()][] = $token[1];
+                    continue;
+                }
+            }
+            if ($token[0] === T_DOC_COMMENT) {
+                $licenseComment = new LicenseComment();
+                if ($licenseComment->is($token[1])) {
+                    $comments[$licenseComment->getName()][] = $token[1];
+                    continue;
+                }
+                $docBlockComment = new DocBlockComment();
+                if ($docBlockComment->is($token[1])) {
+                    $comments[$docBlockComment->getName()][] = $token[1];
+                }
+            }
         }
-
         return $comments;
     }
 

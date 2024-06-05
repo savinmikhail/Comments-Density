@@ -13,6 +13,11 @@ abstract class Comment
         return $this->exceedThreshold;
     }
 
+    public function is(string $token): bool
+    {
+        return (bool) preg_match($this->getPattern(), $token);
+    }
+
     /**
      * @return array<int, CommentTypeInterface>
      */
