@@ -4,7 +4,6 @@ namespace SavinMikhail\CommentsDensity\Comments;
 
 class TodoComment extends Comment implements CommentTypeInterface
 {
-
     public function getPattern(): string
     {
         return '/(?:\/\/|#|\/\*|\*|<!--).*?\btodo\b.*/i';
