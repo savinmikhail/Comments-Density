@@ -7,11 +7,7 @@ namespace SavinMikhail\CommentsDensity;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Comments\Comment;
-use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
-use SavinMikhail\CommentsDensity\Comments\FixMeComment;
-use SavinMikhail\CommentsDensity\Comments\LicenseComment;
-use SavinMikhail\CommentsDensity\Comments\RegularComment;
-use SavinMikhail\CommentsDensity\Comments\TodoComment;
+use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
@@ -34,7 +30,8 @@ final class CommentDensity
         private readonly OutputInterface $output,
         private readonly array $thresholds,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private readonly StatisticCalculator $statisticCalculator
+        private readonly StatisticCalculator $statisticCalculator,
+        private CommentFactory $commentFactory
     ) {
     }
 
@@ -49,22 +46,17 @@ final class CommentDensity
         /** @var SplFileInfo $file */
         foreach ($iterator as $file) {
             // Check if the file is a PHP file
-            if (!$file->isFile() || $file->getExtension() !== 'php') { //test
+            if (! $this->isPhpFile($file)) {
+                continue;
+            }
+            if (! $this->isFileReadable($file)) {
                 continue;
             }
             $filename = $file->getRealPath();
-            if (! $file->isReadable()) {
-                $this->output->writeln("<highlight>$filename is not readable</highlight>");
-                continue;
-            }
+
             $this->output->writeln("<info>Analyzing $filename</info>");
             $statistics = $this->getStatistics($filename);
-            foreach ($statistics['commentStatistic'] as $type => $count) {
-                if (! isset($commentStatistics[$type])) {
-                    $commentStatistics[$type] = 0;
-                }
-                $commentStatistics[$type] += $count;
-            }
+            $this->updateCommentStatistics($commentStatistics, $statistics);
 
             $totalLinesOfCode += $statistics['linesOfCode'];
             $cdsSum += $statistics['CDS'];
@@ -72,6 +64,30 @@ final class CommentDensity
         }
         $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed);
         return $this->exceedThreshold;
+    }
+
+    private function updateCommentStatistics(array &$commentStatistics, array $statistics): void
+    {
+        foreach ($statistics['commentStatistic'] as $type => $count) {
+            if (!isset($commentStatistics[$type])) {
+                $commentStatistics[$type] = 0;
+            }
+            $commentStatistics[$type] += $count;
+        }
+    }
+
+    private function isPhpFile(SplFileInfo $file): bool
+    {
+        return $file->isFile() && $file->getExtension() === 'php';
+    }
+
+    private function isFileReadable(SplFileInfo $file): bool
+    {
+        if (! $file->isReadable()) {
+            $this->output->writeln("<highlight>{$file->getRealPath()} is not readable</highlight>");
+            return false;
+        }
+        return true;
     }
 
     private function getStatistics(string $filename): array
@@ -102,24 +118,9 @@ final class CommentDensity
      */
     private function printStatistics(array $commentStatistics, int $linesOfCode, float $cds): void
     {
-        $table = new Table($this->output);
-        $table
-            ->setHeaders(['Comment Type', 'Lines'])
-            ->setRows(
-                array_map(function (string $type, int $count): array {
-                    $commentTypeColor = $this->getColorForCommentType(CommentType::tryFrom($type));
-                    $color = $this->getColorForThresholds(CommentType::tryFrom($type), $count);
-                    return ["<fg=$commentTypeColor>$type</>", "<fg=$color>$count</>"];
-                }, array_keys($commentStatistics), $commentStatistics)
-            );
-
-        $table->render();
-        $ratio = $this->getRatio($commentStatistics, $linesOfCode);
-        $color = $this->getColorForRatio($ratio);
-        $this->output->writeln(["<fg=$color>Com/LoC: $ratio</>"]);
-        $cds = round($cds, 2);
-        $color = $this->getColorForCDS($cds);
-        $this->output->writeln(["<fg=$color>CDS: $cds</>"]);
+        $this->printTable($commentStatistics);
+        $this->printComToLoc($commentStatistics, $linesOfCode);
+        $this->printCDS($cds);
     }
 
     private function getRatio(array $commentStatistics, int $linesOfCode): float
@@ -176,12 +177,6 @@ final class CommentDensity
 
     private function getCommentsFromFile(array $tokens): array
     {
-        $commentTypes = Comment::getTypes();
-        $patterns = [];
-        foreach ($commentTypes as $commentType) {
-            $patterns[$commentType->getName()] = $commentType->getPattern();
-        }
-
         $comments = [];
         foreach ($tokens as $token) {
             if (! is_array($token)) {
@@ -190,33 +185,9 @@ final class CommentDensity
             if (! in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
                 continue;
             }
-            if ($token[0] === T_COMMENT) {
-                $todoComment = new TodoComment();
-                if ($todoComment->is($token[1])) {
-                    $comments[$todoComment->getName()][] = $token[1];
-                    continue;
-                }
-                $fixmeComment = new FixMeComment();
-                if ($fixmeComment->is($token[1])) {
-                    $comments[$fixmeComment->getName()][] = $token[1];
-                    continue;
-                }
-                $regularComment = new RegularComment();
-                if ($regularComment->is($token[1])) {
-                    $comments[$regularComment->getName()][] = $token[1];
-                    continue;
-                }
-            }
-            if ($token[0] === T_DOC_COMMENT) {
-                $licenseComment = new LicenseComment();
-                if ($licenseComment->is($token[1])) {
-                    $comments[$licenseComment->getName()][] = $token[1];
-                    continue;
-                }
-                $docBlockComment = new DocBlockComment();
-                if ($docBlockComment->is($token[1])) {
-                    $comments[$docBlockComment->getName()][] = $token[1];
-                }
+            $commentType = $this->commentFactory->classifyComment($token[1]);
+            if ($commentType) {
+                $comments[$commentType->getName()][] = $token[1];
             }
         }
         return $comments;
@@ -228,7 +199,6 @@ final class CommentDensity
         foreach ($comments as $type => $commentArray) {
             $lineCounts[$type] = 0;
             foreach ($commentArray as $comment) {
-                // Count the number of newlines in each comment and add 1 for the line itself
                 $lineCounts[$type] += substr_count($comment, PHP_EOL) + 1;
             }
         }
@@ -239,5 +209,51 @@ final class CommentDensity
     {
         $fileContent = file($filename);
         return count($fileContent);
+    }
+
+    /**
+     * @param array $commentStatistics
+     * @return void
+     */
+    public function printTable(array $commentStatistics): void
+    {
+        $table = new Table($this->output);
+        $table
+            ->setHeaders(['Comment Type', 'Lines'])
+            ->setRows(
+                array_map(function (string $type, int $count): array {
+                    $commentType = $this->commentFactory->getCommentType($type);
+                    if ($commentType) {
+                        $color = $commentType->getStatColor($count, $this->thresholds);
+                        return ["<fg=" . $commentType->getColor() . ">$type</>", "<fg=$color>$count</>"];
+                    }
+                    return [$type, $count];
+                }, array_keys($commentStatistics), $commentStatistics)
+            );
+
+        $table->render();
+    }
+
+    /**
+     * @param array $commentStatistics
+     * @param int $linesOfCode
+     * @return void
+     */
+    public function printComToLoc(array $commentStatistics, int $linesOfCode): void
+    {
+        $ratio = $this->getRatio($commentStatistics, $linesOfCode);
+        $color = $this->getColorForRatio($ratio);
+        $this->output->writeln(["<fg=$color>Com/LoC: $ratio</>"]);
+    }
+
+    /**
+     * @param float $cds
+     * @return void
+     */
+    public function printCDS(float $cds): void
+    {
+        $cds = round($cds, 2);
+        $color = $this->getColorForCDS($cds);
+        $this->output->writeln(["<fg=$color>CDS: $cds</>"]);
     }
 }

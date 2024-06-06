@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +32,13 @@ class AnalyzeCommentCommand extends Command
         $directory = $this->getProjectRoot() . '/' . $config['directory'];
         $thresholds = $config['thresholds'];
 
-        $analyzer = new CommentDensity($output, $thresholds, new MissingDocBlockAnalyzer(), new StatisticCalculator());
+        $analyzer = new CommentDensity(
+            $output,
+            $thresholds,
+            new MissingDocBlockAnalyzer(),
+            new StatisticCalculator(),
+            new CommentFactory(),
+        );
         $limitExceeded = $analyzer->analyzeDirectory($directory);
 
         if ($limitExceeded) {

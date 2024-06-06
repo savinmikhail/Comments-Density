@@ -8,6 +8,7 @@ use JetBrains\PhpStorm\NoReturn;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\CommentDensity;
+use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\StatisticCalculator;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -40,7 +41,8 @@ class CommentTest extends TestCase
             new ConsoleOutput(),
             [],
             new MissingDocBlockAnalyzer(),
-            new StatisticCalculator()
+            new StatisticCalculator(),
+            new CommentFactory()
         );
 //        $res = $commentDensity->checkForDocBlocks($file);
 //        dd($res);
