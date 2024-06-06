@@ -17,18 +17,4 @@ abstract class Comment
     {
         return (bool) preg_match($this->getPattern(), $token);
     }
-
-    /**
-     * @return array<int, CommentTypeInterface>
-     */
-    public static function getTypes(): array
-    {
-        return [
-            new RegularComment(),
-            new DocBlockComment(),
-            new FixMeComment(),
-            new TodoComment(),
-            new LicenseComment(),
-        ];
-    }
 }

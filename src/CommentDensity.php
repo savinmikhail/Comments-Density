@@ -153,28 +153,6 @@ final class CommentDensity
         return 'red';
     }
 
-    private function getColorForThresholds(CommentType $type, int $count): string
-    {
-        $commentTypes = Comment::getTypes();
-        foreach ($commentTypes as $commentType) {
-            if ($type->value === $commentType->getName()) {
-                return $commentType->getStatColor($count, $this->thresholds);
-            }
-        }
-        return 'white';
-    }
-
-    private function getColorForCommentType(CommentType $type): string
-    {
-        $commentTypes = Comment::getTypes();
-        foreach ($commentTypes as $commentType) {
-            if ($commentType->getName() === $type->value) {
-                return $commentType->getColor();
-            }
-        }
-        return 'white';
-    }
-
     private function getCommentsFromFile(array $tokens): array
     {
         $comments = [];
