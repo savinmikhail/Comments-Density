@@ -45,19 +45,4 @@ thresholds:
 All the thresholds are not required, but the directory is.
 
 ### Output Example 
-```bash
-Analyzing /home/mikhail/projects/Comments-Density/tests/ClassSample.php
-Analyzing /home/mikhail/projects/Comments-Density/tests/CommentTest.php
-Analyzing /home/mikhail/projects/Comments-Density/tests/sample.php
-+--------------+-------+
-| Comment Type | Lines |
-+--------------+-------+
-| docBlock     | 11    |
-| todo         | 2     |
-| fixme        | 2     |
-| license      | 15    |
-| regular      | 14    |
-+--------------+-------+
-Com/LoC: 0.51
-Comment thresholds were exceeded!
-```
+![Output Example](./example_for_readme.png)
