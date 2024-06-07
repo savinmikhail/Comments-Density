@@ -12,33 +12,36 @@ final class MissingDocBlockAnalyzer
      * @param array $tokens The tokens to analyze.
      * @return array The analysis results.
      */
-    private function analyzeTokens(array $tokens): array
+    private function analyzeTokens(array $tokens, string $filename): array
     {
         $lastDocBlock = null;
-        $results = ['classes' => [], 'methods' => []];
+        $missingDocBlocks = [];
         $tokenCount = count($tokens);
 
         for ($i = 0; $i < $tokenCount; $i++) {
             $token = $tokens[$i];
 
-            if (! is_array($token)) {
+            if (!is_array($token)) {
                 continue;
             }
 
             if ($token[0] === T_DOC_COMMENT) {
                 $lastDocBlock = $token[1];
-            } elseif (in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM], true)) {
-                $name = $this->getNextNonWhitespaceToken($tokens, ++$i);
-                $results['classes'][$name] = ['hasDocBlock' => !empty($lastDocBlock)];
-                $lastDocBlock = null;
-            } elseif ($token[0] === T_FUNCTION) {
-                $name = $this->getNextNonWhitespaceToken($tokens, ++$i);
-                $results['methods'][$name] = ['hasDocBlock' => !empty($lastDocBlock)];
+            } elseif (in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION], true)) {
+                $this->getNextNonWhitespaceToken($tokens, ++$i);
+                if (empty($lastDocBlock)) {
+                    $missingDocBlocks[] = [
+                        'type' => 'missingDocblock',
+                        'content' => '',//"$name missing docblock",
+                        'file' => $filename,
+                        'line' => $token[2]
+                    ];
+                }
                 $lastDocBlock = null;
             }
         }
 
-        return $results;
+        return $missingDocBlocks;
     }
 
     /**
@@ -62,20 +65,8 @@ final class MissingDocBlockAnalyzer
         return '';
     }
 
-    public function getMissingDocblockStatistics(array $tokens): int
+    public function getMissingDocblocks(array $tokens, string $filename): array
     {
-        $docBlocks = $this->analyzeTokens($tokens);
-        $missing = 0;
-        foreach ($docBlocks['classes'] as $class) {
-            if (! $class['hasDocBlock']) {
-                $missing++;
-            }
-        }
-        foreach ($docBlocks['methods'] as $method) {
-            if (! $method['hasDocBlock']) {
-                $missing++;
-            }
-        }
-        return $missing;
+        return $this->analyzeTokens($tokens, $filename);
     }
 }

@@ -38,6 +38,7 @@ final class CommentDensity
     {
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
 
+        $comments = [];
         $commentStatistics = [];
         $totalLinesOfCode = 0;
         $cdsSum = 0;
@@ -60,8 +61,9 @@ final class CommentDensity
             $totalLinesOfCode += $statistics['linesOfCode'];
             $cdsSum += $statistics['CDS'];
             $filesAnalyzed++;
+            array_push($comments, ...$statistics['comments']);
         }
-        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed);
+        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed, $comments);
         return $this->exceedThreshold;
     }
 
@@ -94,32 +96,56 @@ final class CommentDensity
         $code = file_get_contents($filename);
         $tokens = token_get_all($code);
 
-        $comments = $this->getCommentsFromFile($tokens);
+        $comments = $this->getCommentsFromFile($tokens, $filename);
         $missingDocBlocks = $this
             ->docBlockAnalyzer
-            ->getMissingDocblockStatistics($tokens);
+            ->getMissingDocblocks($tokens, $filename);
         $commentStatistic = $this->countCommentLines($comments);
-        $commentStatistic['missingDocblock'] = $missingDocBlocks;
+        $commentStatistic['missingDocblock'] = count($missingDocBlocks);
+        $comments = array_merge($missingDocBlocks, $comments);
         $linesOfCode = $this->countTotalLines($filename);
         $cds = $this
             ->statisticCalculator
             ->calculateCDS($commentStatistic);
 
         return [
+            'comments' => $comments,
             'commentStatistic' => $commentStatistic,
             'linesOfCode' => $linesOfCode,
             'CDS' => $cds
         ];
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.StaticAccess)
-     */
-    private function printStatistics(array $commentStatistics, int $linesOfCode, float $cds): void
+    private function printStatistics(array $commentStatistics, int $linesOfCode, float $cds, array $comments): void
     {
+        $this->printDetailedComments($comments);
         $this->printTable($commentStatistics);
         $this->printComToLoc($commentStatistics, $linesOfCode);
         $this->printCDS($cds);
+    }
+
+    private function printDetailedComments(array $comments): void
+    {
+        foreach ($comments as $comment) {
+            if ($comment['type'] === 'missingDocblock') {
+                $this->output->writeln(
+                    "<fg=red>{$comment['type']} comment</> in "
+                    . "<fg=blue>{$comment['file']}</>:"
+                    . "<fg=blue>{$comment['line']}</>    "
+                    . "{$comment['content']}"
+                );
+                continue;
+            }
+            if ($comment['type']->getAttitude() === 'good') {
+                continue;
+            }
+            $this->output->writeln(
+                "<fg={$comment['type']->getColor()}>{$comment['type']->getName()} comment</> in "
+                . "<fg=blue>{$comment['file']}</>:"
+                . "<fg=blue>{$comment['line']}</>    "
+                . "<fg=yellow>{$comment['content']}</>"
+            );
+        }
     }
 
     private function getRatio(array $commentStatistics, int $linesOfCode): float
@@ -152,7 +178,7 @@ final class CommentDensity
         return 'red';
     }
 
-    private function getCommentsFromFile(array $tokens): array
+    private function getCommentsFromFile(array $tokens, string $filename): array
     {
         $comments = [];
         foreach ($tokens as $token) {
@@ -164,7 +190,12 @@ final class CommentDensity
             }
             $commentType = $this->commentFactory->classifyComment($token[1]);
             if ($commentType) {
-                $comments[$commentType->getName()][] = $token[1];
+                $comments[] = [
+                   'content' => $token[1],
+                    'type' => $commentType,
+                    'line' => $token[2],
+                    'file' => $filename
+                ];
             }
         }
         return $comments;
@@ -173,11 +204,8 @@ final class CommentDensity
     private function countCommentLines(array $comments): array
     {
         $lineCounts = [];
-        foreach ($comments as $type => $commentArray) {
-            $lineCounts[$type] = 0;
-            foreach ($commentArray as $comment) {
-                $lineCounts[$type] += substr_count($comment, PHP_EOL) + 1;
-            }
+        foreach ($comments as $comment) {
+            $lineCounts[$comment['type']->getName()] += substr_count($comment['content'], PHP_EOL) + 1;
         }
         return $lineCounts;
     }
