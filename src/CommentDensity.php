@@ -6,7 +6,6 @@ namespace SavinMikhail\CommentsDensity;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use SavinMikhail\CommentsDensity\Comments\Comment;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +30,7 @@ final class CommentDensity
         private readonly array $thresholds,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
         private readonly StatisticCalculator $statisticCalculator,
-        private CommentFactory $commentFactory
+        private readonly CommentFactory $commentFactory
     ) {
     }
 
@@ -200,6 +199,12 @@ final class CommentDensity
             ->setHeaders(['Comment Type', 'Lines'])
             ->setRows(
                 array_map(function (string $type, int $count): array {
+                    if ($type === 'missingDocblock') {
+                        $color = $this->getMissingDocBlockStatColor($count);
+                        return [
+                            "<fg=" . $this->getMissingDocBlockColor() . ">$type</>", "<fg=$color>$count</>"
+                        ];
+                    }
                     $commentType = $this->commentFactory->getCommentType($type);
                     if ($commentType) {
                         $color = $commentType->getStatColor($count, $this->thresholds);
@@ -210,6 +215,20 @@ final class CommentDensity
             );
 
         $table->render();
+    }
+
+    private function getMissingDocBlockStatColor(float $count): string
+    {
+        if ($count <= $this->thresholds['missingDocBlock']) {
+            return 'green';
+        }
+        $this->exceedThreshold = true;
+        return 'red';
+    }
+
+    private function getMissingDocBlockColor(): string
+    {
+        return 'red';
     }
 
     /**
