@@ -13,7 +13,7 @@ abstract class Comment
         return $this->exceedThreshold;
     }
 
-    public function is(string $token): bool
+    public function matchesPattern(string $token): bool
     {
         return (bool) preg_match($this->getPattern(), $token);
     }

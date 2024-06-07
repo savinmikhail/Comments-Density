@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\Comments;
 
 class CommentFactory
 {
+    /** @var array<array-key, CommentTypeInterface> */
     private array $commentTypes;
 
     public function __construct()
@@ -17,11 +18,6 @@ class CommentFactory
             new LicenseComment(),
             new DocBlockComment(),
         ];
-    }
-
-    public function getCommentTypes(): array
-    {
-        return $this->commentTypes;
     }
 
     public function getCommentType(string $name): ?CommentTypeInterface
@@ -37,7 +33,7 @@ class CommentFactory
     public function classifyComment(string $token): ?CommentTypeInterface
     {
         foreach ($this->commentTypes as $commentType) {
-            if ($commentType->is($token)) {
+            if ($commentType->matchesPattern($token)) {
                 return $commentType;
             }
         }

@@ -10,5 +10,5 @@ interface CommentTypeInterface
     public function getWeight(): float;
     public function getAttitude(): string;
     public function getName(): string;
-    public function is(string $token): bool;
+    public function matchesPattern(string $token): bool;
 }
