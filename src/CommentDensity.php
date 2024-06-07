@@ -219,6 +219,9 @@ final class CommentDensity
 
     private function getMissingDocBlockStatColor(float $count): string
     {
+        if (! isset($this->thresholds['missingDocBlock'])) {
+            return 'white';
+        }
         if ($count <= $this->thresholds['missingDocBlock']) {
             return 'green';
         }

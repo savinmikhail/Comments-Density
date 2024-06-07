@@ -16,6 +16,9 @@ class RegularComment extends Comment implements CommentTypeInterface
 
     public function getStatColor(int $count, array $thresholds): string
     {
+        if (! isset($thresholds[$this->getName()])) {
+            return 'white';
+        }
         if ($count <= $thresholds[$this->getName()]) {
             return 'green';
         }

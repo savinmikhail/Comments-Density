@@ -1,9 +1,10 @@
-directory: "Comments-Density/tests"
+directory: "Comments-Density/src"
 thresholds:
-  docBlock: 10
-  regular: 20
+  docBlock: 90
+  regular: 5
   todo: 5
   fixme: 5
-  Com/LoC: 0.76
-  CDS: 18
+  missingDocBlock: 10
+  Com/LoC: 0.5
+  CDS: 0.5
 
