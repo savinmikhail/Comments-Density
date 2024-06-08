@@ -1,3 +1,9 @@
+<p align="center">
+    <a href="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/?branch=main">
+        <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/quality-score.png?b=main" alt="Quality Score">
+    </a>
+</p>
+
 # Comments Density
 
 CommentDensityAnalyzer is a tool designed to analyze the comment density and quality in source code files in php. 
