@@ -11,18 +11,30 @@ use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 
-final class CommentsDensityPlugin implements  PluginInterface, EventSubscriberInterface
+final class CommentsDensityPlugin implements PluginInterface, EventSubscriberInterface
 {
+    /**
+     * @SuppressWarnings(PHPMD.ShortVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function activate(Composer $composer, IOInterface $io): void
     {
         // No activation logic needed
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.ShortVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function deactivate(Composer $composer, IOInterface $io): void
     {
         // No deactivation logic needed
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.ShortVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function uninstall(Composer $composer, IOInterface $io): void
     {
         // No uninstallation logic needed
@@ -38,28 +50,28 @@ final class CommentsDensityPlugin implements  PluginInterface, EventSubscriberIn
 
     public static function promptForPreCommitHook(Event $event): void
     {
-        $io = $event->getIO();
-        $io->write('Run pre-commit installation');
-        $shouldInstallHook = $io->askConfirmation('Do you want to install the pre-commit hook? [y/N] ');
+        $ioHelper = $event->getIO();
+        $ioHelper->write('Run pre-commit installation');
+        $shouldInstallHook = $ioHelper->askConfirmation('Do you want to install the pre-commit hook? [y/N] ');
 
         if ($shouldInstallHook) {
-            $io->write('Installing pre-commit hook...');
+            $ioHelper->write('Installing pre-commit hook...');
 
             $source = __DIR__ . '/../../pre-commit.sh';
             $destination = '.git/hooks/pre-commit';
 
             if (!file_exists($source)) {
-                $io->writeError("Error: Source file $source does not exist.");
+                $ioHelper->writeError("Error: Source file $source does not exist.");
                 return;
             }
 
             copy($source, $destination);
             chmod($destination, 0755);
 
-            $io->write('Pre-commit hook installed.');
+            $ioHelper->write('Pre-commit hook installed.');
             return;
         }
 
-        $io->write('Pre-commit hook installation skipped.');
+        $ioHelper->write('Pre-commit hook installation skipped.');
     }
 }
