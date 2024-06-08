@@ -86,6 +86,40 @@ final class CommentDensity
         return $this->exceedThreshold;
     }
 
+    public function analyzeFile(string $filename): bool
+    {
+        $comments = [];
+        $commentStatistics = [];
+        $totalLinesOfCode = 0;
+        $cdsSum = 0;
+
+        $this->fileAnalyzer->analyzeFile(
+            new SplFileInfo($filename),
+            $commentStatistics,
+            $comments,
+            $totalLinesOfCode,
+            $cdsSum
+        );
+
+        if (! empty($this->outputConfig) && $this->outputConfig['type'] === 'html') {
+            $this->generateHtmlOutput(
+                $commentStatistics,
+                $totalLinesOfCode,
+                $cdsSum,
+                $comments,
+                0,
+                0,
+                1
+            );
+            $this->output->writeln('<info>Html report was generated successfully!</info>');
+            return $this->exceedThreshold;
+        }
+
+        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum, 1, $comments);
+
+        return $this->exceedThreshold;
+    }
+
     private function isInWhitelist(string $filePath): bool
     {
         foreach ($this->exclude as $whitelistedDir) {
@@ -258,7 +292,7 @@ final class CommentDensity
      * @param array $commentStatistics
      * @return void
      */
-    public function printTable(array $commentStatistics): void
+    private function printTable(array $commentStatistics): void
     {
         $table = new Table($this->output);
         $table
@@ -305,7 +339,7 @@ final class CommentDensity
      * @param int $linesOfCode
      * @return void
      */
-    public function printComToLoc(array $commentStatistics, int $linesOfCode): void
+    private function printComToLoc(array $commentStatistics, int $linesOfCode): void
     {
         $ratio = $this->getRatio($commentStatistics, $linesOfCode);
         $color = $this->getColorForRatio($ratio);
@@ -316,7 +350,7 @@ final class CommentDensity
      * @param float $cds
      * @return void
      */
-    public function printCDS(float $cds): void
+    private function printCDS(float $cds): void
     {
         $cds = round($cds, 2);
         $color = $this->getColorForCDS($cds);
