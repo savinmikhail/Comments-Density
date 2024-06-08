@@ -67,7 +67,7 @@ final class CommentDensity
             array_push($comments, ...$statistics['comments']);
         }
         $endTime = microtime(true);
-        $executionTime = $endTime - $startTime;
+        $executionTimeMS = round(($endTime - $startTime) * 1000, 2);
         $peakMemoryUsage = memory_get_peak_usage(true);
         if (! empty($this->outputConfig) && $this->outputConfig['type'] === 'html') {
             $this->generateHtmlOutput(
@@ -75,13 +75,13 @@ final class CommentDensity
                 $totalLinesOfCode,
                 $cdsSum / $filesAnalyzed,
                 $comments,
-                $executionTime,
+                $executionTimeMS,
                 $peakMemoryUsage
             );
             return $this->exceedThreshold;
         }
         $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed, $comments);
-        $this->printPerformanceMetrics($executionTime, $peakMemoryUsage);
+        $this->printPerformanceMetrics($executionTimeMS, $peakMemoryUsage);
 
         return $this->exceedThreshold;
     }
@@ -94,7 +94,7 @@ final class CommentDensity
         float $executionTime,
         int $peakMemoryUsage
     ): void {
-        $time = round($executionTime, 2) . ' seconds';
+        $time = $executionTime . ' ms';
         $memory = round($peakMemoryUsage / 1024 / 1024, 2) . 'MB';
 
         $html = "<html><head><title>Comment Density Report</title></head><body>";
@@ -211,10 +211,9 @@ final class CommentDensity
 
     private function printPerformanceMetrics(float $executionTime, int $peakMemoryUsage): void
     {
-        $time = round($executionTime, 2);
-        $memory = round($peakMemoryUsage / 1024 / 1024, 2); // Convert to MB
+        $memory = round($peakMemoryUsage / 1024 / 1024, 2);
 
-        $this->output->writeln("<info>Time: $time seconds, Memory: {$memory}MB</info>");
+        $this->output->writeln("<info>Time: $executionTime ms, Memory: {$memory}MB</info>");
     }
 
     private function getRatio(array $commentStatistics, int $linesOfCode): float
