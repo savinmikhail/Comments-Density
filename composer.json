@@ -35,15 +35,13 @@
     "bin": [
         "bin/comments_density"
     ],
-    "scripts": {
-        "post-install-cmd": [
-            "SavinMikhail\\CommentsDensity\\Composer\\PreCommitHookInstaller::promptForPreCommitHook"
-        ],
-        "post-update-cmd": [
-            "SavinMikhail\\CommentsDensity\\Composer\\PreCommitHookInstaller::promptForPreCommitHook"
-        ]
+    "extra": {
+        "class": "SavinMikhail\\CommentsDensity\\Composer\\CommentsDensityPlugin"
     },
     "config": {
+        "platform": {
+            "php": "8.2"
+        },
         "allow-plugins": {
             "phpro/grumphp": true
         },
