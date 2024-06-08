@@ -7,6 +7,7 @@ namespace SavinMikhail\CommentsDensity;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
@@ -37,6 +38,7 @@ final class CommentDensity
     public function analyzeDirectory(string $directory): bool
     {
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+        $startTime = microtime(true);
 
         $comments = [];
         $commentStatistics = [];
@@ -64,6 +66,11 @@ final class CommentDensity
             array_push($comments, ...$statistics['comments']);
         }
         $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed, $comments);
+        $endTime = microtime(true);
+        $executionTime = $endTime - $startTime;
+        $peakMemoryUsage = memory_get_peak_usage(true);
+        $this->printPerformanceMetrics($executionTime, $peakMemoryUsage);
+
         return $this->exceedThreshold;
     }
 
@@ -127,25 +134,35 @@ final class CommentDensity
     private function printDetailedComments(array $comments): void
     {
         foreach ($comments as $comment) {
-            if ($comment['type'] === 'missingDocblock') {
+            /** @var CommentTypeInterface|string $commentType */
+            $commentType = $comment['type'];
+            if ($commentType === 'missingDocblock') {
                 $this->output->writeln(
-                    "<fg=red>{$comment['type']} comment</> in "
+                    "<fg=red>$commentType comment</> in "
                     . "<fg=blue>{$comment['file']}</>:"
                     . "<fg=blue>{$comment['line']}</>    "
                     . "{$comment['content']}"
                 );
                 continue;
             }
-            if ($comment['type']->getAttitude() === 'good') {
+            if ($commentType->getAttitude() === 'good') {
                 continue;
             }
             $this->output->writeln(
-                "<fg={$comment['type']->getColor()}>{$comment['type']->getName()} comment</> in "
+                "<fg={$commentType->getColor()}>{$commentType->getName()} comment</> in "
                 . "<fg=blue>{$comment['file']}</>:"
                 . "<fg=blue>{$comment['line']}</>    "
                 . "<fg=yellow>{$comment['content']}</>"
             );
         }
+    }
+
+    private function printPerformanceMetrics(float $executionTime, int $peakMemoryUsage): void
+    {
+        $time = round($executionTime, 2);
+        $memory = round($peakMemoryUsage / 1024 / 1024, 2); // Convert to MB
+
+        $this->output->writeln("<info>Time: $time seconds, Memory: {$memory}MB</info>");
     }
 
     private function getRatio(array $commentStatistics, int $linesOfCode): float
