@@ -66,6 +66,6 @@ class AnalyzeCommentCommand extends Command
 
     private function getProjectRoot(): string
     {
-        return dirname(__DIR__, 2);
+        return dirname(__DIR__, 4);
     }
 }
