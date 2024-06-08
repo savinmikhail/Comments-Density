@@ -43,14 +43,58 @@ final class CommentsDensityPlugin implements PluginInterface, EventSubscriberInt
     public static function getSubscribedEvents(): array
     {
         return [
-            ScriptEvents::POST_INSTALL_CMD => 'promptForPreCommitHook',
-            ScriptEvents::POST_UPDATE_CMD => 'promptForPreCommitHook',
+            ScriptEvents::POST_INSTALL_CMD => 'promptForSetup',
+            ScriptEvents::POST_UPDATE_CMD => 'promptForSetup',
         ];
     }
 
-    public static function promptForPreCommitHook(Event $event): void
+    public static function promptForSetup(Event $event): void
     {
-        $ioHelper = $event->getIO();
+        $interface = $event->getIO();
+
+        self::promptForPreCommitHook($interface);
+        self::promptForConfigFile($interface);
+    }
+
+    private static function promptForConfigFile(IOInterface $interface): void
+    {
+        $interface->write('Run configuration file setup');
+        $shouldCreateConfig = $interface->askConfirmation('Do you want to create a default configuration file? [y/N] ');
+
+        if ($shouldCreateConfig) {
+            $interface->write('Creating default configuration file...');
+
+            $defaultConfig = <<<YAML
+directories:
+  - "src"
+  - "tests"
+exclude:
+  - "src/bin"
+thresholds:
+  docBlock: 0
+  regular: 0
+  todo: 0
+  fixme: 0
+  missingDocBlock: 0
+  Com/LoC: 0.1
+  CDS: 0.5
+output:
+  type: "html" #  "console" or 'html'
+  file: "output.html" # file path for HTML output
+
+YAML;
+
+            file_put_contents('comments_density.yaml', $defaultConfig);
+
+            $interface->write('Default configuration file created.');
+            return;
+        }
+
+        $interface->write('Configuration file setup skipped.');
+    }
+
+    public static function promptForPreCommitHook(IOInterface $ioHelper): void
+    {
         $ioHelper->write('Run pre-commit installation');
         $shouldInstallHook = $ioHelper->askConfirmation('Do you want to install the pre-commit hook? [y/N] ');
 
