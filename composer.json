@@ -31,9 +31,7 @@
         "phpmd/phpmd": "^2.15",
         "symfony/var-dumper": "^7.0"
     },
-    "suggest": {
-        "dev": "It is recommended to install this package as a dev dependency using --dev flag."
-    },
+    "keywords": ["static analysis"],
     "bin": [
         "bin/comments_density"
     ],
