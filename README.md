@@ -23,7 +23,7 @@ with the report
 To install CommentDensityAnalyzer, run the following command in your terminal:
 
 ```bash
-composer require savinmikhail/comments-density
+composer require --dev savinmikhail/comments-density
 ```
 
 ### Usage
