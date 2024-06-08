@@ -96,24 +96,49 @@ final class CommentDensity
     ): void {
         $time = $executionTime . ' ms';
         $memory = round($peakMemoryUsage / 1024 / 1024, 2) . 'MB';
+        $cds = round($cds, 2);
 
         $html = "<html><head><title>Comment Density Report</title></head><body>";
         $html .= "<h1>Comment Density Report</h1>";
         $html .= "<p><strong>Execution Time:</strong> $time</p>";
         $html .= "<p><strong>Peak Memory Usage:</strong> $memory</p>";
+        $html .= "<p><strong>CDS:</strong> $cds</p>";
+        $html .= "<p><strong>Com/LoC:</strong> {$this->getRatio($commentStatistics, $linesOfCode)}</p>";
 
         $html .= "<h2>Comment Statistics</h2>";
         $html .= "<table border='1'><tr><th>Comment Type</th><th>Lines</th></tr>";
         foreach ($commentStatistics as $type => $count) {
-            $color = $type === 'missingDocblock' ? 'red' : 'green';
-            $html .= "<tr><td style='color: $color;'>$type</td><td>$count</td></tr>";
+            $comment = $this->commentFactory->getCommentType($type);
+            if (!$comment) {
+                $color = $this->getMissingDocBlockColor();
+                $statColor = $this->getMissingDocBlockStatColor($count);
+                $html .= "<tr><td style='color: $color;'>$type</td><td style='color: $statColor;'>$count</td></tr>";
+                continue;
+            }
+            $color = $comment->getColor();
+            $statColor = $comment->getStatColor($count, $this->thresholds);
+
+            $html .= "<tr><td style='color: $color;'>$type</td><td style='color: $statColor;'>$count</td></tr>";
         }
         $html .= "</table>";
 
         $html .= "<h2>Detailed Comments</h2>";
         $html .= "<table border='1'><tr><th>Type</th><th>File</th><th>Line</th><th>Content</th></tr>";
         foreach ($comments as $comment) {
-            $typeColor = $comment['type'] === 'missingDocblock' ? 'red' : 'yellow';
+            /** @var CommentTypeInterface|string $commentType */
+            $commentType = $comment['type'];
+            if ($commentType === 'missingDocblock') {
+                $typeColor = $this->getMissingDocBlockColor();
+                $fileOutput = htmlspecialchars($comment['file']);
+                $lineOutput = htmlspecialchars((string)$comment['line']);
+                $contentOutput = htmlspecialchars($comment['content']);
+                $html .= "<tr><td style='color: $typeColor;'>{$comment['type']}</td><td>$fileOutput</td><td>$lineOutput</td><td>$contentOutput</td></tr>";
+                continue;
+            }
+            if ($commentType->getAttitude() === 'good') {
+                continue;
+            }
+            $typeColor = $commentType->getColor();
             $fileOutput = htmlspecialchars($comment['file']);
             $lineOutput = htmlspecialchars((string)$comment['line']);
             $contentOutput = htmlspecialchars($comment['content']);
