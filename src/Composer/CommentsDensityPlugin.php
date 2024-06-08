@@ -51,8 +51,18 @@ final class CommentsDensityPlugin implements  PluginInterface, EventSubscriberIn
 
         if ($shouldInstallHook) {
             $io->write('Installing pre-commit hook...');
-            copy('vendor/savinmikhail/comments-density/commit_density_pre-commit.sh', '.git/hooks/pre-commit');
-            chmod('.git/hooks/pre-commit', 0755);
+
+            $source = __DIR__ . '/../../pre-commit.sh'; // Adjust the relative path if necessary
+            $destination = '.git/hooks/pre-commit';
+
+            if (!file_exists($source)) {
+                $io->writeError("Error: Source file $source does not exist.");
+                return;
+            }
+
+            copy($source, $destination);
+            chmod($destination, 0755);
+
             $io->write('Pre-commit hook installed.');
             return;
         }
