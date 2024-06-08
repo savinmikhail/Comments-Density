@@ -68,11 +68,19 @@ final class CommentDensity
                 $cdsSum / $filesAnalyzed,
                 $comments,
                 $executionTimeMS,
-                $peakMemoryUsage
+                $peakMemoryUsage,
+                $filesAnalyzed
             );
+            $this->output->writeln('<info>Html report was generated successfully!</info>');
             return $this->exceedThreshold;
         }
-        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed, $comments);
+        $this->printStatistics(
+            $commentStatistics,
+            $totalLinesOfCode,
+            $cdsSum / $filesAnalyzed,
+            $filesAnalyzed,
+            $comments
+        );
         $this->printPerformanceMetrics($executionTimeMS, $peakMemoryUsage);
 
         return $this->exceedThreshold;
@@ -94,7 +102,8 @@ final class CommentDensity
         float $cds,
         array $comments,
         float $executionTime,
-        int $peakMemoryUsage
+        int $peakMemoryUsage,
+        int $filesAnalyzed,
     ): void {
         $time = $executionTime . ' ms';
         $memory = round($peakMemoryUsage / 1024 / 1024, 2) . 'MB';
@@ -106,6 +115,7 @@ final class CommentDensity
         $html .= "<p><strong>Peak Memory Usage:</strong> $memory</p>";
         $html .= "<p><strong>CDS:</strong> $cds</p>";
         $html .= "<p><strong>Com/LoC:</strong> {$this->getRatio($commentStatistics, $linesOfCode)}</p>";
+        $html .= "<p><strong>Files analyzed:</strong> $filesAnalyzed</p>";
 
         $html .= "<h2>Comment Statistics</h2>";
         $html .= "<table border='1'><tr><th>Comment Type</th><th>Lines</th></tr>";
@@ -163,12 +173,23 @@ final class CommentDensity
         file_put_contents($this->outputConfig['file'], $html);
     }
 
-    private function printStatistics(array $commentStatistics, int $linesOfCode, float $cds, array $comments): void
-    {
+    private function printStatistics(
+        array $commentStatistics,
+        int $linesOfCode,
+        float $cds,
+        int $filesAnalyzed,
+        array $comments
+    ): void {
         $this->printDetailedComments($comments);
         $this->printTable($commentStatistics);
         $this->printComToLoc($commentStatistics, $linesOfCode);
         $this->printCDS($cds);
+        $this->printFilesAnalyzed($filesAnalyzed);
+    }
+
+    private function printFilesAnalyzed(int $filesAnalyzed): void
+    {
+        $this->output->writeln("<fg=white>Files analyzed: $filesAnalyzed</>");
     }
 
     private function printDetailedComments(array $comments): void
@@ -200,8 +221,7 @@ final class CommentDensity
     private function printPerformanceMetrics(float $executionTime, int $peakMemoryUsage): void
     {
         $memory = round($peakMemoryUsage / 1024 / 1024, 2);
-
-        $this->output->writeln("<info>Time: $executionTime ms, Memory: {$memory}MB</info>");
+        $this->output->writeln("<fg=white>Time: $executionTime ms, Memory: {$memory}MB</>");
     }
 
     private function getRatio(array $commentStatistics, int $linesOfCode): float
