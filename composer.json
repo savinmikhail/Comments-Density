@@ -34,9 +34,21 @@
     "suggest": {
         "dev": "It is recommended to install this package as a dev dependency using --dev flag."
     },
+    "bin": [
+        "bin/comments_density"
+    ],
+    "scripts": {
+        "post-install-cmd": [
+            "SavinMikhail\\CommentsDensity\\Composer\\PreCommitHookInstaller::promptForPreCommitHook"
+        ],
+        "post-update-cmd": [
+            "SavinMikhail\\CommentsDensity\\Composer\\PreCommitHookInstaller::promptForPreCommitHook"
+        ]
+    },
     "config": {
         "allow-plugins": {
             "phpro/grumphp": true
-        }
+        },
+        "sort-packages": true
     }
 }
