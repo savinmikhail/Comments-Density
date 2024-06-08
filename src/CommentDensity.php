@@ -170,7 +170,7 @@ final class CommentDensity
 
         $html .= "</body></html>";
 
-        file_put_contents($this->outputConfig['file'], $html);
+        file_put_contents(__DIR__ . '/../../' . $this->outputConfig['file'], $html);
     }
 
     private function printStatistics(
