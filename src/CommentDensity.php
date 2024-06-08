@@ -30,9 +30,8 @@ final class CommentDensity
         private readonly OutputInterface $output,
         private readonly array $thresholds,
         private readonly array $outputConfig,
-        private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private readonly StatisticCalculator $statisticCalculator,
-        private readonly CommentFactory $commentFactory
+        private readonly CommentFactory $commentFactory,
+        private readonly FileAnalyzer $fileAnalyzer,
     ) {
     }
 
@@ -48,23 +47,8 @@ final class CommentDensity
         $filesAnalyzed = 0;
         /** @var SplFileInfo $file */
         foreach ($iterator as $file) {
-            // Check if the file is a PHP file
-            if (! $this->isPhpFile($file)) {
-                continue;
-            }
-            if (! $this->isFileReadable($file)) {
-                continue;
-            }
-            $filename = $file->getRealPath();
-
-            $this->output->writeln("<info>Analyzing $filename</info>");
-            $statistics = $this->getStatistics($filename);
-            $this->updateCommentStatistics($commentStatistics, $statistics);
-
-            $totalLinesOfCode += $statistics['linesOfCode'];
-            $cdsSum += $statistics['CDS'];
+            $this->fileAnalyzer->analyzeFile($file, $commentStatistics, $comments, $totalLinesOfCode, $cdsSum);
             $filesAnalyzed++;
-            array_push($comments, ...$statistics['comments']);
         }
         $endTime = microtime(true);
         $executionTimeMS = round(($endTime - $startTime) * 1000, 2);
@@ -132,7 +116,12 @@ final class CommentDensity
                 $fileOutput = htmlspecialchars($comment['file']);
                 $lineOutput = htmlspecialchars((string)$comment['line']);
                 $contentOutput = htmlspecialchars($comment['content']);
-                $html .= "<tr><td style='color: $typeColor;'>{$comment['type']}</td><td>$fileOutput</td><td>$lineOutput</td><td>$contentOutput</td></tr>";
+                $html .= "<tr>
+                    <td style='color: $typeColor;'>{$comment['type']}</td>
+                    <td>$fileOutput</td>
+                    <td>$lineOutput</td>
+                    <td>$contentOutput</td>
+                </tr>";
                 continue;
             }
             if ($commentType->getAttitude() === 'good') {
@@ -142,62 +131,18 @@ final class CommentDensity
             $fileOutput = htmlspecialchars($comment['file']);
             $lineOutput = htmlspecialchars((string)$comment['line']);
             $contentOutput = htmlspecialchars($comment['content']);
-            $html .= "<tr><td style='color: $typeColor;'>{$comment['type']}</td><td>$fileOutput</td><td>$lineOutput</td><td>$contentOutput</td></tr>";
+            $html .= "<tr>
+                <td style='color: $typeColor;'>{$comment['type']}</td>
+                <td>$fileOutput</td>
+                <td>$lineOutput</td>
+                <td>$contentOutput</td>
+            </tr>";
         }
         $html .= "</table>";
 
         $html .= "</body></html>";
 
         file_put_contents($this->outputConfig['file'], $html);
-    }
-
-    private function updateCommentStatistics(array &$commentStatistics, array $statistics): void
-    {
-        foreach ($statistics['commentStatistic'] as $type => $count) {
-            if (!isset($commentStatistics[$type])) {
-                $commentStatistics[$type] = 0;
-            }
-            $commentStatistics[$type] += $count;
-        }
-    }
-
-    private function isPhpFile(SplFileInfo $file): bool
-    {
-        return $file->isFile() && $file->getExtension() === 'php';
-    }
-
-    private function isFileReadable(SplFileInfo $file): bool
-    {
-        if (! $file->isReadable()) {
-            $this->output->writeln("<highlight>{$file->getRealPath()} is not readable</highlight>");
-            return false;
-        }
-        return true;
-    }
-
-    private function getStatistics(string $filename): array
-    {
-        $code = file_get_contents($filename);
-        $tokens = token_get_all($code);
-
-        $comments = $this->getCommentsFromFile($tokens, $filename);
-        $missingDocBlocks = $this
-            ->docBlockAnalyzer
-            ->getMissingDocblocks($tokens, $filename);
-        $commentStatistic = $this->countCommentLines($comments);
-        $commentStatistic['missingDocblock'] = count($missingDocBlocks);
-        $comments = array_merge($missingDocBlocks, $comments);
-        $linesOfCode = $this->countTotalLines($filename);
-        $cds = $this
-            ->statisticCalculator
-            ->calculateCDS($commentStatistic);
-
-        return [
-            'comments' => $comments,
-            'commentStatistic' => $commentStatistic,
-            'linesOfCode' => $linesOfCode,
-            'CDS' => $cds
-        ];
     }
 
     private function printStatistics(array $commentStatistics, int $linesOfCode, float $cds, array $comments): void
@@ -269,48 +214,6 @@ final class CommentDensity
         }
         $this->exceedThreshold = true;
         return 'red';
-    }
-
-    private function getCommentsFromFile(array $tokens, string $filename): array
-    {
-        $comments = [];
-        foreach ($tokens as $token) {
-            if (! is_array($token)) {
-                continue;
-            }
-            if (! in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
-                continue;
-            }
-            $commentType = $this->commentFactory->classifyComment($token[1]);
-            if ($commentType) {
-                $comments[] = [
-                   'content' => $token[1],
-                    'type' => $commentType,
-                    'line' => $token[2],
-                    'file' => $filename
-                ];
-            }
-        }
-        return $comments;
-    }
-
-    private function countCommentLines(array $comments): array
-    {
-        $lineCounts = [];
-        foreach ($comments as $comment) {
-            $typeName = $comment['type']->getName();
-            if (!isset($lineCounts[$typeName])) {
-                $lineCounts[$typeName] = 0;
-            }
-            $lineCounts[$typeName] += substr_count($comment['content'], PHP_EOL) + 1;
-        }
-        return $lineCounts;
-    }
-
-    private function countTotalLines(string $filename): int
-    {
-        $fileContent = file($filename);
-        return count($fileContent);
     }
 
     /**

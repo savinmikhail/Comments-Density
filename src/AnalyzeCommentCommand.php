@@ -38,9 +38,13 @@ class AnalyzeCommentCommand extends Command
             $output,
             $thresholds,
             $outputConfig,
-            new MissingDocBlockAnalyzer(),
-            new StatisticCalculator($commentFactory),
             $commentFactory,
+            new FileAnalyzer(
+                $output,
+                new MissingDocBlockAnalyzer(),
+                new StatisticCalculator($commentFactory),
+                $commentFactory
+            )
         );
         $limitExceeded = $analyzer->analyzeDirectory($directory);
 
