@@ -273,7 +273,11 @@ final class CommentDensity
     {
         $lineCounts = [];
         foreach ($comments as $comment) {
-            $lineCounts[$comment['type']->getName()] += substr_count($comment['content'], PHP_EOL) + 1;
+            $typeName = $comment['type']->getName();
+            if (!isset($lineCounts[$typeName])) {
+                $lineCounts[$typeName] = 0;
+            }
+            $lineCounts[$typeName] += substr_count($comment['content'], PHP_EOL) + 1;
         }
         return $lineCounts;
     }
