@@ -5,15 +5,8 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Composer;
 
 use Composer\Composer;
-use Composer\DependencyResolver\Operation\InstallOperation;
-use Composer\DependencyResolver\Operation\OperationInterface;
-use Composer\DependencyResolver\Operation\UninstallOperation;
-use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\EventDispatcher\EventSubscriberInterface;
-use Composer\Installer\PackageEvent;
-use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
-use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
@@ -47,12 +40,12 @@ final class CommentsDensityPlugin implements  PluginInterface, EventSubscriberIn
     {
         $io = $event->getIO();
         $io->write('Run pre-commit installation');
-        $shouldInstallHook = $io->askConfirmation('Do you want to install the pre-commit hook? [y/N] ', false);
+        $shouldInstallHook = $io->askConfirmation('Do you want to install the pre-commit hook? [y/N] ');
 
         if ($shouldInstallHook) {
             $io->write('Installing pre-commit hook...');
 
-            $source = __DIR__ . '/../../pre-commit.sh'; // Adjust the relative path if necessary
+            $source = __DIR__ . '/../../pre-commit.sh';
             $destination = '.git/hooks/pre-commit';
 
             if (!file_exists($source)) {
