@@ -24,6 +24,9 @@ maintainability assessments.
 - **Quality Check**: You can set up configuration file, and if the thresholds won't pass, the exit code will be returned 
 with the report
 
+### Output Example 
+![Output Example](./example_for_readme.png)
+
 ### Installation
 
 To install CommentDensityAnalyzer, run the following command in your terminal:
@@ -40,15 +43,21 @@ php vendor/bin/comments_density analyze:comments
 ### Configuration
 
 ```yaml
-directory: "src"
+directories:
+  - "Comments-Density/src"
+  - "Comments-Density/vendor"
+exclude:
+  - "Comments-Density/src/Comments"
 thresholds:
-  docBlock: 10
-  regular: 20
+  docBlock: 90
+  regular: 5
   todo: 5
   fixme: 5
-  Com/LoC: 0.76
+  missingDocBlock: 10
+  Com/LoC: 0.1
+  CDS: 0.1
+output:
+  type: "console" #  "console" or 'html'
+  file: "output.html" # file path for HTML output
 ```
 All the thresholds are not required, but the directory is.
-
-### Output Example 
-![Output Example](./example_for_readme.png)
