@@ -10,7 +10,7 @@ fi
 
 for FILE in $FILES; do
   echo "Analyzing $FILE..."
-  php ../../vendor/bin/comments_density analyze:file $FILE
+  php vendor/bin/comments_density analyze:file $FILE
   if [ $? -ne 0 ]; then
     echo "Comment density check failed for $FILE"
     exit 1
