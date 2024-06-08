@@ -19,10 +19,11 @@ At this moment works only for php files.
 
 - **Multiple Comment Types**: Supports identification and analysis of several comment types including regular, 
 docblocks, TODOs, FIXMEs, and license information.
-- **Detailed Reporting**: Provides reports on comment density and quality, which can be used to guide code reviews and 
-maintainability assessments.
+- **Detailed Reporting**: Helps quickly find code spots where changes might be neccessary.
 - **Quality Check**: You can set up configuration file, and if the thresholds won't pass, the exit code will be returned 
 with the report
+- **Configurable Reports**: You can get results whether in console or html file.
+- **Pre-commit hook**: to validate only those files, that are about to be commited.
 
 ### Output Example 
 ![Output Example](./example_for_readme.png)
