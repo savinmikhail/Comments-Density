@@ -37,13 +37,13 @@ class CommentTest extends TestCase
     public function testCheckForDocBlocks(): void
     {
         $file = __DIR__ . DIRECTORY_SEPARATOR . 'ClassSample.php';
-        $commentDensity = new CommentDensity(
-            new ConsoleOutput(),
-            [],
-            new MissingDocBlockAnalyzer(),
-            new StatisticCalculator(),
-            new CommentFactory()
-        );
+//        $commentDensity = new CommentDensity(
+//            new ConsoleOutput(),
+//            [],
+//            new MissingDocBlockAnalyzer(),
+//            new StatisticCalculator(),
+//            new CommentFactory()
+//        );
 //        $res = $commentDensity->checkForDocBlocks($file);
 //        dd($res);
     }

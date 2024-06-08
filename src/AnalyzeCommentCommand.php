@@ -29,7 +29,14 @@ class AnalyzeCommentCommand extends Command
         $yamlParser = new Parser();
         $config = $yamlParser->parseFile($configFile);
 
-        $directory = $this->getProjectRoot() . '/' . $config['directory'];
+        $directories = array_map(
+            fn($dir) => $this->getProjectRoot() . '/' . $dir,
+            $config['directories'] ?? [$this->getProjectRoot() . '/' . $config['directory']]
+        );
+        $exclude = array_map(
+            fn($dir) => $this->getProjectRoot() . '/' . $dir,
+            $config['exclude'] ?? [$this->getProjectRoot() . '/' . $config['exclude']]
+        );
         $thresholds = $config['thresholds'];
         $outputConfig = $config['output'] ?? [];
 
@@ -37,6 +44,7 @@ class AnalyzeCommentCommand extends Command
         $analyzer = new CommentDensity(
             $output,
             $thresholds,
+            $exclude,
             $outputConfig,
             $commentFactory,
             new FileAnalyzer(
@@ -46,7 +54,7 @@ class AnalyzeCommentCommand extends Command
                 $commentFactory
             )
         );
-        $limitExceeded = $analyzer->analyzeDirectory($directory);
+        $limitExceeded = $analyzer->analyzeDirectories($directories);
 
         if ($limitExceeded) {
             $output->writeln('<error>Comment thresholds were exceeded!</error>');

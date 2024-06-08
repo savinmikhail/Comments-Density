@@ -22,8 +22,12 @@ final readonly class StatisticCalculator
         $minPossibleScore = $this->getMinPossibleScore($commentStatistics);
         $maxPossibleScore = $this->getMaxPossibleScore($commentStatistics);
 
-        return (new Integer(0))
+        try {
+            return (new Integer(0))
             ->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
+        } catch (\InvalidArgumentException) {
+            return 0;
+        }
     }
 
     private function calculateRawScore(array $commentStatistics): float

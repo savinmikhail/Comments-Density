@@ -15,12 +15,7 @@ use Symfony\Component\Console\Helper\Table;
 use function array_keys;
 use function array_map;
 use function array_sum;
-use function file;
-use function file_get_contents;
 use function round;
-use function substr_count;
-
-use const PHP_EOL;
 
 final class CommentDensity
 {
@@ -29,27 +24,40 @@ final class CommentDensity
     public function __construct(
         private readonly OutputInterface $output,
         private readonly array $thresholds,
+        private readonly array $exclude,
         private readonly array $outputConfig,
         private readonly CommentFactory $commentFactory,
         private readonly FileAnalyzer $fileAnalyzer,
     ) {
     }
 
-    public function analyzeDirectory(string $directory): bool
+    public function analyzeDirectories(array $directories): bool
     {
         $startTime = microtime(true);
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
-
         $comments = [];
         $commentStatistics = [];
         $totalLinesOfCode = 0;
         $cdsSum = 0;
         $filesAnalyzed = 0;
-        /** @var SplFileInfo $file */
-        foreach ($iterator as $file) {
-            $this->fileAnalyzer->analyzeFile($file, $commentStatistics, $comments, $totalLinesOfCode, $cdsSum);
-            $filesAnalyzed++;
+
+        foreach ($directories as $directory) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+            /** @var SplFileInfo $file */
+            foreach ($iterator as $file) {
+                if ($this->isInWhitelist($file->getRealPath())) {
+                    continue;
+                }
+                $this->fileAnalyzer->analyzeFile(
+                    $file,
+                    $commentStatistics,
+                    $comments,
+                    $totalLinesOfCode,
+                    $cdsSum
+                );
+                $filesAnalyzed++;
+            }
         }
+
         $endTime = microtime(true);
         $executionTimeMS = round(($endTime - $startTime) * 1000, 2);
         $peakMemoryUsage = memory_get_peak_usage(true);
@@ -68,6 +76,16 @@ final class CommentDensity
         $this->printPerformanceMetrics($executionTimeMS, $peakMemoryUsage);
 
         return $this->exceedThreshold;
+    }
+
+    private function isInWhitelist(string $filePath): bool
+    {
+        foreach ($this->exclude as $whitelistedDir) {
+            if (str_contains($filePath, $whitelistedDir)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function generateHtmlOutput(
