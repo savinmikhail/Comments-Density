@@ -54,6 +54,7 @@ class AnalyzeFileCommand extends Command
 
         if ($limitExceeded) {
             $output->writeln('<error>Comment thresholds were exceeded!</error>');
+            $output->writeln('<info>To skip commit checks, add -n or --no-verify flag to commit command</info>');
             return Command::FAILURE;
         }
         $output->writeln('<info>Comment thresholds are passed!</info>');
