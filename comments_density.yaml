@@ -7,4 +7,6 @@ thresholds:
   missingDocBlock: 10
   Com/LoC: 0.5
   CDS: 0.5
-
+output:
+  type: "html" # or "console"
+  file: "output.html" # file path for HTML output

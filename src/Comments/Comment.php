@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Comments;
 
-abstract class Comment
+abstract class Comment implements \Stringable
 {
     protected bool $exceedThreshold = false;
 
@@ -16,5 +16,10 @@ abstract class Comment
     public function matchesPattern(string $token): bool
     {
         return (bool) preg_match($this->getPattern(), $token);
+    }
+
+    public function __toString(): string
+    {
+        return $this->getName();
     }
 }

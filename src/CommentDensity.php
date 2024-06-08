@@ -29,6 +29,7 @@ final class CommentDensity
     public function __construct(
         private readonly OutputInterface $output,
         private readonly array $thresholds,
+        private readonly array $outputConfig,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
         private readonly StatisticCalculator $statisticCalculator,
         private readonly CommentFactory $commentFactory
@@ -37,8 +38,8 @@ final class CommentDensity
 
     public function analyzeDirectory(string $directory): bool
     {
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
         $startTime = microtime(true);
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
 
         $comments = [];
         $commentStatistics = [];
@@ -65,13 +66,64 @@ final class CommentDensity
             $filesAnalyzed++;
             array_push($comments, ...$statistics['comments']);
         }
-        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed, $comments);
         $endTime = microtime(true);
         $executionTime = $endTime - $startTime;
         $peakMemoryUsage = memory_get_peak_usage(true);
+        if (! empty($this->outputConfig) && $this->outputConfig['type'] === 'html') {
+            $this->generateHtmlOutput(
+                $commentStatistics,
+                $totalLinesOfCode,
+                $cdsSum / $filesAnalyzed,
+                $comments,
+                $executionTime,
+                $peakMemoryUsage
+            );
+            return $this->exceedThreshold;
+        }
+        $this->printStatistics($commentStatistics, $totalLinesOfCode, $cdsSum / $filesAnalyzed, $comments);
         $this->printPerformanceMetrics($executionTime, $peakMemoryUsage);
 
         return $this->exceedThreshold;
+    }
+
+    private function generateHtmlOutput(
+        array $commentStatistics,
+        int $linesOfCode,
+        float $cds,
+        array $comments,
+        float $executionTime,
+        int $peakMemoryUsage
+    ): void {
+        $time = round($executionTime, 2) . ' seconds';
+        $memory = round($peakMemoryUsage / 1024 / 1024, 2) . 'MB';
+
+        $html = "<html><head><title>Comment Density Report</title></head><body>";
+        $html .= "<h1>Comment Density Report</h1>";
+        $html .= "<p><strong>Execution Time:</strong> $time</p>";
+        $html .= "<p><strong>Peak Memory Usage:</strong> $memory</p>";
+
+        $html .= "<h2>Comment Statistics</h2>";
+        $html .= "<table border='1'><tr><th>Comment Type</th><th>Lines</th></tr>";
+        foreach ($commentStatistics as $type => $count) {
+            $color = $type === 'missingDocblock' ? 'red' : 'green';
+            $html .= "<tr><td style='color: $color;'>$type</td><td>$count</td></tr>";
+        }
+        $html .= "</table>";
+
+        $html .= "<h2>Detailed Comments</h2>";
+        $html .= "<table border='1'><tr><th>Type</th><th>File</th><th>Line</th><th>Content</th></tr>";
+        foreach ($comments as $comment) {
+            $typeColor = $comment['type'] === 'missingDocblock' ? 'red' : 'yellow';
+            $fileOutput = htmlspecialchars($comment['file']);
+            $lineOutput = htmlspecialchars((string)$comment['line']);
+            $contentOutput = htmlspecialchars($comment['content']);
+            $html .= "<tr><td style='color: $typeColor;'>{$comment['type']}</td><td>$fileOutput</td><td>$lineOutput</td><td>$contentOutput</td></tr>";
+        }
+        $html .= "</table>";
+
+        $html .= "</body></html>";
+
+        file_put_contents($this->outputConfig['file'], $html);
     }
 
     private function updateCommentStatistics(array &$commentStatistics, array $statistics): void
