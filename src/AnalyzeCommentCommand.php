@@ -33,13 +33,14 @@ class AnalyzeCommentCommand extends Command
         $thresholds = $config['thresholds'];
         $outputConfig = $config['output'] ?? [];
 
+        $commentFactory = new CommentFactory();
         $analyzer = new CommentDensity(
             $output,
             $thresholds,
             $outputConfig,
             new MissingDocBlockAnalyzer(),
-            new StatisticCalculator(),
-            new CommentFactory(),
+            new StatisticCalculator($commentFactory),
+            $commentFactory,
         );
         $limitExceeded = $analyzer->analyzeDirectory($directory);
 
