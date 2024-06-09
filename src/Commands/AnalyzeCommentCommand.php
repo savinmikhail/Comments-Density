@@ -6,6 +6,8 @@ namespace SavinMikhail\CommentsDensity\Commands;
 
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
+use SavinMikhail\CommentsDensity\DTO\Input\InputDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\StatisticCalculator;
@@ -41,15 +43,19 @@ class AnalyzeCommentCommand extends Command
             fn($dir) => $this->getProjectRoot() . '/' . $dir,
             $config['exclude'] ?? [$this->getProjectRoot() . '/' . $config['exclude']]
         );
-        $thresholds = $config['thresholds'];
+        $thresholds = $config['thresholds'] ?? [];
         $outputConfig = $config['output'] ?? [];
+
+        $inputDTO = new ConfigDTO(
+            $thresholds,
+            $exclude,
+            $outputConfig
+        );
 
         $commentFactory = new CommentFactory();
         $analyzer = new CommentDensity(
             $output,
-            $thresholds,
-            $exclude,
-            $outputConfig,
+            $inputDTO,
             $commentFactory,
             new FileAnalyzer(
                 $output,
@@ -70,6 +76,6 @@ class AnalyzeCommentCommand extends Command
 
     private function getProjectRoot(): string
     {
-        return dirname(__DIR__, 4);
+        return dirname(__DIR__, 2);
     }
 }
