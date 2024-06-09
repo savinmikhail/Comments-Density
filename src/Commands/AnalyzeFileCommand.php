@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity;
+namespace SavinMikhail\CommentsDensity\Commands;
 
+use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\FileAnalyzer;
+use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
+use SavinMikhail\CommentsDensity\StatisticCalculator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

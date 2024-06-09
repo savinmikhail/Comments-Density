@@ -23,8 +23,8 @@ if (!$autoloadFound) {
     exit(1);
 }
 
-use SavinMikhail\CommentsDensity\AnalyzeFileCommand;
-use SavinMikhail\CommentsDensity\AnalyzeCommentCommand;
+use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
+use SavinMikhail\CommentsDensity\Commands\AnalyzeFileCommand;
 use Symfony\Component\Console\Application;
 
 $app = new Application();
