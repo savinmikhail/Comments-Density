@@ -15,18 +15,17 @@ final readonly class ConsoleReporter
 {
     public function __construct(
         private OutputInterface $output,
-        private OutputDTO $dto,
     ) {
     }
 
-    public function report(): void
+    public function report(OutputDTO $dto): void
     {
-        $this->printDetailedComments($this->dto->comments);
-        $this->printTable($this->dto->commentsStatistics);
-        $this->printComToLoc($this->dto->comToLocDTO);
-        $this->printCDS($this->dto->cdsDTO);
-        $this->printFilesAnalyzed($this->dto->filesAnalyzed);
-        $this->printPerformanceMetrics($this->dto->performanceMetricsDTO);
+        $this->printDetailedComments($dto->comments);
+        $this->printTable($dto->commentsStatistics);
+        $this->printComToLoc($dto->comToLocDTO);
+        $this->printCDS($dto->cdsDTO);
+        $this->printFilesAnalyzed($dto->filesAnalyzed);
+        $this->printPerformanceMetrics($dto->performanceMetricsDTO);
     }
 
     private function printFilesAnalyzed(int $filesAnalyzed): void

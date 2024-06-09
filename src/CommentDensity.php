@@ -76,11 +76,11 @@ final class CommentDensity
             $peakMemoryUsage
         );
 
-        $reporter = new ConsoleReporter($this->output, $outputDTO);
+        $reporter = new ConsoleReporter($this->output);
         if (! empty($this->outputConfig) && $this->outputConfig['type'] === 'html') {
-            $reporter = new HtmlReporter($outputDTO, __DIR__ . '/../../../' . $this->outputConfig['file']);
+            $reporter = new HtmlReporter(__DIR__ . '/../../../' . $this->outputConfig['file']);
         }
-        $reporter->report();
+        $reporter->report($outputDTO);
 
         return $this->exceedThreshold;
     }

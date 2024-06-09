@@ -5,32 +5,32 @@ namespace SavinMikhail\CommentsDensity\Reporters;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\OutputDTO;
 
-final readonly class HtmlReporter
+final readonly class HtmlReporter implements ReporterInterface
 {
-    public function __construct(private OutputDTO $dto, private string $reportPath)
+    public function __construct(private string $reportPath)
     {
     }
 
-    public function report(): void
+    public function report(OutputDTO $dto): void
     {
         $html = "<html><head><title>Comment Density Report</title></head><body>";
         $html .= "<h1>Comment Density Report</h1>";
-        $html .= "<p><strong>Execution Time:</strong> {$this->dto->performanceMetricsDTO->executionTime} ms</p>";
-        $html .= "<p><strong>Peak Memory Usage:</strong> {$this->dto->performanceMetricsDTO->peakMemoryUsage} MB</p>";
-        $html .= "<p><strong>CDS:</strong> {$this->dto->cdsDTO->cds}</p>";
-        $html .= "<p><strong>Com/LoC:</strong> {$this->dto->comToLocDTO->comToLoc}</p>";
-        $html .= "<p><strong>Files analyzed:</strong> {$this->dto->filesAnalyzed}</p>";
+        $html .= "<p><strong>Execution Time:</strong> {$dto->performanceMetricsDTO->executionTime} ms</p>";
+        $html .= "<p><strong>Peak Memory Usage:</strong> {$dto->performanceMetricsDTO->peakMemoryUsage} MB</p>";
+        $html .= "<p><strong>CDS:</strong> {$dto->cdsDTO->cds}</p>";
+        $html .= "<p><strong>Com/LoC:</strong> {$dto->comToLocDTO->comToLoc}</p>";
+        $html .= "<p><strong>Files analyzed:</strong> {$dto->filesAnalyzed}</p>";
 
         $html .= "<h2>Comment Statistics</h2>";
         $html .= "<table border='1'><tr><th>Comment Type</th><th>Lines</th></tr>";
-        foreach ($this->dto->commentsStatistics as $commentStatisticsDTO) {
+        foreach ($dto->commentsStatistics as $commentStatisticsDTO) {
             $html .= "<tr><td style='color: {$commentStatisticsDTO->typeColor};'>{$commentStatisticsDTO->type}</td><td style='color: {$commentStatisticsDTO->typeColor};'>{$commentStatisticsDTO->count}</td></tr>";
         }
         $html .= "</table>";
 
         $html .= "<h2>Detailed Comments</h2>";
         $html .= "<table border='1'><tr><th>Type</th><th>File</th><th>Line</th><th>Content</th></tr>";
-        foreach ($this->dto->comments as $comment) {
+        foreach ($dto->comments as $comment) {
             $commentType = htmlspecialchars($comment->commentType);
             $commentTypeColor = htmlspecialchars($comment->commentTypeColor);
             $file = htmlspecialchars($comment->file);
