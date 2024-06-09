@@ -2,7 +2,7 @@
 
 namespace SavinMikhail\CommentsDensity\Reporters;
 
-use SavinMikhail\CommentsDensity\DTO\OutputDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 
 interface ReporterInterface
 {

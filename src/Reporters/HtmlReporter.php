@@ -2,8 +2,7 @@
 
 namespace SavinMikhail\CommentsDensity\Reporters;
 
-use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
-use SavinMikhail\CommentsDensity\DTO\OutputDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 
 final readonly class HtmlReporter implements ReporterInterface
 {

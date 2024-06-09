@@ -2,12 +2,12 @@
 
 namespace SavinMikhail\CommentsDensity\Reporters;
 
-use SavinMikhail\CommentsDensity\DTO\CdsDTO;
-use SavinMikhail\CommentsDensity\DTO\CommentDTO;
-use SavinMikhail\CommentsDensity\DTO\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\DTO\ComToLocDTO;
-use SavinMikhail\CommentsDensity\DTO\OutputDTO;
-use SavinMikhail\CommentsDensity\DTO\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
