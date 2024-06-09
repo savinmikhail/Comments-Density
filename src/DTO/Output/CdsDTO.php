@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\DTO;
+namespace SavinMikhail\CommentsDensity\DTO\Output;
 
-final readonly class ComToLocDTO
+final readonly class CdsDTO
 {
     public function __construct(
-        public float $comToLoc,
+        public float $cds,
         public string $color,
     ) {
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace SavinMikhail\CommentsDensity\DTO;
+namespace SavinMikhail\CommentsDensity\DTO\Output;
 
 final readonly class CommentDTO
 {
