@@ -8,12 +8,13 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
-use SavinMikhail\CommentsDensity\DTO\CdsDTO;
-use SavinMikhail\CommentsDensity\DTO\CommentDTO;
-use SavinMikhail\CommentsDensity\DTO\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\DTO\ComToLocDTO;
-use SavinMikhail\CommentsDensity\DTO\OutputDTO;
-use SavinMikhail\CommentsDensity\DTO\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use SavinMikhail\CommentsDensity\Reporters\HtmlReporter;
 use SplFileInfo;
@@ -27,9 +28,7 @@ final class CommentDensity
 
     public function __construct(
         private readonly OutputInterface $output,
-        private readonly array $thresholds,
-        private readonly array $exclude,
-        private readonly array $outputConfig,
+        private readonly ConfigDTO $configDTO,
         private readonly CommentFactory $commentFactory,
         private readonly FileAnalyzer $fileAnalyzer,
     ) {
@@ -175,7 +174,7 @@ final class CommentDensity
                     $commentType->getColor(),
                     $commentType->getName(),
                     $count,
-                    $commentType->getStatColor($count, $this->thresholds)
+                    $commentType->getStatColor($count, $this->configDTO->thresholds)
                 );
             }
         }
@@ -250,7 +249,7 @@ final class CommentDensity
 
     private function isInWhitelist(string $filePath): bool
     {
-        foreach ($this->exclude as $whitelistedDir) {
+        foreach ($this->configDTO->exclude as $whitelistedDir) {
             if (str_contains($filePath, $whitelistedDir)) {
                 return true;
             }
