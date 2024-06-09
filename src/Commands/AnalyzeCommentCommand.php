@@ -7,9 +7,10 @@ namespace SavinMikhail\CommentsDensity\Commands;
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Input\InputDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
+use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
+use SavinMikhail\CommentsDensity\Reporters\HtmlReporter;
 use SavinMikhail\CommentsDensity\StatisticCalculator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,23 +47,28 @@ class AnalyzeCommentCommand extends Command
         $thresholds = $config['thresholds'] ?? [];
         $outputConfig = $config['output'] ?? [];
 
-        $inputDTO = new ConfigDTO(
+        $configDto = new ConfigDTO(
             $thresholds,
             $exclude,
             $outputConfig
         );
 
         $commentFactory = new CommentFactory();
-        $analyzer = new CommentDensity(
+        $reporter = new ConsoleReporter($output);
+        if (! empty($configDto->outputConfig) && $configDto->outputConfig['type'] === 'html') {
+            $reporter = new HtmlReporter(__DIR__ . '/../../../' . $configDto->outputConfig['file']);
+        }
+        $fileAnalyzer = new FileAnalyzer(
             $output,
-            $inputDTO,
+            new MissingDocBlockAnalyzer(),
+            new StatisticCalculator($commentFactory),
+            $commentFactory
+        );
+        $analyzer = new CommentDensity(
+            $configDto,
             $commentFactory,
-            new FileAnalyzer(
-                $output,
-                new MissingDocBlockAnalyzer(),
-                new StatisticCalculator($commentFactory),
-                $commentFactory
-            )
+            $fileAnalyzer,
+            $reporter
         );
         $limitExceeded = $analyzer->analyzeDirectories($directories);
 

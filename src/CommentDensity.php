@@ -15,10 +15,8 @@ use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
-use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
-use SavinMikhail\CommentsDensity\Reporters\HtmlReporter;
+use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use SplFileInfo;
-use Symfony\Component\Console\Output\OutputInterface;
 
 use function round;
 
@@ -27,10 +25,10 @@ final class CommentDensity
     private bool $exceedThreshold = false;
 
     public function __construct(
-        private readonly OutputInterface $output,
         private readonly ConfigDTO $configDTO,
         private readonly CommentFactory $commentFactory,
         private readonly FileAnalyzer $fileAnalyzer,
+        private readonly ReporterInterface $reporter,
     ) {
     }
 
@@ -75,11 +73,7 @@ final class CommentDensity
             $peakMemoryUsage
         );
 
-        $reporter = new ConsoleReporter($this->output);
-        if (! empty($this->outputConfig) && $this->outputConfig['type'] === 'html') {
-            $reporter = new HtmlReporter(__DIR__ . '/../../../' . $this->outputConfig['file']);
-        }
-        $reporter->report($outputDTO);
+        $this->reporter->report($outputDTO);
 
         return $this->exceedThreshold;
     }
