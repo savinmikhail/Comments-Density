@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Comments;
 
-abstract class Comment implements \Stringable
+use Stringable;
+
+abstract class Comment implements Stringable
 {
     protected bool $exceedThreshold = false;
 

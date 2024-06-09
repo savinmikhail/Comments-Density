@@ -1,8 +1,8 @@
 directories:
-  - "Comments-Density/src"
-  - "Comments-Density/vendor"
+  - "src"
+  - "tests"
 exclude:
-  - "Comments-Density/src/Comments"
+  - "src/Comments"
 thresholds:
   docBlock: 90
   regular: 5
@@ -12,5 +12,5 @@ thresholds:
   Com/LoC: 0.1
   CDS: 0.1
 output:
-  type: "console" #  "console" or 'html'
+  type: "html" #  "console" or 'html'
   file: "output.html" # file path for HTML output
