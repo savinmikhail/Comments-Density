@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity;
 
 final class MissingDocBlockAnalyzer
 {
+    private bool $exceedThreshold = true;
     /**
      * Analyzes the tokens of a file for docblocks.
      *
@@ -68,5 +69,32 @@ final class MissingDocBlockAnalyzer
     public function getMissingDocblocks(array $tokens, string $filename): array
     {
         return $this->analyzeTokens($tokens, $filename);
+    }
+
+    public function getColor(): string
+    {
+        return 'red';
+    }
+
+    public function getStatColor(float $count, array $thresholds): string
+    {
+        if (! isset($thresholds['missingDocBlock'])) {
+            return 'white';
+        }
+        if ($count <= $thresholds['missingDocBlock']) {
+            return 'green';
+        }
+        $this->exceedThreshold = true;
+        return 'red';
+    }
+
+    public function hasExceededThreshold(): bool
+    {
+        return $this->exceedThreshold;
+    }
+
+    public function getName(): string
+    {
+        return 'missingDocblock';
     }
 }
