@@ -6,7 +6,7 @@ class RegularComment extends Comment implements CommentTypeInterface
 {
     public function getPattern(): string
     {
-        return '/(\/\/(?!.*\b(?:todo|fixme)\b:?).*?$)|\/\*(?!\*)(?!.*\b(?:todo|fixme)\b:?).*?\*\//ms';
+        return '/(#(?!.*\b(?:todo|fixme)\b:?).*?$)|(\/\/(?!.*\b(?:todo|fixme)\b:?).*?$)|\/\*(?!\*)(?!.*\b(?:todo|fixme)\b:?).*?\*\//ms';
     }
 
     public function getColor(): string
