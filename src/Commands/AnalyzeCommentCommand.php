@@ -13,6 +13,7 @@ use SavinMikhail\CommentsDensity\FileAnalyzer;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use SavinMikhail\CommentsDensity\Reporters\HtmlReporter;
+use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use SavinMikhail\CommentsDensity\StatisticCalculator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,18 +35,10 @@ class AnalyzeCommentCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $configFile = $this->getProjectRoot() . '/comments_density.yaml';
+        $config = $this->parseConfigFile($configFile);
 
-        $yamlParser = new Parser();
-        $config = $yamlParser->parseFile($configFile);
-
-        $directories = array_map(
-            fn($dir) => $this->getProjectRoot() . '/' . $dir,
-            $config['directories'] ?? [$this->getProjectRoot() . '/' . $config['directory']]
-        );
-        $exclude = array_map(
-            fn($dir) => $this->getProjectRoot() . '/' . $dir,
-            $config['exclude'] ?? [$this->getProjectRoot() . '/' . $config['exclude']]
-        );
+        $directories = $this->getDirectories($config);
+        $exclude = $this->getExcludes($config);
         $thresholds = $config['thresholds'] ?? [];
         $outputConfig = $config['output'] ?? [];
 
@@ -55,11 +48,8 @@ class AnalyzeCommentCommand extends Command
             $outputConfig
         );
 
+        $reporter = $this->getReporter($output, $configDto);
         $commentFactory = new CommentFactory();
-        $reporter = new ConsoleReporter($output);
-        if (! empty($configDto->outputConfig) && $configDto->outputConfig['type'] === 'html') {
-            $reporter = new HtmlReporter(__DIR__ . '/../../../' . $configDto->outputConfig['file']);
-        }
         $missingDocBlock = new MissingDocBlockAnalyzer();
         $fileAnalyzer = new FileAnalyzer(
             $output,
@@ -67,6 +57,7 @@ class AnalyzeCommentCommand extends Command
             new StatisticCalculator($commentFactory),
             $commentFactory
         );
+
         $analyzer = new CommentDensity(
             $configDto,
             $commentFactory,
@@ -76,12 +67,49 @@ class AnalyzeCommentCommand extends Command
             new ComToLoc($configDto->thresholds),
             $missingDocBlock
         );
+
+        return $this->analyze($analyzer, $directories, $output);
+    }
+
+    private function parseConfigFile(string $configFile): array
+    {
+        $yamlParser = new Parser();
+        return $yamlParser->parseFile($configFile);
+    }
+
+    private function getDirectories(array $config): array
+    {
+        return array_map(
+            fn($dir) => $this->getProjectRoot() . '/' . $dir,
+            $config['directories']
+        );
+    }
+
+    private function getExcludes(array $config): array
+    {
+        return array_map(
+            fn($dir) => $this->getProjectRoot() . '/' . $dir,
+            $config['exclude']
+        );
+    }
+
+    private function getReporter(OutputInterface $output, ConfigDTO $configDto): ReporterInterface
+    {
+        if (!empty($configDto->outputConfig) && $configDto->outputConfig['type'] === 'html') {
+            return new HtmlReporter(__DIR__ . '/../../../' . $configDto->outputConfig['file']);
+        }
+        return new ConsoleReporter($output);
+    }
+
+    private function analyze(CommentDensity $analyzer, array $directories, OutputInterface $output): int
+    {
         $limitExceeded = $analyzer->analyzeDirectories($directories);
 
         if ($limitExceeded) {
             $output->writeln('<error>Comment thresholds were exceeded!</error>');
             return Command::FAILURE;
         }
+
         $output->writeln('<info>Comment thresholds are passed!</info>');
         return Command::SUCCESS;
     }
