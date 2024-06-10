@@ -2,6 +2,12 @@
     <a href="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/?branch=main">
         <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/quality-score.png?b=main" alt="Quality Score">
     </a>
+    <a href="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/?branch=main">
+        <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/coverage.png?b=main" alt="Code Coverage">
+    </a>
+    <a href="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/?branch=main">
+        <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/build.png?b=main" alt="Build status">
+    </a>
 </p>
 
 # Comments Density
