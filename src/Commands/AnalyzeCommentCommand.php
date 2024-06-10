@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
+use SavinMikhail\CommentsDensity\CDS;
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\ComToLoc;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
@@ -58,9 +60,10 @@ class AnalyzeCommentCommand extends Command
         if (! empty($configDto->outputConfig) && $configDto->outputConfig['type'] === 'html') {
             $reporter = new HtmlReporter(__DIR__ . '/../../../' . $configDto->outputConfig['file']);
         }
+        $missingDocBlock = new MissingDocBlockAnalyzer();
         $fileAnalyzer = new FileAnalyzer(
             $output,
-            new MissingDocBlockAnalyzer(),
+            $missingDocBlock,
             new StatisticCalculator($commentFactory),
             $commentFactory
         );
@@ -68,7 +71,10 @@ class AnalyzeCommentCommand extends Command
             $configDto,
             $commentFactory,
             $fileAnalyzer,
-            $reporter
+            $reporter,
+            new CDS($configDto->thresholds),
+            new ComToLoc($configDto->thresholds),
+            $missingDocBlock
         );
         $limitExceeded = $analyzer->analyzeDirectories($directories);
 

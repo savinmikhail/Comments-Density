@@ -9,10 +9,8 @@ use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
@@ -29,6 +27,9 @@ final class CommentDensity
         private readonly CommentFactory $commentFactory,
         private readonly FileAnalyzer $fileAnalyzer,
         private readonly ReporterInterface $reporter,
+        private readonly CDS $cds,
+        private readonly ComToLoc $comToLoc,
+        private readonly MissingDocBlockAnalyzer $missingDocBlock,
     ) {
     }
 
@@ -87,84 +88,44 @@ final class CommentDensity
         float $executionTime,
         float $peakMemoryUsage
     ): OutputDTO {
-        $performanceMetricsDTO = new PerformanceMetricsDTO(
+        $metricsDTO = new PerformanceMetricsDTO(
             $executionTime,
             round($peakMemoryUsage / 1024 / 1024, 2)
         );
+
+        $cdsDTO = $this->cds->prepareCDS($cds);
+        $comToLocDTO = $this->comToLoc->prepareComToLoc($commentStatistics, $linesOfCode);
+
+
+        if ($this->cds->hasExceededThreshold() || $this->comToLoc->hasExceededThreshold()) {
+            $this->exceedThreshold = true;
+        }
         return new OutputDTO(
             $filesAnalyzed,
             $this->prepareCommentStatistics($commentStatistics),
             $this->prepareComments($comments),
-            $performanceMetricsDTO,
-            $this->prepareComToLoc($commentStatistics, $linesOfCode),
-            $this->prepareCDS($cds)
+            $metricsDTO,
+            $comToLocDTO,
+            $cdsDTO
         );
-    }
-
-    private function prepareCDS(float $cds): CdsDTO
-    {
-        $cds = round($cds, 2);
-        return new CdsDTO(
-            $cds,
-            $this->getColorForCDS($cds),
-        );
-    }
-
-    private function getColorForCDS(float $cds): string
-    {
-        if (! isset($this->thresholds['CDS'])) {
-            return 'white';
-        }
-        if ($cds >= $this->thresholds['CDS']) {
-            return 'green';
-        }
-        $this->exceedThreshold = true;
-        return 'red';
-    }
-
-    private function prepareComToLoc(array $commentStatistics, int $linesOfCode): ComToLocDTO
-    {
-        $ratio = $this->getRatio($commentStatistics, $linesOfCode);
-        return new ComToLocDTO(
-            $ratio,
-            $this->getColorForRatio($ratio)
-        );
-    }
-
-    private function getRatio(array $commentStatistics, int $linesOfCode): float
-    {
-        $totalComments = array_sum($commentStatistics);
-        return round($totalComments / $linesOfCode, 2);
-    }
-
-    private function getColorForRatio(float $ratio): string
-    {
-        if (! isset($this->thresholds['Com/LoC'])) {
-            return 'white';
-        }
-        if ($ratio >= $this->thresholds['Com/LoC']) {
-            return 'green';
-        }
-        $this->exceedThreshold = true;
-        return 'red';
     }
 
     private function prepareCommentStatistics(array $commentStatistics): array
     {
-        $preparedCommentStatistics = [];
+        $preparedStatistics = [];
         foreach ($commentStatistics as $type => $count) {
             if ($type === 'missingDocblock') {
-                $preparedCommentStatistics[] = new CommentStatisticsDTO(
-                    $this->getMissingDocBlockColor(),
-                    'missingDocblock',
+                $preparedStatistics[] = new CommentStatisticsDTO(
+                    $this->missingDocBlock->getColor(),
+                    $this->missingDocBlock->getName(),
                     $count,
-                    $this->getMissingDocBlockStatColor($count)
+                    $this->missingDocBlock->getStatColor($count, $this->configDTO->thresholds)
                 );
                 continue;
             }
             $commentType = $this->commentFactory->getCommentType($type);
             if ($commentType) {
-                $preparedCommentStatistics[] = new CommentStatisticsDTO(
+                $preparedStatistics[] = new CommentStatisticsDTO(
                     $commentType->getColor(),
                     $commentType->getName(),
                     $count,
@@ -172,24 +133,7 @@ final class CommentDensity
                 );
             }
         }
-        return  $preparedCommentStatistics;
-    }
-
-    private function getMissingDocBlockColor(): string
-    {
-        return 'red';
-    }
-
-    private function getMissingDocBlockStatColor(float $count): string
-    {
-        if (! isset($this->thresholds['missingDocBlock'])) {
-            return 'white';
-        }
-        if ($count <= $this->thresholds['missingDocBlock']) {
-            return 'green';
-        }
-        $this->exceedThreshold = true;
-        return 'red';
+        return  $preparedStatistics;
     }
 
     private function prepareComments(array $comments): array

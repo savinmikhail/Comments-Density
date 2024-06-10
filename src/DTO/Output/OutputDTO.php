@@ -10,7 +10,7 @@ final readonly class OutputDTO
         public array $commentsStatistics,
         /** @var array<array-key, CommentDTO> */
         public array $comments,
-        public PerformanceMetricsDTO $performanceMetricsDTO,
+        public PerformanceMetricsDTO $performanceDTO,
         public ComToLocDTO $comToLocDTO,
         public CdsDTO $cdsDTO,
     ) {

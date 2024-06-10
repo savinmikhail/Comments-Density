@@ -25,7 +25,7 @@ final readonly class ConsoleReporter implements ReporterInterface
         $this->printComToLoc($dto->comToLocDTO);
         $this->printCDS($dto->cdsDTO);
         $this->printFilesAnalyzed($dto->filesAnalyzed);
-        $this->printPerformanceMetrics($dto->performanceMetricsDTO);
+        $this->printPerformanceMetrics($dto->performanceDTO);
     }
 
     private function printFilesAnalyzed(int $filesAnalyzed): void
@@ -67,9 +67,9 @@ final readonly class ConsoleReporter implements ReporterInterface
         $table
             ->setHeaders(['Comment Type', 'Lines'])
             ->setRows(
-                array_map(function (int $key, CommentStatisticsDTO $dto): array {
+                array_map(function (CommentStatisticsDTO $dto): array {
                     return ["<fg=" . $dto->typeColor . ">$dto->type</>", "<fg=$dto->color>$dto->count</>"];
-                }, array_keys($commentStatistics), $commentStatistics)
+                }, $commentStatistics)
             );
 
         $table->render();
