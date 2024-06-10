@@ -15,11 +15,9 @@
 CommentDensityAnalyzer is a tool designed to analyze the comment density and quality in source code files in php. 
 It helps maintain and improve the quality of code documentation by evaluating different types of comments and providing 
 insights into their effectiveness and appropriateness.
-We can say, that licences in the code files doesn't matter. 
-But the commented out code does. And lack of docblock comments to classes or methods too
+E.g. we can say, that licences in the code doesn't matter. 
+But the commented out code does. And the lack of docblock comments for classes or methods too.
 
-
-At this moment works only for php files.
 
 ## Features
 
@@ -67,4 +65,3 @@ output:
   type: "console" #  "console" or 'html'
   file: "output.html" # file path for HTML output
 ```
-All the thresholds are not required, but the directory is.
