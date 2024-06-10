@@ -4,14 +4,78 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use Mikhail\PrimitiveWrappers\Int\Integer;
+use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
 use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
 
 final class CDS
 {
+    private const MISSING_DOCBLOCK_WEIGHT = -1;
+
     private bool $exceedThreshold = false;
 
-    public function __construct(private readonly array $thresholds)
+    public function __construct(
+        private readonly array $thresholds,
+        private readonly CommentFactory $commentFactory,
+    ) {
+    }
+
+    public function calculateCDS(array $commentStatistics): float
     {
+        $rawScore = $this->calculateRawScore($commentStatistics);
+        $minPossibleScore = $this->getMinPossibleScore($commentStatistics);
+        $maxPossibleScore = $this->getMaxPossibleScore($commentStatistics);
+
+        try {
+            return (new Integer(0))
+                ->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
+        } catch (\InvalidArgumentException) {
+            return 0;
+        }
+    }
+
+    private function calculateRawScore(array $commentStatistics): float
+    {
+        $rawScore = 0;
+
+        foreach ($commentStatistics as $type => $count) {
+            $comment = $this->commentFactory->getCommentType($type);
+            if ($comment) {
+                $rawScore += $count * $comment->getWeight();
+                continue;
+            }
+            $rawScore += $count * self::MISSING_DOCBLOCK_WEIGHT;
+        }
+
+        return $rawScore;
+    }
+
+    private function getMinPossibleScore(array $commentStatistics): float
+    {
+        $minScore = 0;
+        foreach ($commentStatistics as $type => $count) {
+            $comment = $this->commentFactory->getCommentType($type);
+            if (!$comment) {
+                $minScore += self::MISSING_DOCBLOCK_WEIGHT * $count;
+                continue;
+            }
+            if (in_array($comment->getAttitude(), ['bad', 'unwanted'])) {
+                $minScore += $comment->getWeight() * $count;
+                continue;
+            }
+            $minScore -= $comment->getWeight() * $count;
+        }
+        return $minScore;
+    }
+
+    private function getMaxPossibleScore(array $commentStatistics): float
+    {
+        return (
+                ($commentStatistics['missingDocblock'] ?? 0)
+                + ($commentStatistics['docblock'] ?? 0)
+            )
+            * ((new DocBlockComment())->getWeight());
     }
 
     public function prepareCDS(float $cds): CdsDTO
