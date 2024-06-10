@@ -11,9 +11,7 @@ use SavinMikhail\CommentsDensity\ComToLoc;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
-use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
-use SavinMikhail\CommentsDensity\Reporters\HtmlReporter;
-use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
+use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
 use SavinMikhail\CommentsDensity\StatisticCalculator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -48,7 +46,7 @@ class AnalyzeCommentCommand extends Command
             $outputConfig
         );
 
-        $reporter = $this->getReporter($output, $configDto);
+        $reporterFactory = new ReporterFactory();
         $commentFactory = new CommentFactory();
         $missingDocBlock = new MissingDocBlockAnalyzer();
         $fileAnalyzer = new FileAnalyzer(
@@ -62,7 +60,7 @@ class AnalyzeCommentCommand extends Command
             $configDto,
             $commentFactory,
             $fileAnalyzer,
-            $reporter,
+            $reporterFactory->createReporter($output, $configDto),
             new CDS($configDto->thresholds),
             new ComToLoc($configDto->thresholds),
             $missingDocBlock
@@ -91,14 +89,6 @@ class AnalyzeCommentCommand extends Command
             fn($dir) => $this->getProjectRoot() . '/' . $dir,
             $config['exclude']
         );
-    }
-
-    private function getReporter(OutputInterface $output, ConfigDTO $configDto): ReporterInterface
-    {
-        if (!empty($configDto->outputConfig) && $configDto->outputConfig['type'] === 'html') {
-            return new HtmlReporter(__DIR__ . '/../../../' . $configDto->outputConfig['file']);
-        }
-        return new ConsoleReporter($output);
     }
 
     private function analyze(CommentDensity $analyzer, array $directories, OutputInterface $output): int
