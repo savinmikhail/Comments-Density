@@ -9,6 +9,11 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
+use SavinMikhail\CommentsDensity\Comments\FixMeComment;
+use SavinMikhail\CommentsDensity\Comments\LicenseComment;
+use SavinMikhail\CommentsDensity\Comments\RegularComment;
+use SavinMikhail\CommentsDensity\Comments\TodoComment;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\StatisticCalculator;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -18,33 +23,23 @@ class CommentTest extends TestCase
     public static function regularCommentRegexDataProvider(): array
     {
         return [
-            ['//dd()',  true],
-            ['#something',  true],
-            ['/* bla bal */',  true],
-            ['/** @var string $name */', false],
-            ['//todo: asdf', false],
-            ['//fixme: asdf', false]
+            ['//dd()',  RegularComment::class],
+            ['#something',  RegularComment::class],
+            ['/* bla bal */',  RegularComment::class],
+            ['/** @var string $name */', DocBlockComment::class],
+            ['//todo: asdf', TodoComment::class],
+            ['// TODO asdf', TodoComment::class],
+            ['//fixme: asdf', FixMeComment::class],
+            ['// FIXME asdf', FixMeComment::class],
+            ['/** License MIT */', LicenseComment::class],
         ];
     }
 
     #[DataProvider('regularCommentRegexDataProvider')]
-    public function testRegularCommentRegex(string $comment, bool $shouldMatch): void
+    public function testRegularCommentRegex(string $comment, string $class): void
     {
-        $this->markTestIncomplete();
-    }
-
-    #[NoReturn]
-    public function testCheckForDocBlocks(): void
-    {
-        $file = __DIR__ . DIRECTORY_SEPARATOR . 'ClassSample.php';
-//        $commentDensity = new CommentDensity(
-//            new ConsoleOutput(),
-//            [],
-//            new MissingDocBlockAnalyzer(),
-//            new StatisticCalculator(),
-//            new CommentFactory()
-//        );
-//        $res = $commentDensity->checkForDocBlocks($file);
-//        dd($res);
+        $factory = new CommentFactory();
+        $commentType = $factory->classifyComment($comment);
+        $this->assertTrue($commentType instanceof $class);
     }
 }
