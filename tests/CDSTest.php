@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\CDS;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 
-final class CDSTest  extends TestCase
+final class CDSTest extends TestCase
 {
     public function testCalculateCDS(): void
     {
