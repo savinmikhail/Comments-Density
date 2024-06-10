@@ -12,7 +12,6 @@ use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
-use SavinMikhail\CommentsDensity\StatisticCalculator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -52,7 +51,7 @@ class AnalyzeCommentCommand extends Command
         $fileAnalyzer = new FileAnalyzer(
             $output,
             $missingDocBlock,
-            new StatisticCalculator($commentFactory),
+            new CDS($configDto->thresholds, $commentFactory),
             $commentFactory
         );
 
@@ -61,7 +60,7 @@ class AnalyzeCommentCommand extends Command
             $commentFactory,
             $fileAnalyzer,
             $reporterFactory->createReporter($output, $configDto),
-            new CDS($configDto->thresholds),
+            new CDS($configDto->thresholds, $commentFactory),
             new ComToLoc($configDto->thresholds),
             $missingDocBlock
         );
@@ -69,13 +68,13 @@ class AnalyzeCommentCommand extends Command
         return $this->analyze($analyzer, $directories, $output);
     }
 
-    private function parseConfigFile(string $configFile): array
+    protected function parseConfigFile(string $configFile): array
     {
         $yamlParser = new Parser();
         return $yamlParser->parseFile($configFile);
     }
 
-    private function getDirectories(array $config): array
+    protected function getDirectories(array $config): array
     {
         return array_map(
             fn($dir) => $this->getProjectRoot() . '/' . $dir,
@@ -83,7 +82,7 @@ class AnalyzeCommentCommand extends Command
         );
     }
 
-    private function getExcludes(array $config): array
+    protected function getExcludes(array $config): array
     {
         return array_map(
             fn($dir) => $this->getProjectRoot() . '/' . $dir,
@@ -91,7 +90,7 @@ class AnalyzeCommentCommand extends Command
         );
     }
 
-    private function analyze(CommentDensity $analyzer, array $directories, OutputInterface $output): int
+    protected function analyze(CommentDensity $analyzer, array $directories, OutputInterface $output): int
     {
         $limitExceeded = $analyzer->analyzeDirectories($directories);
 
@@ -104,7 +103,7 @@ class AnalyzeCommentCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function getProjectRoot(): string
+    protected function getProjectRoot(): string
     {
         return dirname(__DIR__, 2);
     }

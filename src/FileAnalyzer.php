@@ -13,7 +13,7 @@ final readonly class FileAnalyzer
     public function __construct(
         private OutputInterface $output,
         private MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private StatisticCalculator $statisticCalculator,
+        private CDS $statisticCalculator,
         private CommentFactory $commentFactory
     ) {
     }
