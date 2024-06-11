@@ -13,6 +13,7 @@ use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
 use SavinMikhail\CommentsDensity\Metrics\Metrics;
 use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
+use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,9 +38,7 @@ class AnalyzeFileCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $configFile = $this->getProjectRoot() . '/comments_density.yaml';
-
-        $yamlParser = new Parser();
-        $config = $yamlParser->parseFile($configFile);
+        $config = $this->parseConfigFile($configFile);
 
         $thresholds = $config['thresholds'];
         $outputConfig = $config['output'] ?? [];
@@ -65,13 +64,18 @@ class AnalyzeFileCommand extends Command
         );
         $analyzer = new CommentDensity(
             $configDto,
-            $thresholds,
+            $commentFactory,
             $fileAnalyzer,
-            $outputConfig,
+            new ConsoleReporter($output),
             $missingDocBlock,
             $metrics
         );
 
+        return $this->analyzeFile($analyzer, $file, $output);
+    }
+
+    protected function analyzeFile(CommentDensity $analyzer, string $file, OutputInterface $output): int
+    {
         $limitExceeded = $analyzer->analyzeFile($file);
 
         if ($limitExceeded) {
@@ -83,8 +87,14 @@ class AnalyzeFileCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function getProjectRoot(): string
+    protected function getProjectRoot(): string
     {
         return dirname(__DIR__, 4);
+    }
+
+    protected function parseConfigFile(string $configFile): array
+    {
+        $yamlParser = new Parser();
+        return $yamlParser->parseFile($configFile);
     }
 }
