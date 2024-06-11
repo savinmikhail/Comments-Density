@@ -12,13 +12,9 @@ use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\Metrics\Metrics;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use SplFileInfo;
-
-use function memory_get_peak_usage;
-use function microtime;
-use function round;
 
 final class CommentDensity
 {
@@ -29,15 +25,14 @@ final class CommentDensity
         private readonly CommentFactory $commentFactory,
         private readonly FileAnalyzer $fileAnalyzer,
         private readonly ReporterInterface $reporter,
-        private readonly CDS $cds,
-        private readonly ComToLoc $comToLoc,
         private readonly MissingDocBlockAnalyzer $missingDocBlock,
+        private readonly Metrics $metrics,
     ) {
     }
 
     public function analyzeDirectories(array $directories): bool
     {
-        $startTime = microtime(true);
+        $this->metrics->startPerformanceMonitoring();
         $comments = [];
         $commentStatistics = [];
         $totalLinesOfCode = 0;
@@ -62,9 +57,7 @@ final class CommentDensity
             }
         }
 
-        $endTime = microtime(true);
-        $executionTimeMS = round(($endTime - $startTime) * 1000, 2);
-        $peakMemoryUsage = memory_get_peak_usage(true);
+        $this->metrics->stopPerformanceMonitoring();
 
         $outputDTO = $this->createOutputDTO(
             $comments,
@@ -72,8 +65,6 @@ final class CommentDensity
             $totalLinesOfCode,
             $cdsSum / $totalLinesOfCode,
             $filesAnalyzed,
-            $executionTimeMS,
-            $peakMemoryUsage
         );
 
         $this->reporter->report($outputDTO);
@@ -87,28 +78,17 @@ final class CommentDensity
         int $linesOfCode,
         float $cds,
         int $filesAnalyzed,
-        float $executionTime,
-        float $peakMemoryUsage
     ): OutputDTO {
-        $metricsDTO = new PerformanceMetricsDTO(
-            $executionTime,
-            round($peakMemoryUsage / 1024 / 1024, 2)
-        );
-
-        $cdsDTO = $this->cds->prepareCDS($cds);
-        $comToLocDTO = $this->comToLoc->prepareComToLoc($commentStatistics, $linesOfCode);
-
-
-        if ($this->cds->hasExceededThreshold() || $this->comToLoc->hasExceededThreshold()) {
+        if ($this->metrics->hasExceededThreshold()) {
             $this->exceedThreshold = true;
         }
         return new OutputDTO(
             $filesAnalyzed,
             $this->prepareCommentStatistics($commentStatistics),
             $this->prepareComments($comments),
-            $metricsDTO,
-            $comToLocDTO,
-            $cdsDTO
+            $this->metrics->getPerformanceMetrics(),
+            $this->metrics->prepareComToLoc($commentStatistics, $linesOfCode),
+            $this->metrics->prepareCDS($cds)
         );
     }
 

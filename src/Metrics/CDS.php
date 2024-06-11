@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity;
+namespace SavinMikhail\CommentsDensity\Metrics;
 
 use Mikhail\PrimitiveWrappers\Int\Integer;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;

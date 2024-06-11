@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
-use SavinMikhail\CommentsDensity\CDS;
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\ComToLoc;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
+use SavinMikhail\CommentsDensity\Metrics\CDS;
+use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
+use SavinMikhail\CommentsDensity\Metrics\Metrics;
+use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -56,14 +58,18 @@ class AnalyzeFileCommand extends Command
             $cds,
             $commentFactory
         );
+        $metrics = new Metrics(
+            $cds,
+            new ComToLoc($configDto->thresholds),
+            new PerformanceMonitor(),
+        );
         $analyzer = new CommentDensity(
             $configDto,
             $thresholds,
             $fileAnalyzer,
             $outputConfig,
-            $cds,
-            new ComToLoc($configDto->thresholds),
-            $missingDocBlock
+            $missingDocBlock,
+            $metrics
         );
 
         $limitExceeded = $analyzer->analyzeFile($file);

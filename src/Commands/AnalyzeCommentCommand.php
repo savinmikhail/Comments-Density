@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
-use SavinMikhail\CommentsDensity\CDS;
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\ComToLoc;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
+use SavinMikhail\CommentsDensity\Metrics\CDS;
+use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
+use SavinMikhail\CommentsDensity\Metrics\Metrics;
+use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
 use Symfony\Component\Console\Command\Command;
@@ -51,21 +53,22 @@ class AnalyzeCommentCommand extends Command
         $reporterFactory = new ReporterFactory();
         $commentFactory = new CommentFactory();
         $missingDocBlock = new MissingDocBlockAnalyzer();
+        $cds = new CDS($configDto->thresholds, $commentFactory);
         $fileAnalyzer = new FileAnalyzer(
             $output,
             $missingDocBlock,
-            new CDS($configDto->thresholds, $commentFactory),
+            $cds,
             $commentFactory
         );
 
+        $metrics = new Metrics($cds, new ComToLoc($configDto->thresholds), new PerformanceMonitor());
         $analyzer = new CommentDensity(
             $configDto,
             $commentFactory,
             $fileAnalyzer,
             $reporterFactory->createReporter($output, $configDto),
-            new CDS($configDto->thresholds, $commentFactory),
-            new ComToLoc($configDto->thresholds),
-            $missingDocBlock
+            $missingDocBlock,
+            $metrics
         );
 
         return $this->analyze($analyzer, $directories, $output);

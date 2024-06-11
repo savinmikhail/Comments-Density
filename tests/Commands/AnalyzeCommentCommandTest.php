@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity\Commands;
 
 use Mockery;
-use Symfony\Component\Console\Command\Command;
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\CDS;
-use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
+use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\ComToLoc;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
+use SavinMikhail\CommentsDensity\Metrics\CDS;
+use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
+use SavinMikhail\CommentsDensity\Metrics\Metrics;
+use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Parser;
@@ -46,8 +48,8 @@ class AnalyzeCommentCommandTest extends TestCase
         $missingDocBlock = new MissingDocBlockAnalyzer();
         $fileAnalyzer = new FileAnalyzer($output, $missingDocBlock, new CDS($configDto->thresholds, $commentFactory), $commentFactory);
         $reporter = (new ReporterFactory())->createReporter($output, $configDto);
-
-        $commentDensity = new CommentDensity($configDto, $commentFactory, $fileAnalyzer, $reporter, new CDS($configDto->thresholds, $commentFactory), new ComToLoc($configDto->thresholds), $missingDocBlock);
+        $metrics = new Metrics(new CDS($configDto->thresholds, $commentFactory), new ComToLoc($configDto->thresholds), new PerformanceMonitor());
+        $commentDensity = new CommentDensity($configDto, $commentFactory, $fileAnalyzer, $reporter, $missingDocBlock, $metrics);
 
         // Create a partial mock of the actual instance
         $commentDensityMock = Mockery::mock($commentDensity)->makePartial();
@@ -98,9 +100,9 @@ class AnalyzeCommentCommandTest extends TestCase
         $missingDocBlock = new MissingDocBlockAnalyzer();
         $fileAnalyzer = new FileAnalyzer($output, $missingDocBlock, new CDS($configDto->thresholds, $commentFactory), $commentFactory);
         $reporter = (new ReporterFactory())->createReporter($output, $configDto);
-
+        $metrics = new Metrics(new CDS($configDto->thresholds, $commentFactory), new ComToLoc($configDto->thresholds), new PerformanceMonitor());
         // Create an instance of CommentDensity
-        $commentDensity = new CommentDensity($configDto, $commentFactory, $fileAnalyzer, $reporter, new CDS($configDto->thresholds, $commentFactory), new ComToLoc($configDto->thresholds), $missingDocBlock);
+        $commentDensity = new CommentDensity($configDto, $commentFactory, $fileAnalyzer, $reporter, $missingDocBlock, $metrics);
 
         // Create a partial mock of the actual instance and set the analyzeDirectories method to return true
         $commentDensityMock = Mockery::mock($commentDensity)->makePartial();

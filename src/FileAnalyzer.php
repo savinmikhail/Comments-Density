@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity;
 
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\Metrics\CDS;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 

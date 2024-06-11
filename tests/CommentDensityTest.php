@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity;
 
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\CDS;
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\ComToLoc;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\FileAnalyzer;
+use SavinMikhail\CommentsDensity\Metrics\CDS;
+use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
+use SavinMikhail\CommentsDensity\Metrics\Metrics;
+use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use SavinMikhail\CommentsDensity\StatisticCalculator;
@@ -31,15 +33,18 @@ final class CommentDensityTest extends TestCase
         $cds = new CDS($config->thresholds, $commentFactory);
         $fileAnalyzer = new FileAnalyzer($output, $missingDocBlockAnalyzer, $cds, $commentFactory);
         $reporter = new ConsoleReporter($output);
-
+        $metrics  = new Metrics(
+            $cds,
+            new ComToLoc($config->thresholds),
+            new PerformanceMonitor()
+        );
         $analyzer = new CommentDensity(
             $config,
             $commentFactory,
             $fileAnalyzer,
             $reporter,
-            $cds,
-            new ComToLoc($config->thresholds),
             $missingDocBlockAnalyzer,
+            $metrics
         );
 
         $directories = [__DIR__ . '/TestFiles'];

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity;
 
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\CDS;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\Metrics\CDS;
 
 final class CDSTest extends TestCase
 {

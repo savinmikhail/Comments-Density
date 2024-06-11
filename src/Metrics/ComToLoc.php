@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity;
+namespace SavinMikhail\CommentsDensity\Metrics;
 
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 
