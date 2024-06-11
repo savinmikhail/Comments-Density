@@ -10,42 +10,42 @@
     </a>
 </p>
 
-# Comments Density
+<h1 align="center">Comments Density Analyzer</h1>
 
-CommentDensityAnalyzer is a tool designed to analyze the comment density and quality in source code files in php. 
-It helps maintain and improve the quality of code documentation by evaluating different types of comments and providing 
-insights into their effectiveness and appropriateness.
-E.g. we can say, that licences in the code doesn't matter. 
-But the commented out code does. And the lack of docblock comments for classes or methods too.
-
+<p align="center">A tool to analyze the comment density and quality in PHP source code files, helping to maintain and improve code documentation quality.</p>
 
 ## Features
 
 - **Multiple Comment Types**: Supports identification and analysis of several comment types including regular, 
 docblocks, TODOs, FIXMEs, and license information.
-- **Detailed Reporting**: Helps quickly find code spots where changes might be neccessary.
-- **Quality Check**: You can set up configuration file, and if the thresholds won't pass, the exit code will be returned 
-with the report
-- **Configurable Reports**: You can get results whether in console or html file.
-- **Pre-commit hook**: to validate only those files, that are about to be commited.
+- **Detailed Reporting**: Quickly find code spots where changes might be necessary.
+- **Quality Check**: Set up a configuration file, and if thresholds aren't met, the exit code will be returned with the report.
+- **Configurable Reports**:  Get results in either console or HTML file.
+- **Pre-commit hook**: Validate only the files that are about to be committed.
 
 ### Output Example 
 ![Output Example](./example_for_readme.png)
 
 ### Installation
 
-To install CommentDensityAnalyzer, run the following command in your terminal:
+To install Comment Density Analyzer, run the following command in your terminal:
 
 ```bash
 composer require --dev savinmikhail/comments-density
 ```
 
 ### Usage
+
+Analyze the comment density in your PHP files with:
+
 ```bash
 php vendor/bin/comments_density analyze:comments
 ```
 
 ### Configuration
+
+On installation, you can allow plugin to create its configuration file.
+Customize your analysis by editing a comments_density.yaml configuration file:
 
 ```yaml
 directories:
@@ -65,3 +65,13 @@ output:
   type: "console" #  "console" or 'html'
   file: "output.html" # file path for HTML output
 ```
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This library is released under the [MIT license](LICENSE).
+
+___
+    
