@@ -17,6 +17,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Parser;
 
+use function array_map;
+use function dirname;
+
 class AnalyzeCommentCommand extends Command
 {
     protected function configure(): void
@@ -105,6 +108,6 @@ class AnalyzeCommentCommand extends Command
 
     protected function getProjectRoot(): string
     {
-        return dirname(__DIR__, 2);
+        return dirname(__DIR__, 4);
     }
 }

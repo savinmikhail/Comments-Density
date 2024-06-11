@@ -6,6 +6,7 @@ class RegularComment extends Comment implements CommentTypeInterface
 {
     public function getPattern(): string
     {
+        // phpcs:ignore Generic.Files.LineLength.TooLong
         return '/(#(?!.*\b(?:todo|fixme)\b:?).*?$)|(\/\/(?!.*\b(?:todo|fixme)\b:?).*?$)|\/\*(?!\*)(?!.*\b(?:todo|fixme)\b:?).*?\*\//ms';
     }
 

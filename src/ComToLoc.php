@@ -6,6 +6,9 @@ namespace SavinMikhail\CommentsDensity;
 
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 
+use function array_sum;
+use function round;
+
 final class ComToLoc
 {
     private bool $exceedThreshold = false;

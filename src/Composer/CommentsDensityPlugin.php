@@ -11,6 +11,11 @@ use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 
+use function chmod;
+use function copy;
+use function file_exists;
+use function file_put_contents;
+
 final class CommentsDensityPlugin implements PluginInterface, EventSubscriberInterface
 {
     /**

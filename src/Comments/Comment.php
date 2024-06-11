@@ -10,7 +10,7 @@ abstract class Comment implements Stringable
 {
     protected bool $exceedThreshold = false;
 
-    public function isExceededThreshold(): bool
+    public function hasExceededThreshold(): bool
     {
         return $this->exceedThreshold;
     }

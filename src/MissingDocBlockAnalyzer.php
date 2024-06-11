@@ -4,9 +4,18 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use function in_array;
+use function is_array;
+
+use const T_CLASS;
+use const T_DOC_COMMENT;
+use const T_FUNCTION;
+use const T_INTERFACE;
+
 final class MissingDocBlockAnalyzer
 {
     private bool $exceedThreshold = true;
+
     /**
      * Analyzes the tokens of a file for docblocks.
      *
@@ -29,11 +38,10 @@ final class MissingDocBlockAnalyzer
             if ($token[0] === T_DOC_COMMENT) {
                 $lastDocBlock = $token[1];
             } elseif (in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION], true)) {
-                $this->getNextNonWhitespaceToken($tokens, ++$i);
                 if (empty($lastDocBlock)) {
                     $missingDocBlocks[] = [
                         'type' => 'missingDocblock',
-                        'content' => '',//"$name missing docblock",
+                        'content' => '',
                         'file' => $filename,
                         'line' => $token[2]
                     ];
@@ -43,27 +51,6 @@ final class MissingDocBlockAnalyzer
         }
 
         return $missingDocBlocks;
-    }
-
-    /**
-     * Gets the next non-whitespace token.
-     *
-     * @param array $tokens The tokens to analyze.
-     * @param int $currentIndex The current index in the tokens array.
-     * @return string The next non-whitespace token.
-     */
-    private function getNextNonWhitespaceToken(array $tokens, int $currentIndex): string
-    {
-        $count = count($tokens);
-        for ($i = $currentIndex; $i < $count; $i++) {
-            if (! is_array($tokens[$i])) {
-                continue;
-            }
-            if ($tokens[$i][0] !== T_WHITESPACE) {
-                return $tokens[$i][1];
-            }
-        }
-        return '';
     }
 
     public function getMissingDocblocks(array $tokens, string $filename): array

@@ -4,6 +4,9 @@ namespace SavinMikhail\CommentsDensity\Reporters;
 
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 
+use function file_put_contents;
+use function htmlspecialchars;
+
 final readonly class HtmlReporter implements ReporterInterface
 {
     public function __construct(private string $reportPath)

@@ -8,6 +8,19 @@ use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function array_merge;
+use function array_push;
+use function file;
+use function file_get_contents;
+use function in_array;
+use function is_array;
+use function substr_count;
+use function token_get_all;
+
+use const PHP_EOL;
+use const T_COMMENT;
+use const T_DOC_COMMENT;
+
 final readonly class FileAnalyzer
 {
     public function __construct(

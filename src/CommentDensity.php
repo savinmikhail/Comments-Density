@@ -16,6 +16,8 @@ use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use SplFileInfo;
 
+use function memory_get_peak_usage;
+use function microtime;
 use function round;
 
 final class CommentDensity
@@ -121,6 +123,7 @@ final class CommentDensity
                     $count,
                     $this->missingDocBlock->getStatColor($count, $this->configDTO->thresholds)
                 );
+                $this->exceedThreshold = $this->exceedThreshold ?: $this->missingDocBlock->hasExceededThreshold();
                 continue;
             }
             $commentType = $this->commentFactory->getCommentType($type);
@@ -131,6 +134,7 @@ final class CommentDensity
                     $count,
                     $commentType->getStatColor($count, $this->configDTO->thresholds)
                 );
+                $this->exceedThreshold = $this->exceedThreshold ?: $commentType->hasExceededThreshold();
             }
         }
         return  $preparedStatistics;
@@ -180,7 +184,6 @@ final class CommentDensity
             $totalLinesOfCode,
             $cdsSum
         );
-
 
         return $this->exceedThreshold;
     }

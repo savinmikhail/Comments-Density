@@ -9,6 +9,9 @@ use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
 use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
 
+use function in_array;
+use function round;
+
 final class CDS
 {
     private const MISSING_DOCBLOCK_WEIGHT = -1;
