@@ -14,7 +14,7 @@ use const T_INTERFACE;
 
 final class MissingDocBlockAnalyzer
 {
-    private bool $exceedThreshold = true;
+    private bool $exceedThreshold = false;
 
     /**
      * Analyzes the tokens of a file for docblocks.
