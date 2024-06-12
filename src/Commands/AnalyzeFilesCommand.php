@@ -22,14 +22,14 @@ use Symfony\Component\Yaml\Parser;
 
 use function dirname;
 
-class AnalyzeFileCommand extends Command
+class AnalyzeFilesCommand extends Command
 {
     protected function configure(): void
     {
-        $this->setName('analyze:file')
-            ->setDescription('Analyzes the comment density in a single PHP file.')
-            ->addArgument('file', InputArgument::REQUIRED, 'The PHP file to analyze')
-            ->setHelp('This command allows you to analyze the comments in a single PHP file.');
+        $this->setName('analyze:files')
+            ->setDescription('Analyzes the comment density in multiple PHP files.')
+            ->addArgument('files', InputArgument::IS_ARRAY, 'The PHP files to analyze')
+            ->setHelp('This command allows you to analyze the comments in multiple PHP files.');
     }
 
     /**
@@ -42,7 +42,7 @@ class AnalyzeFileCommand extends Command
 
         $thresholds = $config['thresholds'];
         $outputConfig = $config['output'] ?? [];
-        $file = $input->getArgument('file');
+        $files = $input->getArgument('files');
         $missingDocBlock = new MissingDocBlockAnalyzer();
         $configDto = new ConfigDTO(
             $thresholds,
@@ -71,12 +71,12 @@ class AnalyzeFileCommand extends Command
             $metrics
         );
 
-        return $this->analyzeFile($analyzer, $file, $output);
+        return $this->analyzeFiles($analyzer, $files, $output);
     }
 
-    protected function analyzeFile(CommentDensity $analyzer, string $file, OutputInterface $output): int
+    protected function analyzeFiles(CommentDensity $analyzer, array $files, OutputInterface $output): int
     {
-        $limitExceeded = $analyzer->analyzeFile($file);
+        $limitExceeded = $analyzer->analyzeFiles($files);
 
         if ($limitExceeded) {
             $output->writeln('<error>Comment thresholds were exceeded!</error>');
@@ -89,7 +89,7 @@ class AnalyzeFileCommand extends Command
 
     protected function getProjectRoot(): string
     {
-        return dirname(__DIR__, 4);
+        return dirname(__DIR__, 5);
     }
 
     protected function parseConfigFile(string $configFile): array

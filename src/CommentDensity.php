@@ -32,6 +32,30 @@ final class CommentDensity
 
     public function analyzeDirectories(array $directories): bool
     {
+        $files = $this->getFilesFromDirectories($directories);
+        return $this->analyze($files);
+    }
+
+    public function analyzeFiles(array $files): bool
+    {
+        $splFiles = array_map(fn($file) => new SplFileInfo($file), $files);
+        return $this->analyze($splFiles);
+    }
+
+    private function getFilesFromDirectories(array $directories): array
+    {
+        $files = [];
+        foreach ($directories as $directory) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+            foreach ($iterator as $file) {
+                $files[] = $file;
+            }
+        }
+        return $files;
+    }
+
+    private function analyze(array $files): bool
+    {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];
         $commentStatistics = [];
@@ -39,13 +63,8 @@ final class CommentDensity
         $cdsSum = 0;
         $filesAnalyzed = 0;
 
-        foreach ($directories as $directory) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
-            /** @var SplFileInfo $file */
-            foreach ($iterator as $file) {
-                if ($this->isInWhitelist($file->getRealPath())) {
-                    continue;
-                }
+        foreach ($files as $file) {
+            if ($file instanceof SplFileInfo && !$this->isInWhitelist($file->getRealPath())) {
                 $this->fileAnalyzer->analyzeFile(
                     $file,
                     $commentStatistics,
@@ -79,10 +98,7 @@ final class CommentDensity
         float $cds,
         int $filesAnalyzed,
     ): OutputDTO {
-        if ($this->metrics->hasExceededThreshold()) {
-            $this->exceedThreshold = true;
-        }
-        return new OutputDTO(
+        $outputDTO = new OutputDTO(
             $filesAnalyzed,
             $this->prepareCommentStatistics($commentStatistics),
             $this->prepareComments($comments),
@@ -90,6 +106,10 @@ final class CommentDensity
             $this->metrics->prepareComToLoc($commentStatistics, $linesOfCode),
             $this->metrics->prepareCDS($cds)
         );
+        if ($this->metrics->hasExceededThreshold()) {
+            $this->exceedThreshold = true;
+        }
+        return $outputDTO;
     }
 
     private function prepareCommentStatistics(array $commentStatistics): array
@@ -103,7 +123,9 @@ final class CommentDensity
                     $count,
                     $this->missingDocBlock->getStatColor($count, $this->configDTO->thresholds)
                 );
-                $this->exceedThreshold = $this->exceedThreshold ?: $this->missingDocBlock->hasExceededThreshold();
+                if ($this->missingDocBlock->hasExceededThreshold()) {
+                    $this->exceedThreshold = true;
+                }
                 continue;
             }
             $commentType = $this->commentFactory->getCommentType($type);
@@ -114,10 +136,12 @@ final class CommentDensity
                     $count,
                     $commentType->getStatColor($count, $this->configDTO->thresholds)
                 );
-                $this->exceedThreshold = $this->exceedThreshold ?: $commentType->hasExceededThreshold();
+                if ($commentType->hasExceededThreshold()) {
+                    $this->exceedThreshold = true;
+                }
             }
         }
-        return  $preparedStatistics;
+        return $preparedStatistics;
     }
 
     private function prepareComments(array $comments): array
@@ -148,24 +172,6 @@ final class CommentDensity
             );
         }
         return $preparedComments;
-    }
-
-    public function analyzeFile(string $filename): bool
-    {
-        $comments = [];
-        $commentStatistics = [];
-        $totalLinesOfCode = 0;
-        $cdsSum = 0;
-
-        $this->fileAnalyzer->analyzeFile(
-            new SplFileInfo($filename),
-            $commentStatistics,
-            $comments,
-            $totalLinesOfCode,
-            $cdsSum
-        );
-
-        return $this->exceedThreshold;
     }
 
     private function isInWhitelist(string $filePath): bool

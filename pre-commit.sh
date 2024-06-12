@@ -8,14 +8,9 @@ if [ -z "$FILES" ]; then
   exit 0
 fi
 
-for FILE in $FILES; do
-  echo "Analyzing $FILE..."
-  php vendor/bin/comments_density analyze:file $FILE
-  if [ $? -ne 0 ]; then
-    echo "Comment density check failed for $FILE"
-    exit 1
-  fi
-done
+php vendor/bin/comments_density analyze:files $FILES
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 
-echo "All files passed comment density check."
 exit 0
