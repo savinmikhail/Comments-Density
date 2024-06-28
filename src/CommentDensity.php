@@ -30,28 +30,10 @@ final class CommentDensity
     ) {
     }
 
-    public function analyzeDirectories(array $directories): bool
-    {
-        $files = $this->getFilesFromDirectories($directories);
-        return $this->analyze($files);
-    }
-
     public function analyzeFiles(array $files): bool
     {
         $splFiles = array_map(fn($file) => new SplFileInfo($file), $files);
         return $this->analyze($splFiles);
-    }
-
-    private function getFilesFromDirectories(array $directories): array
-    {
-        $files = [];
-        foreach ($directories as $directory) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
-            foreach ($iterator as $file) {
-                $files[] = $file;
-            }
-        }
-        return $files;
     }
 
     private function analyze(array $files): bool
