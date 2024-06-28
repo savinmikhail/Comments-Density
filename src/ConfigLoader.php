@@ -30,12 +30,14 @@ final readonly class ConfigLoader
         $thresholds = $config['thresholds'];
         $outputConfig = $config['output'];
         $directories = $this->getDirectories($config);
+        $only = $config['only'];
 
         return new ConfigDTO(
             $thresholds,
             $exclude,
             $outputConfig,
             $directories,
+            $only
         );
     }
 
@@ -63,9 +65,6 @@ final readonly class ConfigLoader
 
     protected function getProjectRoot(): string
     {
-        if (! $this->projectRoot) {
-            $this->projectRoot = dirname(__DIR__, 5);
-        }
-        return $this->projectRoot;
+        return dirname(__DIR__, 5);
     }
 }
