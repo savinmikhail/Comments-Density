@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
@@ -15,6 +13,9 @@ use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Metrics\Metrics;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use SplFileInfo;
+
+use function array_keys;
+use function in_array;
 
 final class CommentDensity
 {
@@ -32,8 +33,7 @@ final class CommentDensity
 
     public function analyzeFiles(array $files): bool
     {
-        $splFiles = array_map(fn($file) => new SplFileInfo($file), $files);
-        return $this->analyze($splFiles);
+        return $this->analyze($files);
     }
 
     private function analyze(array $files): bool
@@ -46,19 +46,25 @@ final class CommentDensity
         $filesAnalyzed = 0;
 
         foreach ($files as $file) {
-            if ($file instanceof SplFileInfo && !$this->isInWhitelist($file->getRealPath())) {
-                $this->fileAnalyzer->analyzeFile(
-                    $file,
-                    $commentStatistics,
-                    $comments,
-                    $totalLinesOfCode,
-                    $cdsSum
-                );
-                $filesAnalyzed++;
+            if (! ($file instanceof SplFileInfo)) {
+                continue;
             }
+             if ($this->isInWhitelist($file->getRealPath())) {
+                continue;
+             }
+            $this->fileAnalyzer->analyzeFile(
+                $file,
+                $commentStatistics,
+                $comments,
+                $totalLinesOfCode,
+                $cdsSum
+            );
+            $filesAnalyzed++;
         }
 
         $this->metrics->stopPerformanceMonitoring();
+
+        $this->removeUnusedStatistics($comments, $commentStatistics);
 
         $outputDTO = $this->createOutputDTO(
             $comments,
@@ -71,6 +77,23 @@ final class CommentDensity
         $this->reporter->report($outputDTO);
 
         return $this->exceedThreshold;
+    }
+
+    protected function removeUnusedStatistics(array &$comments, array &$commentStatistics): void
+    {
+        if (! $this->configDTO->only) {
+            return;
+        }
+        foreach ($comments as $key => $comment) {
+            if (! in_array((string) $comment['type'], $this->configDTO->only)) {
+                unset($comments[$key]);
+            }
+        }
+        foreach (array_keys($commentStatistics) as $commentType) {
+            if (! in_array($commentType, $this->configDTO->only)) {
+                unset($commentStatistics[$commentType]);
+            }
+        }
     }
 
     private function createOutputDTO(
