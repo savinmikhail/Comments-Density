@@ -14,7 +14,6 @@ use const DIRECTORY_SEPARATOR;
 
 final readonly class ConfigLoader
 {
-    private string $projectRoot;
     protected const CONFIG_FILE = 'comments_density.yaml';
 
     protected function parseConfigFile(string $configFile): array
