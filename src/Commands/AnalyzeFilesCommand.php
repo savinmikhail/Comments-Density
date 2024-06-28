@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
+use SavinMikhail\CommentsDensity\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,8 +29,9 @@ class AnalyzeFilesCommand extends Command
 
         $files = $input->getArgument('files');
         $reporter = new ConsoleReporter($output);
+        $analyzerFactory = new AnalyzerFactory();
 
-        $analyzer = $this->getAnalyzer($configDto, $output, $reporter);
+        $analyzer = $this->getAnalyzer($analyzerFactory, $configDto, $output, $reporter);
 
         return $this->analyze($analyzer, $files, $output);
     }
