@@ -25,7 +25,7 @@ use function dirname;
 
 use const DIRECTORY_SEPARATOR;
 
-abstract class Command  extends SymfonyCommand
+abstract class Command extends SymfonyCommand
 {
     protected const CONFIG_FILE = 'comments_density.yaml';
 
