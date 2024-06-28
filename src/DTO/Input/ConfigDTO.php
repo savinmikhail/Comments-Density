@@ -10,6 +10,7 @@ final readonly class ConfigDTO
         public array $thresholds,
         public array $exclude,
         public array $output,
+        public array $directories,
     ) {
     }
 }
