@@ -1,8 +1,7 @@
 directories:
   - "src"
-  - "tests"
 exclude:
-  - "src/Comments"
+  - "src/DTO"
 thresholds:
   docBlock: 90
   regular: 5
@@ -11,6 +10,8 @@ thresholds:
   missingDocBlock: 10
   Com/LoC: 0.1
   CDS: 0.1
+only:
+  - 'missingDocblock'
 output:
-  type: "html" #  "console" or 'html'
+  type: "console" #  "console" or 'html'
   file: "output.html" # file path for HTML output
