@@ -49,9 +49,9 @@ final class CommentDensity
             if (! ($file instanceof SplFileInfo)) {
                 continue;
             }
-             if ($this->isInWhitelist($file->getRealPath())) {
+            if ($this->isInWhitelist($file->getRealPath())) {
                 continue;
-             }
+            }
             $this->fileAnalyzer->analyzeFile(
                 $file,
                 $commentStatistics,
