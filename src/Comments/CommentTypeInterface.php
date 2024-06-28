@@ -11,4 +11,5 @@ interface CommentTypeInterface
     public function getAttitude(): string;
     public function getName(): string;
     public function matchesPattern(string $token): bool;
+    public function hasExceededThreshold(): bool;
 }
