@@ -2,13 +2,29 @@
 
 namespace SavinMikhail\CommentsDensity\DTO\Output;
 
-final readonly class CommentStatisticsDTO
+final class CommentStatisticsDTO
 {
-    public function __construct(
-        public string $typeColor,
-        public string $type,
-        public int $count,
-        public string $color,
-    ) {
+    /**
+     * @readonly
+     */
+    public string $typeColor;
+    /**
+     * @readonly
+     */
+    public string $type;
+    /**
+     * @readonly
+     */
+    public int $count;
+    /**
+     * @readonly
+     */
+    public string $color;
+    public function __construct(string $typeColor, string $type, int $count, string $color)
+    {
+        $this->typeColor = $typeColor;
+        $this->type = $type;
+        $this->count = $count;
+        $this->color = $color;
     }
 }

@@ -13,7 +13,7 @@ use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final readonly class AnalyzerFactory
+final class AnalyzerFactory
 {
     public function getAnalyzer(
         ConfigDTO $configDto,

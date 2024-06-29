@@ -19,16 +19,46 @@ use function in_array;
 
 final class CommentDensity
 {
+    /**
+     * @readonly
+     */
+    private ConfigDTO $configDTO;
+    /**
+     * @readonly
+     */
+    private CommentFactory $commentFactory;
+    /**
+     * @readonly
+     */
+    private FileAnalyzer $fileAnalyzer;
+    /**
+     * @readonly
+     */
+    private ReporterInterface $reporter;
+    /**
+     * @readonly
+     */
+    private MissingDocBlockAnalyzer $missingDocBlock;
+    /**
+     * @readonly
+     */
+    private Metrics $metrics;
     private bool $exceedThreshold = false;
 
     public function __construct(
-        private readonly ConfigDTO $configDTO,
-        private readonly CommentFactory $commentFactory,
-        private readonly FileAnalyzer $fileAnalyzer,
-        private readonly ReporterInterface $reporter,
-        private readonly MissingDocBlockAnalyzer $missingDocBlock,
-        private readonly Metrics $metrics,
+        ConfigDTO $configDTO,
+        CommentFactory $commentFactory,
+        FileAnalyzer $fileAnalyzer,
+        ReporterInterface $reporter,
+        MissingDocBlockAnalyzer $missingDocBlock,
+        Metrics $metrics
     ) {
+        $this->configDTO = $configDTO;
+        $this->commentFactory = $commentFactory;
+        $this->fileAnalyzer = $fileAnalyzer;
+        $this->reporter = $reporter;
+        $this->missingDocBlock = $missingDocBlock;
+        $this->metrics = $metrics;
     }
 
     public function analyzeFiles(array $files): bool
@@ -96,13 +126,8 @@ final class CommentDensity
         }
     }
 
-    private function createOutputDTO(
-        array $comments,
-        array $commentStatistics,
-        int $linesOfCode,
-        float $cds,
-        int $filesAnalyzed,
-    ): OutputDTO {
+    private function createOutputDTO(array $comments, array $commentStatistics, int $linesOfCode, float $cds, int $filesAnalyzed): OutputDTO
+    {
         $outputDTO = new OutputDTO(
             $filesAnalyzed,
             $this->prepareCommentStatistics($commentStatistics),
@@ -182,7 +207,7 @@ final class CommentDensity
     private function isInWhitelist(string $filePath): bool
     {
         foreach ($this->configDTO->exclude as $whitelistedDir) {
-            if (str_contains($filePath, $whitelistedDir)) {
+            if (strpos($filePath, $whitelistedDir) !== false) {
                 return true;
             }
         }

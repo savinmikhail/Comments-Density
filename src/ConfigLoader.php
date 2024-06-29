@@ -12,7 +12,7 @@ use function dirname;
 
 use const DIRECTORY_SEPARATOR;
 
-final readonly class ConfigLoader
+final class ConfigLoader
 {
     protected const CONFIG_FILE = 'comments_density.yaml';
 

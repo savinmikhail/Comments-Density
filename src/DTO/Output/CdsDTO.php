@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\DTO\Output;
 
-final readonly class CdsDTO
+final class CdsDTO
 {
-    public function __construct(
-        public float $cds,
-        public string $color,
-    ) {
+    /**
+     * @readonly
+     */
+    public float $cds;
+    /**
+     * @readonly
+     */
+    public string $color;
+    public function __construct(float $cds, string $color)
+    {
+        $this->cds = $cds;
+        $this->color = $color;
     }
 }

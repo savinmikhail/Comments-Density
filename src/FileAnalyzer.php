@@ -22,14 +22,34 @@ use const PHP_EOL;
 use const T_COMMENT;
 use const T_DOC_COMMENT;
 
-final readonly class FileAnalyzer
+final class FileAnalyzer
 {
+    /**
+     * @readonly
+     */
+    private OutputInterface $output;
+    /**
+     * @readonly
+     */
+    private MissingDocBlockAnalyzer $docBlockAnalyzer;
+    /**
+     * @readonly
+     */
+    private CDS $statisticCalculator;
+    /**
+     * @readonly
+     */
+    private CommentFactory $commentFactory;
     public function __construct(
-        private OutputInterface $output,
-        private MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private CDS $statisticCalculator,
-        private CommentFactory $commentFactory
+        OutputInterface $output,
+        MissingDocBlockAnalyzer $docBlockAnalyzer,
+        CDS $statisticCalculator,
+        CommentFactory $commentFactory
     ) {
+        $this->output = $output;
+        $this->docBlockAnalyzer = $docBlockAnalyzer;
+        $this->statisticCalculator = $statisticCalculator;
+        $this->commentFactory = $commentFactory;
     }
 
     public function analyzeFile(

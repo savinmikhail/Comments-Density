@@ -15,7 +15,6 @@ use SavinMikhail\CommentsDensity\Metrics\Metrics;
 use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
-use SavinMikhail\CommentsDensity\StatisticCalculator;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class CommentDensityTest extends TestCase

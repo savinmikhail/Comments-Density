@@ -11,10 +11,15 @@ use function round;
 
 final class ComToLoc
 {
+    /**
+     * @readonly
+     */
+    private array $thresholds;
     private bool $exceedThreshold = false;
 
-    public function __construct(private readonly array $thresholds)
+    public function __construct(array $thresholds)
     {
+        $this->thresholds = $thresholds;
     }
 
     public function prepareComToLoc(array $commentStatistics, int $linesOfCode): ComToLocDTO

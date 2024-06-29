@@ -4,14 +4,34 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\DTO\Input;
 
-final readonly class ConfigDTO
+final class ConfigDTO
 {
-    public function __construct(
-        public array $thresholds,
-        public array $exclude,
-        public array $output,
-        public array $directories,
-        public ?array $only,
-    ) {
+    /**
+     * @readonly
+     */
+    public array $thresholds;
+    /**
+     * @readonly
+     */
+    public array $exclude;
+    /**
+     * @readonly
+     */
+    public array $output;
+    /**
+     * @readonly
+     */
+    public array $directories;
+    /**
+     * @readonly
+     */
+    public ?array $only;
+    public function __construct(array $thresholds, array $exclude, array $output, array $directories, ?array $only)
+    {
+        $this->thresholds = $thresholds;
+        $this->exclude = $exclude;
+        $this->output = $output;
+        $this->directories = $directories;
+        $this->only = $only;
     }
 }

@@ -8,13 +8,25 @@ use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 
-final readonly class Metrics
+final class Metrics
 {
-    public function __construct(
-        private CDS $cds,
-        private ComToLoc $comToLoc,
-        private PerformanceMonitor $performanceMonitor
-    ) {
+    /**
+     * @readonly
+     */
+    private CDS $cds;
+    /**
+     * @readonly
+     */
+    private ComToLoc $comToLoc;
+    /**
+     * @readonly
+     */
+    private PerformanceMonitor $performanceMonitor;
+    public function __construct(CDS $cds, ComToLoc $comToLoc, PerformanceMonitor $performanceMonitor)
+    {
+        $this->cds = $cds;
+        $this->comToLoc = $comToLoc;
+        $this->performanceMonitor = $performanceMonitor;
     }
 
     public function startPerformanceMonitoring(): void

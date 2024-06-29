@@ -30,7 +30,6 @@ class CommentTest extends TestCase
         ];
     }
 
-    #[DataProvider('regularCommentRegexDataProvider')]
     public function testRegularCommentRegex(string $comment, string $class): void
     {
         $factory = new CommentFactory();

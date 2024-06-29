@@ -7,7 +7,7 @@ namespace SavinMikhail\CommentsDensity\Reporters;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final readonly class ReporterFactory
+final class ReporterFactory
 {
     public function createReporter(OutputInterface $output, ConfigDTO $configDto): ReporterInterface
     {
