@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use Generator;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
@@ -62,7 +63,7 @@ final class CommentDensity
         $this->metrics = $metrics;
     }
 
-    public function analyze(array $files): bool
+    public function analyze(Generator $files): bool
     {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];

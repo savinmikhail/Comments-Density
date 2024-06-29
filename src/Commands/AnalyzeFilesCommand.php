@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
+use Generator;
 use SavinMikhail\CommentsDensity\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use Symfony\Component\Console\Input\InputArgument;
@@ -27,10 +28,9 @@ class AnalyzeFilesCommand extends Command
     {
         $configDto = $this->getConfigDto();
 
-        $files = $input->getArgument('files');
-        $files = array_map(function($filePath) {
-            return new SplFileInfo($filePath);
-        }, $files);
+        $filePaths = $input->getArgument('files');
+
+        $files = $this->generateFiles($filePaths);
 
         $reporter = new ConsoleReporter($output);
         $analyzerFactory = new AnalyzerFactory();
@@ -38,5 +38,12 @@ class AnalyzeFilesCommand extends Command
         $analyzer = $this->getAnalyzer($analyzerFactory, $configDto, $output, $reporter);
 
         return $this->analyze($analyzer, $files, $output);
+    }
+
+    protected function generateFiles(array $filePaths): Generator
+    {
+        foreach ($filePaths as $filePath) {
+            yield new SplFileInfo($filePath);
+        }
     }
 }
