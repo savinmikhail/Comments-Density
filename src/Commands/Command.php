@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Commands;
 
 use Generator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\ConfigLoader;
