@@ -9,6 +9,9 @@ use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use SplFileInfo;
+
+use function array_map;
 
 class AnalyzeFilesCommand extends Command
 {
@@ -20,14 +23,15 @@ class AnalyzeFilesCommand extends Command
             ->setHelp('This command allows you to analyze the comments in multiple PHP files.');
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $configDto = $this->getConfigDto();
 
         $files = $input->getArgument('files');
+        $files = array_map(function($filePath) {
+            return new SplFileInfo($filePath);
+        }, $files);
+
         $reporter = new ConsoleReporter($output);
         $analyzerFactory = new AnalyzerFactory();
 
