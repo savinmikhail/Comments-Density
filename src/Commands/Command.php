@@ -36,7 +36,7 @@ abstract class Command extends SymfonyCommand
 
     protected function analyze(CommentDensity $analyzer, array $files, OutputInterface $output): int
     {
-        $limitExceeded = $analyzer->analyzeFiles($files);
+        $limitExceeded = $analyzer->analyze($files);
 
         if ($limitExceeded) {
             $output->writeln('<error>Comment thresholds were exceeded!</error>');

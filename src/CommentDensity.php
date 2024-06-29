@@ -62,12 +62,7 @@ final class CommentDensity
         $this->metrics = $metrics;
     }
 
-    public function analyzeFiles(array $files): bool
-    {
-        return $this->analyze($files);
-    }
-
-    private function analyze(array $files): bool
+    public function analyze(array $files): bool
     {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];
