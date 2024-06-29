@@ -12,8 +12,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use SplFileInfo;
 
-use function array_map;
-
 class AnalyzeFilesCommand extends Command
 {
     protected function configure(): void
