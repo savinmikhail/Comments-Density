@@ -37,7 +37,7 @@ final class MissingDocBlockAnalyzer
 
             if ($token[0] === T_DOC_COMMENT) {
                 $lastDocBlock = $token[1];
-            } elseif (in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION], true)) {
+            } elseif (in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_FUNCTION], true)) {
                 if (empty($lastDocBlock)) {
                     $missingDocBlocks[] = [
                         'type' => 'missingDocblock',
