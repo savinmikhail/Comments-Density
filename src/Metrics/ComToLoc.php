@@ -33,6 +33,9 @@ final class ComToLoc
 
     private function getRatio(array $commentStatistics, int $linesOfCode): float
     {
+        if ($linesOfCode === 0) {
+            return 0;
+        }
         $totalComments = array_sum($commentStatistics);
         return round($totalComments / $linesOfCode, 2);
     }
