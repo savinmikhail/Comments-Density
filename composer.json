@@ -20,20 +20,11 @@
         }
     ],
     "require": {
-        "php": ">=8.2",
-        "composer-plugin-api": "^2.0",
-        "savinmikhail/primitive_wrappers": "^1.1",
-        "symfony/console": "^6.1",
-        "symfony/yaml": "^6.4"
-    },
-    "require-dev": {
-        "composer/composer": "^2.2.6",
-        "mockery/mockery": "^1.6",
-        "phpmd/phpmd": "^2.15",
-        "phpro/grumphp": "^2.5",
-        "phpunit/phpunit": "^11.1",
-        "squizlabs/php_codesniffer": "^3.9",
-        "symfony/var-dumper": "^7.0"
+        "php": ">=7.4",
+        "composer-plugin-api": "*",
+        "savinmikhail/primitive_wrappers": "^1.2",
+        "symfony/console": "^5.4",
+        "symfony/yaml": "^5.4"
     },
     "keywords": ["static analysis"],
     "bin": [
@@ -44,12 +35,22 @@
     },
     "config": {
         "platform": {
-            "php": "8.2"
+            "php": "7.4"
         },
         "allow-plugins": {
             "phpro/grumphp": true
         },
         "sort-packages": true,
         "optimize-autoloader": true
+    },
+    "require-dev": {
+        "composer/composer": "^2.7",
+        "mockery/mockery": "^1.6",
+        "phpmd/phpmd": "^2.15",
+        "phpro/grumphp": "^1.13",
+        "phpunit/phpunit": "^9.6",
+        "rector/rector": "^1.1",
+        "squizlabs/php_codesniffer": "^3.10",
+        "symfony/var-dumper": "^5.4"
     }
 }
