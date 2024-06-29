@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
+use Generator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,5 +35,15 @@ class AnalyzeCommentCommand extends Command
         $analyzer = $this->getAnalyzer($analyzerFactory, $configDto, $output, $reporter);
 
         return $this->analyze($analyzer, $files, $output);
+    }
+
+    protected function getFilesFromDirectories(array $directories): Generator
+    {
+        foreach ($directories as $directory) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+            foreach ($iterator as $file) {
+                yield $file;
+            }
+        }
     }
 }

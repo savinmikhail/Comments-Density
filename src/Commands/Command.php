@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
+use Generator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzerFactory;
@@ -22,19 +23,7 @@ abstract class Command extends SymfonyCommand
         return $configLoader->getConfigDto();
     }
 
-    protected function getFilesFromDirectories(array $directories): array
-    {
-        $files = [];
-        foreach ($directories as $directory) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
-            foreach ($iterator as $file) {
-                $files[] = $file;
-            }
-        }
-        return $files;
-    }
-
-    protected function analyze(CommentDensity $analyzer, array $files, OutputInterface $output): int
+    protected function analyze(CommentDensity $analyzer, Generator $files, OutputInterface $output): int
     {
         $limitExceeded = $analyzer->analyze($files);
 
