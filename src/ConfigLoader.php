@@ -64,6 +64,6 @@ final class ConfigLoader
 
     protected function getProjectRoot(): string
     {
-        return dirname(__DIR__, 5);
+        return dirname(__DIR__, 4);
     }
 }
