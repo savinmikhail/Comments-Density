@@ -17,7 +17,7 @@
 ## Features
 
 - **Multiple Comment Types**: Supports identification and analysis of several comment types including regular, 
-docblocks, TODOs, FIXMEs, and license information.
+docblocks, TODOs, FIXMEs, and license information. You can configure the set of them to be evaluated.
 - **Detailed Reporting**: Quickly find code spots where changes might be necessary.
 - **Quality Check**: Set up a configuration file, and if thresholds aren't met, the exit code will be returned with the report.
 - **Configurable Reports**:  Get results in either console or HTML file.
@@ -61,6 +61,9 @@ thresholds:
   missingDocBlock: 10
   Com/LoC: 0.1
   CDS: 0.1
+only:
+  - 'todo'
+  - 'missingDocblock'
 output:
   type: "console" #  "console" or 'html'
   file: "output.html" # file path for HTML output
