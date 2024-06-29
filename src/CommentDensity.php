@@ -16,6 +16,7 @@ use SplFileInfo;
 
 use function array_keys;
 use function in_array;
+use function strpos;
 
 final class CommentDensity
 {
@@ -82,6 +83,10 @@ final class CommentDensity
             if ($this->isInWhitelist($file->getRealPath())) {
                 continue;
             }
+            if ($file->getSize() === 0) {
+                continue;
+            }
+
             $this->fileAnalyzer->analyzeFile(
                 $file,
                 $commentStatistics,
@@ -96,11 +101,12 @@ final class CommentDensity
 
         $this->removeUnusedStatistics($comments, $commentStatistics);
 
+        $averageCds = $totalLinesOfCode === 0 ? 0 : $cdsSum / $totalLinesOfCode;
         $outputDTO = $this->createOutputDTO(
             $comments,
             $commentStatistics,
             $totalLinesOfCode,
-            $cdsSum / $totalLinesOfCode,
+            $averageCds,
             $filesAnalyzed,
         );
 
