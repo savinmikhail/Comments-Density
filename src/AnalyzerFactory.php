@@ -20,7 +20,7 @@ final class AnalyzerFactory
         OutputInterface $output,
         ReporterInterface $reporter
     ): CommentDensity {
-        $commentFactory = new CommentFactory();
+        $commentFactory = new CommentFactory($configDto->only);
         $missingDocBlock = new MissingDocBlockAnalyzer();
         $cds = new CDS($configDto->thresholds, $commentFactory);
 
