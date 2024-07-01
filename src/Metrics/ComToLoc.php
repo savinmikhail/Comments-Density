@@ -41,7 +41,13 @@ final class ComToLoc
         if ($linesOfCode === 0) {
             return 0;
         }
-        $totalComments = array_sum($commentStatistics);
+
+        $totalComments = 0;
+
+        foreach ($commentStatistics as $stat) {
+            $totalComments += $stat['lines'];
+        }
+
         return round($totalComments / $linesOfCode, 2);
     }
 
