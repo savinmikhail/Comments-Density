@@ -6,15 +6,20 @@ use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 
 use function file_put_contents;
 use function htmlspecialchars;
+use function nl2br;
+
+use const ENT_QUOTES;
+use const ENT_SUBSTITUTE;
 
 final readonly class HtmlReporter implements ReporterInterface
 {
     public function __construct(private string $reportPath)
     {
     }
+
     public function report(OutputDTO $dto): void
     {
-        $html = "<html><head><title>Comment Density Report</title></head><body>";
+        $html = "<html><head><meta charset='UTF-8'><title>Comment Density Report</title></head><body>";
         $html .= $this->generateHeader($dto);
         $html .= $this->generateCommentStatisticsTable($dto);
         $html .= $this->generateDetailedCommentsTable($dto);
@@ -38,9 +43,12 @@ final readonly class HtmlReporter implements ReporterInterface
         $html = "<h2>Comment Statistics</h2>";
         $html .= "<table border='1'><tr><th>Comment Type</th><th>Lines</th></tr>";
         foreach ($dto->commentsStatistics as $commentStatisticsDTO) {
+            $type = htmlspecialchars($commentStatisticsDTO->type, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $count = htmlspecialchars((string)$commentStatisticsDTO->count, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $color = htmlspecialchars($commentStatisticsDTO->typeColor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $html .= "<tr>
-                    <td style='color: {$commentStatisticsDTO->typeColor};'>{$commentStatisticsDTO->type}</td>
-                    <td style='color: {$commentStatisticsDTO->typeColor};'>{$commentStatisticsDTO->count}</td>
+                    <td style='color: $color;'>$type</td>
+                    <td style='color: $color;'>$count</td>
                 </tr>";
         }
         $html .= "</table>";
@@ -59,11 +67,11 @@ final readonly class HtmlReporter implements ReporterInterface
                 <th>Content</th>
             </tr>";
         foreach ($dto->comments as $comment) {
-            $commentType = htmlspecialchars($comment->commentType);
-            $commentTypeColor = htmlspecialchars($comment->commentTypeColor);
-            $file = htmlspecialchars($comment->file);
-            $line = htmlspecialchars((string)$comment->line);
-            $content = htmlspecialchars($comment->content);
+            $commentType = htmlspecialchars($comment->commentType, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $commentTypeColor = htmlspecialchars($comment->commentTypeColor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $file = htmlspecialchars($comment->file, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $line = htmlspecialchars((string)$comment->line, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $content = nl2br(htmlspecialchars($comment->content, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
 
             $html .= "<tr>
                 <td style='color: $commentTypeColor;'>$commentType</td>
