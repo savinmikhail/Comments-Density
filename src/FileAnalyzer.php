@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity;
 
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,7 +29,8 @@ final readonly class FileAnalyzer
         private OutputInterface $output,
         private MissingDocBlockAnalyzer $docBlockAnalyzer,
         private CDS $statisticCalculator,
-        private CommentFactory $commentFactory
+        private CommentFactory $commentFactory,
+        private ConfigDTO $configDto
     ) {
     }
 
@@ -74,12 +76,15 @@ final readonly class FileAnalyzer
         $tokens = token_get_all($code);
 
         $comments = $this->getCommentsFromFile($tokens, $filename);
-        $missingDocBlocks = $this
-            ->docBlockAnalyzer
-            ->getMissingDocblocks($tokens, $filename);
         $commentStatistic = $this->countCommentLines($comments);
-        $commentStatistic['missingDocblock'] = count($missingDocBlocks);
-        $comments = array_merge($missingDocBlocks, $comments);
+        if (in_array('missingDocblock', $this->configDto->only)) {
+            $missingDocBlocks = $this
+                ->docBlockAnalyzer
+                ->getMissingDocblocks($tokens, $filename);
+            $commentStatistic['missingDocblock'] = count($missingDocBlocks);
+            $comments = array_merge($missingDocBlocks, $comments);
+        }
+
         $linesOfCode = $this->countTotalLines($filename);
         $cds = $this
             ->statisticCalculator
