@@ -1,5 +1,5 @@
 /vendor
 /.idea
-coverage
-.phpunit.result.cache
-composer.lock
+/coverage
+/.phpunit.result.cache
+/composer.lock
