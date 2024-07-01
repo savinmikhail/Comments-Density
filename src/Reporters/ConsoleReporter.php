@@ -75,7 +75,7 @@ final class ConsoleReporter implements ReporterInterface
                 array_map(function (CommentStatisticsDTO $dto): array {
                     return [
                         "<fg=" . $dto->typeColor . ">$dto->type</>",
-                        "<fg=$dto->color>$dto->lines</>",
+                        "<fg=white>$dto->lines</>",
                         "<fg=$dto->color>$dto->count</>",
                     ];
                 }, $commentStatistics)
