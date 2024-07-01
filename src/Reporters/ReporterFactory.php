@@ -15,7 +15,7 @@ final readonly class ReporterFactory
             return new ConsoleReporter($output);
         }
         if ($configDto->output['type'] === 'html') {
-            return new HtmlReporter(__DIR__ . '/../../../' . $configDto->output['file']);
+            return new HtmlReporter($configDto->output['file']);
         }
         return new ConsoleReporter($output);
     }

@@ -15,6 +15,7 @@ use const DIRECTORY_SEPARATOR;
 final readonly class ConfigLoader
 {
     protected const CONFIG_FILE = 'comments_density.yaml';
+    protected const DIR_LEVEL = 4;
 
     protected function parseConfigFile(string $configFile): array
     {
@@ -28,6 +29,7 @@ final readonly class ConfigLoader
         $exclude = $this->getExcludes($config);
         $thresholds = $config['thresholds'];
         $outputConfig = $config['output'];
+        $outputConfig['file'] = $this->getProjectRoot() . DIRECTORY_SEPARATOR . $outputConfig['file'];
         $directories = $this->getDirectories($config);
         $only = $config['only'];
 
@@ -64,6 +66,6 @@ final readonly class ConfigLoader
 
     protected function getProjectRoot(): string
     {
-        return dirname(__DIR__, 4);
+        return dirname(__DIR__, self::DIR_LEVEL);
     }
 }
