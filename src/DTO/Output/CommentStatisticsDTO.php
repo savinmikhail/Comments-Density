@@ -7,7 +7,7 @@ final readonly class CommentStatisticsDTO
     public function __construct(
         public string $typeColor,
         public string $type,
-        public string $lines,
+        public int $lines,
         public string $color,
         public int $count,
     ) {
