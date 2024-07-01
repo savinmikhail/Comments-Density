@@ -84,7 +84,8 @@ final readonly class FileAnalyzer
             $missingDocBlocks = $this
                 ->docBlockAnalyzer
                 ->getMissingDocblocks($tokens, $filename);
-            $commentStatistic['missingDocblock'] = count($missingDocBlocks);
+            $commentStatistic['missingDocblock']['count'] = count($missingDocBlocks);
+            $commentStatistic['missingDocblock']['lines'] = 0;
             $comments = array_merge($missingDocBlocks, $comments);
         }
 
@@ -103,11 +104,13 @@ final readonly class FileAnalyzer
 
     private function updateCommentStatistics(array &$commentStatistics, array $statistics): void
     {
-        foreach ($statistics['commentStatistic'] as $type => $count) {
+        foreach ($statistics['commentStatistic'] as $type => $stat) {
             if (!isset($commentStatistics[$type])) {
-                $commentStatistics[$type] = 0;
+                $commentStatistics[$type]['count'] = 0;
+                $commentStatistics[$type]['lines'] = 0;
             }
-            $commentStatistics[$type] += $count;
+            $commentStatistics[$type]['count'] += $stat['count'];
+            $commentStatistics[$type]['lines'] += $stat['lines'];
         }
     }
 
@@ -140,9 +143,13 @@ final readonly class FileAnalyzer
         foreach ($comments as $comment) {
             $typeName = $comment['type']->getName();
             if (!isset($lineCounts[$typeName])) {
-                $lineCounts[$typeName] = 0;
+                $lineCounts[$typeName] = [
+                    'lines' => 0,
+                    'count' => 0,
+                ];
             }
-            $lineCounts[$typeName] += substr_count($comment['content'], PHP_EOL) + 1;
+            $lineCounts[$typeName]['lines'] += substr_count($comment['content'], PHP_EOL) + 1;
+            $lineCounts[$typeName]['count']++;
         }
         return $lineCounts;
     }

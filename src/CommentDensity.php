@@ -101,13 +101,14 @@ final class CommentDensity
     private function prepareCommentStatistics(array $commentStatistics): array
     {
         $preparedStatistics = [];
-        foreach ($commentStatistics as $type => $count) {
+        foreach ($commentStatistics as $type => $stat) {
             if ($type === 'missingDocblock') {
                 $preparedStatistics[] = new CommentStatisticsDTO(
                     $this->missingDocBlock->getColor(),
                     $this->missingDocBlock->getName(),
-                    $count,
-                    $this->missingDocBlock->getStatColor($count, $this->configDTO->thresholds)
+                    $stat['lines'],
+                    $this->missingDocBlock->getStatColor($stat['count'], $this->configDTO->thresholds),
+                    $stat['count']
                 );
                 if ($this->missingDocBlock->hasExceededThreshold()) {
                     $this->exceedThreshold = true;
@@ -119,8 +120,9 @@ final class CommentDensity
                 $preparedStatistics[] = new CommentStatisticsDTO(
                     $commentType->getColor(),
                     $commentType->getName(),
-                    $count,
-                    $commentType->getStatColor($count, $this->configDTO->thresholds)
+                    $stat['lines'],
+                    $commentType->getStatColor($stat['count'], $this->configDTO->thresholds),
+                    $stat['count']
                 );
                 if ($commentType->hasExceededThreshold()) {
                     $this->exceedThreshold = true;

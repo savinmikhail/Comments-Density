@@ -67,10 +67,14 @@ final readonly class ConsoleReporter implements ReporterInterface
     {
         $table = new Table($this->output);
         $table
-            ->setHeaders(['Comment Type', 'Lines'])
+            ->setHeaders(['Comment Type', 'Lines', 'Times'])
             ->setRows(
                 array_map(function (CommentStatisticsDTO $dto): array {
-                    return ["<fg=" . $dto->typeColor . ">$dto->type</>", "<fg=$dto->color>$dto->count</>"];
+                    return [
+                        "<fg=" . $dto->typeColor . ">$dto->type</>",
+                        "<fg=$dto->color>$dto->lines</>",
+                        "<fg=$dto->color>$dto->count</>",
+                    ];
                 }, $commentStatistics)
             );
 
