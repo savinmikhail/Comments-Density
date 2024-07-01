@@ -107,8 +107,13 @@ final class CommentDensity
         return $this->exceedThreshold;
     }
 
-    private function createOutputDTO(array $comments, array $commentStatistics, int $linesOfCode, float $cds, int $filesAnalyzed): OutputDTO
-    {
+    private function createOutputDTO(
+        array $comments,
+        array $commentStatistics,
+        int $linesOfCode,
+        float $cds,
+        int $filesAnalyzed
+    ): OutputDTO {
         $outputDTO = new OutputDTO(
             $filesAnalyzed,
             $this->prepareCommentStatistics($commentStatistics),
