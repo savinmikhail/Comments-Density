@@ -50,13 +50,13 @@ final class CDS
     {
         $rawScore = 0;
 
-        foreach ($commentStatistics as $type => $count) {
+        foreach ($commentStatistics as $type => $stat) {
             $comment = $this->commentFactory->getCommentType($type);
             if ($comment) {
-                $rawScore += $count * $comment->getWeight();
+                $rawScore += $stat['count'] * $comment->getWeight();
                 continue;
             }
-            $rawScore += $count * self::MISSING_DOCBLOCK_WEIGHT;
+            $rawScore += $stat['count'] * self::MISSING_DOCBLOCK_WEIGHT;
         }
 
         return $rawScore;
@@ -65,17 +65,17 @@ final class CDS
     private function getMinPossibleScore(array $commentStatistics): float
     {
         $minScore = 0;
-        foreach ($commentStatistics as $type => $count) {
+        foreach ($commentStatistics as $type => $stat) {
             $comment = $this->commentFactory->getCommentType($type);
             if (!$comment) {
-                $minScore += self::MISSING_DOCBLOCK_WEIGHT * $count;
+                $minScore += self::MISSING_DOCBLOCK_WEIGHT * $stat['count'];
                 continue;
             }
             if (in_array($comment->getAttitude(), ['bad', 'unwanted'])) {
-                $minScore += $comment->getWeight() * $count;
+                $minScore += $comment->getWeight() * $stat['count'];
                 continue;
             }
-            $minScore -= $comment->getWeight() * $count;
+            $minScore -= $comment->getWeight() * $stat['count'];
         }
         return $minScore;
     }
@@ -83,8 +83,8 @@ final class CDS
     private function getMaxPossibleScore(array $commentStatistics): float
     {
         return (
-                ($commentStatistics['missingDocblock'] ?? 0)
-                + ($commentStatistics['docblock'] ?? 0)
+                ($commentStatistics['missingDocblock']['count'] ?? 0)
+                + ($commentStatistics['docblock']['count'] ?? 0)
             )
             * ((new DocBlockComment())->getWeight());
     }
