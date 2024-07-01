@@ -25,7 +25,14 @@ final class HtmlReporter implements ReporterInterface
 
     public function report(OutputDTO $dto): void
     {
-        $html = "<html><head><meta charset='UTF-8'><title>Comment Density Report</title></head><body>";
+        $html = "<html><head><meta charset='UTF-8'><title>Comment Density Report</title>";
+        $html .= "<style>
+            body { background-color: black; color: white; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid white; padding: 8px; }
+            th { background-color: #333; }
+            td { background-color: #444; }
+            </style></head><body>";
         $html .= $this->generateHeader($dto);
         $html .= $this->generateCommentStatisticsTable($dto);
         $html .= $this->generateDetailedCommentsTable($dto);
@@ -47,13 +54,15 @@ final class HtmlReporter implements ReporterInterface
     private function generateCommentStatisticsTable(OutputDTO $dto): string
     {
         $html = "<h2>Comment Statistics</h2>";
-        $html .= "<table border='1'><tr><th>Comment Type</th><th>Lines</th></tr>";
+        $html .= "<table><tr><th>Comment Type</th><th>Lines</th><th>Times</th></tr>";
         foreach ($dto->commentsStatistics as $commentStatisticsDTO) {
             $type = htmlspecialchars($commentStatisticsDTO->type, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $count = htmlspecialchars((string)$commentStatisticsDTO->count, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $lines = htmlspecialchars((string)$commentStatisticsDTO->lines, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $color = htmlspecialchars($commentStatisticsDTO->typeColor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $html .= "<tr>
                     <td style='color: $color;'>$type</td>
+                    <td style='color: white;'>$lines</td>
                     <td style='color: $color;'>$count</td>
                 </tr>";
         }
@@ -65,7 +74,7 @@ final class HtmlReporter implements ReporterInterface
     private function generateDetailedCommentsTable(OutputDTO $dto): string
     {
         $html = "<h2>Detailed Comments</h2>";
-        $html .= "<table border='1'>
+        $html .= "<table>
             <tr>
                 <th>Type</th>
                 <th>File</th>
