@@ -28,7 +28,8 @@ final class AnalyzerFactory
             $output,
             $missingDocBlock,
             $cds,
-            $commentFactory
+            $commentFactory,
+            $configDto,
         );
 
         $metrics = new Metrics(
