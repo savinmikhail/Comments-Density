@@ -15,7 +15,7 @@ use const DIRECTORY_SEPARATOR;
 final readonly class ConfigLoader
 {
     protected const CONFIG_FILE = 'comments_density.yaml';
-    protected const DIR_LEVEL = 1;
+    protected const DIR_LEVEL = 4;
 
     protected function parseConfigFile(string $configFile): array
     {
