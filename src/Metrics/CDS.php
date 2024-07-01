@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Metrics;
 
+use InvalidArgumentException;
 use Mikhail\PrimitiveWrappers\Int\Integer;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
@@ -41,7 +42,7 @@ final class CDS
         try {
             return (new Integer(0))
                 ->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return 0;
         }
     }
