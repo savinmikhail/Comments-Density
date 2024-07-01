@@ -11,7 +11,7 @@ final readonly class ConfigDTO
         public array $exclude,
         public array $output,
         public array $directories,
-        public ?array $only,
+        public array $only,
     ) {
     }
 }
