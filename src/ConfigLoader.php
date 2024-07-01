@@ -15,7 +15,7 @@ use const DIRECTORY_SEPARATOR;
 final class ConfigLoader
 {
     protected const CONFIG_FILE = 'comments_density.yaml';
-    protected const DIR_LEVEL = 4;
+    protected const DIR_LEVEL = 1;
 
     protected function parseConfigFile(string $configFile): array
     {
@@ -31,7 +31,7 @@ final class ConfigLoader
         $outputConfig = $config['output'];
         $outputConfig['file'] = $this->getProjectRoot() . DIRECTORY_SEPARATOR . $outputConfig['file'];
         $directories = $this->getDirectories($config);
-        $only = $config['only'];
+        $only = $config['only'] ?? [];
 
         return new ConfigDTO(
             $thresholds,

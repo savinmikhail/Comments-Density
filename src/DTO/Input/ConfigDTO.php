@@ -25,9 +25,14 @@ final class ConfigDTO
     /**
      * @readonly
      */
-    public ?array $only;
-    public function __construct(array $thresholds, array $exclude, array $output, array $directories, ?array $only)
-    {
+    public array $only;
+    public function __construct(
+        array $thresholds,
+        array $exclude,
+        array $output,
+        array $directories,
+        array $only
+    ) {
         $this->thresholds = $thresholds;
         $this->exclude = $exclude;
         $this->output = $output;
