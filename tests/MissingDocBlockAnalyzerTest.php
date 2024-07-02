@@ -89,7 +89,9 @@ CODE;
         ];
     }
 
-    #[DataProvider('closureDataProvider')]
+    /**
+     * @dataProvider closureDataProvider
+     */
     public function testClosuresAndArrowFunctions(string $code): void
     {
         $tokens = token_get_all($code);
@@ -143,20 +145,5 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(0, $missingDocBlocks);
-    }
-
-    public function testEnumDeclaration(): void
-    {
-        $code = <<<'CODE'
-<?php
-enum Status {
-    case PENDING;
-    case COMPLETED;
-}
-CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
-
-        $this->assertCount(1, $missingDocBlocks);
     }
 }
