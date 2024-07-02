@@ -115,11 +115,9 @@ final class MissingDocBlockAnalyzer
                 continue;
             }
             if (
-                $tokens[$index - 3] === '['
-                && $tokens[$index - 2][0] === T_STRING
+                $tokens[$index - 2][0] === T_STRING
                 && $tokens[$index - 1][0] === T_PAAMAYIM_NEKUDOTAYIM
                 && $tokens[$index][0] === T_CLASS
-                && ($tokens[$index + 1] === ']' || $tokens[$index + 1] === ',')
             ) {
                 return true;
             }
