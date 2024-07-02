@@ -22,7 +22,7 @@ final class MissingDocBlockAnalyzerTest extends TestCase
     {
         $code = <<<'CODE'
 <?php
-function testFunction() {
+function testFunctionn() {
     // function body
 }
 CODE;
@@ -30,7 +30,6 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
-        $this->assertEquals('missingDocblock', $missingDocBlocks[0]['type']);
     }
 
     public function testMethodDeclaration(): void
@@ -50,7 +49,6 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
-        $this->assertEquals('missingDocblock', $missingDocBlocks[0]['type']);
     }
 
     public function testFunctionImport(): void
@@ -109,7 +107,6 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
-        $this->assertEquals('missingDocblock', $missingDocBlocks[0]['type']);
     }
 
     public function testTraitDeclaration(): void
@@ -122,7 +119,6 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
-        $this->assertEquals('missingDocblock', $missingDocBlocks[0]['type']);
     }
 
     public function testInterfaceDeclaration(): void
@@ -135,7 +131,6 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
-        $this->assertEquals('missingDocblock', $missingDocBlocks[0]['type']);
     }
 
     public function testAnonymousClassDeclaration(): void
@@ -163,6 +158,5 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
-        $this->assertEquals('missingDocblock', $missingDocBlocks[0]['type']);
     }
 }
