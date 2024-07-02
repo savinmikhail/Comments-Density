@@ -11,6 +11,7 @@ use const T_CLASS;
 use const T_DOC_COMMENT;
 use const T_FUNCTION;
 use const T_INTERFACE;
+use const T_TRAIT;
 
 final class MissingDocBlockAnalyzer
 {
@@ -38,6 +39,13 @@ final class MissingDocBlockAnalyzer
             if ($token[0] === T_DOC_COMMENT) {
                 $lastDocBlock = $token[1];
             } elseif (in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_FUNCTION], true)) {
+                if ($token[0] === T_FUNCTION) {
+                    $isFunctionDeclaration = $this->isFunctionDeclaration($tokens, $i);
+                    if (!$isFunctionDeclaration) {
+                        continue;
+                    }
+                }
+
                 if (empty($lastDocBlock)) {
                     $missingDocBlocks[] = [
                         'type' => 'missingDocblock',
@@ -51,6 +59,24 @@ final class MissingDocBlockAnalyzer
         }
 
         return $missingDocBlocks;
+    }
+
+    private function isFunctionDeclaration(array $tokens, int $index): bool
+    {
+        $tokenCount = count($tokens);
+        for ($j = $index + 1; $j < $tokenCount; $j++) {
+            $nextToken = $tokens[$j];
+            if (is_array($nextToken) && $nextToken[0] === T_STRING) {
+                continue;
+            }
+            if ($nextToken === '(') {
+                return true;
+            }
+            if ($nextToken === ';') {
+                return false;
+            }
+        }
+        return false;
     }
 
     public function getMissingDocblocks(array $tokens, string $filename): array
