@@ -103,7 +103,7 @@ final class FileAnalyzer
         $comments = $this->getCommentsFromFile($tokens, $filename);
         $commentStatistic = $this->countCommentLines($comments);
         if (
-            empty($this->allowedTypes)
+            empty($this->configDto->only)
             || in_array('missingDocblock', $this->configDto->only, true)
         ) {
             $missingDocBlocks = $this
