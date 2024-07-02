@@ -2,3 +2,5 @@
 /.idea
 /coverage
 /.phpunit.result.cache
+/composer.lock
+/output.html
