@@ -148,7 +148,6 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(0, $missingDocBlocks);
-        $this->assertEquals('missingDocblock', $missingDocBlocks[0]['type']);
     }
 
     public function testEnumDeclaration(): void
