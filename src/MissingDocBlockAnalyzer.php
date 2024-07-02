@@ -81,24 +81,16 @@ final class MissingDocBlockAnalyzer
         if (! in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION], true)) {
             return false;
         }
-        if (
-            $token[0] === T_CLASS
-            && (
-                $this->isClosure($tokens, $index)
-                || $this->isAnonymousClass($tokens, $index)
-            )
-        ) {
-            return false;
+        if ($token[0] === T_CLASS) {
+            if ($this->isAnonymousClass($tokens, $index) || $this->isClosure($tokens, $index)) {
+                return false;
+            }
         }
 
-        if (
-            $token[0] === T_FUNCTION
-            && (
-                $this->isAnonymousFunction($tokens, $index)
-                || ! $this->isFunctionDeclaration($tokens, $index)
-            )
-        ) {
-            return false;
+        if ($token[0] === T_FUNCTION) {
+            if ($this->isAnonymousFunction($tokens, $index) || ! $this->isFunctionDeclaration($tokens, $index)) {
+                return false;
+            }
         }
 
         return true;
