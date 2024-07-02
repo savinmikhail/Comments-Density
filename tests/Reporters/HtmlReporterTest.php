@@ -37,8 +37,8 @@ final class HtmlReporterTest extends TestCase
         $cdsDTO = new CDSDTO(0.45, 'red');
         $comToLocDTO = new ComToLocDTO(0.12, 'red');
         $commentsStatistics = [
-            new CommentStatisticsDTO('#000000', 'docblock', 10, '#000000'),
-            new CommentStatisticsDTO('#FF0000', 'regular', 5, '#FF0000'),
+            new CommentStatisticsDTO('#000000', 'docblock', 10, '#000000', 2),
+            new CommentStatisticsDTO('#FF0000', 'regular', 5, '#FF0000', 3),
         ];
         $comments = [
             new CommentDTO('docblock', '#000000', 'some/file.php', 10, 'This is a docblock comment'),
