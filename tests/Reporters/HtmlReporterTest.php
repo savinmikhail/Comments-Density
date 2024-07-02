@@ -7,7 +7,7 @@ namespace SavinMikhail\Tests\CommentsDensity\Reporters;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CDSDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
@@ -34,7 +34,7 @@ final class HtmlReporterTest extends TestCase
         $reporter = new HtmlReporter($this->reportPath);
 
         $performanceDTO = new PerformanceMetricsDTO(123, 1.23);
-        $cdsDTO = new CDSDTO(0.45, 'red');
+        $cdsDTO = new CdsDTO(0.45, 'red');
         $comToLocDTO = new ComToLocDTO(0.12, 'red');
         $commentsStatistics = [
             new CommentStatisticsDTO('#000000', 'docblock', 10, '#000000', 2),
