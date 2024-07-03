@@ -4,17 +4,27 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use function dd;
 use function in_array;
 use function is_array;
 
+use const T_ARRAY;
 use const T_CLASS;
+use const T_CONST;
 use const T_DOC_COMMENT;
+use const T_FINAL;
 use const T_FUNCTION;
 use const T_INTERFACE;
 use const T_PAAMAYIM_NEKUDOTAYIM;
+use const T_PRIVATE;
+use const T_PROTECTED;
+use const T_PUBLIC;
+use const T_READONLY;
+use const T_STATIC;
 use const T_STRING;
 use const T_TRAIT;
 use const T_ENUM;
+use const T_VARIABLE;
 use const T_WHITESPACE;
 
 final class MissingDocBlockAnalyzer
@@ -78,7 +88,7 @@ final class MissingDocBlockAnalyzer
 
     private function isDocBlockRequired(array $token, array $tokens, int $index): bool
     {
-        if (! in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION], true)) {
+        if (!in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION, T_CONST, T_VARIABLE], true)) {
             return false;
         }
         if ($token[0] === T_CLASS) {
@@ -89,6 +99,12 @@ final class MissingDocBlockAnalyzer
 
         if ($token[0] === T_FUNCTION) {
             if ($this->isAnonymousFunction($tokens, $index) || ! $this->isFunctionDeclaration($tokens, $index)) {
+                return false;
+            }
+        }
+
+        if ($token[0] === T_CONST || $token[0] === T_VARIABLE) {
+            if (! $this->isPropertyOrConstant($tokens, $index)) {
                 return false;
             }
         }
@@ -104,6 +120,34 @@ final class MissingDocBlockAnalyzer
             'file' => $filename,
             'line' => $token[2]
         ];
+    }
+
+    private function isPropertyOrConstant(array $tokens, int $index): bool
+    {
+//        dd(
+//            $tokens[$index - 4],
+//            $tokens[$index - 3],
+//            $tokens[$index - 2],
+//            $tokens[$index - 1],
+//            $tokens[$index]
+//        );
+        return (
+            $tokens[$index - 1][0] === T_WHITESPACE
+            && (
+                $tokens[$index - 2][0] === T_STRING
+                || $tokens[$index - 2][0] === T_ARRAY
+                || $tokens[$index - 2][0] === T_STATIC
+                || $tokens[$index - 2][0] === T_READONLY
+                || $tokens[$index - 2][0] === T_PUBLIC
+                || $tokens[$index - 2][0] === T_PROTECTED
+                || $tokens[$index - 2][0] === T_PRIVATE
+                || $tokens[$index - 2][0] === T_FINAL
+            )
+            && (
+                $tokens[$index - 3][0] === T_WHITESPACE
+            )
+            && ($tokens[$index - 4] !== '(' && $tokens[$index - 4] !== ',')
+        );
     }
 
     protected function isClosure(array $tokens, int $index): bool
