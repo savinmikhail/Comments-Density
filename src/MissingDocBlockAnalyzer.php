@@ -53,7 +53,6 @@ final class MissingDocBlockAnalyzer
             if ($token[0] === T_DOC_COMMENT) {
                 $lastDocBlock = $token[1];
             } elseif ($this->isDocBlockRequired($token, $tokens, $i)) {
-
                 if (empty($lastDocBlock)) {
                     $missingDocBlocks[] = $this->createMissingDocBlockStat($token, $filename);
                 }
@@ -88,7 +87,7 @@ final class MissingDocBlockAnalyzer
 
     private function isDocBlockRequired(array $token, array $tokens, int $index): bool
     {
-        if (!in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION, T_CONST, T_VARIABLE], true)) {
+        if (! in_array($token[0], [T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION, T_CONST, T_VARIABLE], true)) {
             return false;
         }
         if ($token[0] === T_CLASS) {
@@ -124,13 +123,6 @@ final class MissingDocBlockAnalyzer
 
     private function isPropertyOrConstant(array $tokens, int $index): bool
     {
-//        dd(
-//            $tokens[$index - 4],
-//            $tokens[$index - 3],
-//            $tokens[$index - 2],
-//            $tokens[$index - 1],
-//            $tokens[$index]
-//        );
         return (
             $tokens[$index - 1][0] === T_WHITESPACE
             && (
