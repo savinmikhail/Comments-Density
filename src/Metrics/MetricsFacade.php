@@ -8,7 +8,7 @@ use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 
-final readonly class Metrics
+final readonly class MetricsFacade
 {
     public function __construct(
         private CDS $cds,

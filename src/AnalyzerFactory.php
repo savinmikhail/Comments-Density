@@ -8,7 +8,7 @@ use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
 use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
-use SavinMikhail\CommentsDensity\Metrics\Metrics;
+use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,7 +32,7 @@ final readonly class AnalyzerFactory
             $configDto,
         );
 
-        $metrics = new Metrics(
+        $metrics = new MetricsFacade(
             $cds,
             new ComToLoc($configDto->thresholds),
             new PerformanceMonitor()

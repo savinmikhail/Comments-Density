@@ -11,7 +11,7 @@ use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
-use SavinMikhail\CommentsDensity\Metrics\Metrics;
+use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use SplFileInfo;
 
@@ -27,7 +27,7 @@ final class CommentDensity
         private readonly FileAnalyzer $fileAnalyzer,
         private readonly ReporterInterface $reporter,
         private readonly MissingDocBlockAnalyzer $missingDocBlock,
-        private readonly Metrics $metrics,
+        private readonly MetricsFacade $metrics,
     ) {
     }
 
