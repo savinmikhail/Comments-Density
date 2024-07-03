@@ -18,6 +18,31 @@ use function file_put_contents;
 
 final class CommentsDensityPlugin implements PluginInterface, EventSubscriberInterface
 {
+    private const CONFIG = [
+        'directories' => [
+            'src',
+        ],
+        'exclude' => [
+            'src/DTO',
+        ],
+        'thresholds' => [
+            'docBlock' => 90,
+            'regular' => 5,
+            'todo' => 5,
+            'fixme' => 5,
+            'missingDocBlock' => 10,
+            'Com/LoC' => 0.1,
+            'CDS' => 0.1,
+        ],
+        'only' => [
+            'missingDocblock'
+        ],
+        'output' => [
+            'type' => 'console', // "console" or 'html'
+            'file' => 'output.html', // file path for HTML output
+        ],
+    ];
+
     /**
      * @SuppressWarnings(PHPMD.ShortVariable)
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -69,27 +94,7 @@ final class CommentsDensityPlugin implements PluginInterface, EventSubscriberInt
         if ($shouldCreateConfig) {
             $interface->write('Creating default configuration file...');
 
-            $defaultConfig = <<<YAML
-directories:
-  - "src"
-  - "tests"
-exclude:
-  - "src/bin"
-thresholds:
-  docBlock: 0
-  regular: 0
-  todo: 0
-  fixme: 0
-  missingDocBlock: 0
-  Com/LoC: 0.1
-  CDS: 0.5
-output:
-  type: "html" #  "console" or 'html'
-  file: "output.html" # file path for HTML output
-
-YAML;
-
-            file_put_contents('comments_density.yaml', $defaultConfig);
+            file_put_contents('comments_density.php', self::CONFIG);
 
             $interface->write('Default configuration file created.');
             return;

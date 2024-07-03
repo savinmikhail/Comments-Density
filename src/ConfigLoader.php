@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity;
 
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use Symfony\Component\Yaml\Parser;
 
 use function array_map;
 use function dirname;
@@ -14,13 +13,12 @@ use const DIRECTORY_SEPARATOR;
 
 final readonly class ConfigLoader
 {
-    protected const CONFIG_FILE = 'comments_density.yaml';
+    protected const CONFIG_FILE = 'comments_density.php';
     protected const DIR_LEVEL = 4;
 
     protected function parseConfigFile(string $configFile): array
     {
-        $yamlParser = new Parser();
-        return $yamlParser->parseFile($configFile);
+        return require_once $configFile;
     }
 
     public function getConfigDto(): ConfigDTO
