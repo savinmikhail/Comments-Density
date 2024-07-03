@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\Tests\CommentsDensity;
 
+use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
@@ -158,5 +159,117 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
+    }
+
+    public static function propertyDataProvider(): Generator
+    {
+        yield 'public int property' => [
+            <<<'CODE'
+<?php
+/**  */
+class Foo {
+    public int $public;
+}
+CODE
+            , 1
+        ];
+
+        yield 'public readonly string property' => [
+            <<<'CODE'
+<?php
+/**  */
+class Foo {
+    public readonly string $publicReadonly;
+}
+CODE
+            , 1
+        ];
+
+        yield 'public static array property' => [
+            <<<'CODE'
+<?php
+/**  */
+class Foo {
+    public static array $publicStatic;
+}
+CODE
+            , 1
+        ];
+
+        yield 'protected DateTime property' => [
+            <<<'CODE'
+<?php
+/**  */
+class Foo {
+    protected DateTime $protected;
+}
+CODE
+            , 1
+        ];
+
+        yield 'private int property' => [
+            <<<'CODE'
+<?php
+/**  */
+class Foo {
+    private int $private;
+}
+CODE
+            , 1
+        ];
+
+        yield 'method with local variable' => [
+            <<<'CODE'
+<?php
+/**  */
+class Foo {
+    /**  */
+    public function foo(
+        DateTime $time, int $foo,
+        array $var = 3,
+    ): array {
+        $regVar = 2;
+    }
+}
+CODE
+            , 0
+        ];
+    }
+
+    #[DataProvider('propertyDataProvider')]
+    public function testProperties(string $code, int $expectedCount): void
+    {
+        $tokens = token_get_all($code);
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
+    }
+
+    public function testConstant()
+    {
+        $code = <<<'CODE'
+<?php
+/**
+* 
+ */
+class Foo 
+{
+  final const FINAL = 2;
+  public const PUBLIC = 3;
+  protected const int TYPED = 4;
+  private const PRIVATE = 5;
+   
+   /**
+    * 
+    */
+    public function foo()
+    {
+        const METHOD = 'foo';
+    }
+}
+CODE;
+        $tokens = token_get_all($code);
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+
+        $this->assertCount(4, $missingDocBlocks);
     }
 }
