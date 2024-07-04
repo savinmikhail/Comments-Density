@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
-use function dd;
 use function in_array;
 use function is_array;
 
@@ -67,7 +66,7 @@ final class MissingDocBlockAnalyzer
     {
         for ($j = $index + 1, $count = count($tokens); $j < $count; $j++) {
             $nextToken = $tokens[$j];
-            if ($nextToken[0] === T_WHITESPACE) {
+            if ($this->isWhitespace($nextToken)) {
                 continue;
             }
             return $nextToken === $expectedToken;
@@ -91,13 +90,13 @@ final class MissingDocBlockAnalyzer
             return false;
         }
         if ($token[0] === T_CLASS) {
-            if ($this->isAnonymousClass($tokens, $index) || $this->isClosure($tokens, $index)) {
+            if ($this->isAnonymousClass($tokens, $index) || $this->isClassNameResolution($tokens, $index)) {
                 return false;
             }
         }
 
         if ($token[0] === T_FUNCTION) {
-            if ($this->isAnonymousFunction($tokens, $index) || ! $this->isFunctionDeclaration($tokens, $index)) {
+            if ($this->isAnonymousFunction($tokens, $index) ||  $this->isFunctionImport($tokens, $index)) {
                 return false;
             }
         }
@@ -121,62 +120,86 @@ final class MissingDocBlockAnalyzer
         ];
     }
 
+    protected function isWhitespace(array|string $token): bool
+    {
+        if (! is_array($token)) {
+            return false;
+        }
+        return $token[0] === T_WHITESPACE;
+    }
+
+    protected function isTypeDeclaration(mixed $token): bool
+    {
+        if (! is_array($token)) {
+            return false;
+        }
+        return $token[0] === T_STRING || $token[0] === T_ARRAY;
+    }
+
+    protected function isVisibilityModificator(mixed $token): bool
+    {
+        if (! is_array($token)) {
+            return false;
+        }
+        return  $token[0] === T_PUBLIC
+            || $token[0] === T_PROTECTED
+            || $token[0] === T_PRIVATE;
+    }
+
+    protected function isStatic(mixed $token): bool
+    {
+        if (! is_array($token)) {
+            return false;
+        }
+        return $token[0] === T_STATIC;
+    }
+
+    protected function isConstructPropertyDeclaration(array|string $token): bool
+    {
+        if (is_array($token)) {
+            return false;
+        }
+        return ($token === '(' || $token === ',');
+    }
+
+    private function isWithinBounds(array $tokens, int $index, int $offset): bool
+    {
+        return isset($tokens[$index + $offset]);
+    }
+
     private function isPropertyOrConstant(array $tokens, int $index): bool
     {
         return (
-            $tokens[$index - 1][0] === T_WHITESPACE
-            && (
-                $tokens[$index - 2][0] === T_STRING
-                || $tokens[$index - 2][0] === T_ARRAY
-                || $tokens[$index - 2][0] === T_STATIC
+            $this->isWithinBounds($tokens, $index, -2)
+            &&  (
+                $this->isTypeDeclaration($tokens[$index - 2])
+                || $this->isVisibilityModificator($tokens[$index - 2])
+                || $this->isStatic($tokens[$index - 2])
                 || $tokens[$index - 2][0] === T_READONLY
-                || $tokens[$index - 2][0] === T_PUBLIC
-                || $tokens[$index - 2][0] === T_PROTECTED
-                || $tokens[$index - 2][0] === T_PRIVATE
                 || $tokens[$index - 2][0] === T_FINAL
             )
-            && (
-                $tokens[$index - 3][0] === T_WHITESPACE
+            && ! (
+                $this->isWithinBounds($tokens, $index, -4)
+                && $this->isConstructPropertyDeclaration($tokens[$index - 4])
             )
-            && ($tokens[$index - 4] !== '(' && $tokens[$index - 4] !== ',')
         );
     }
 
-    protected function isClosure(array $tokens, int $index): bool
+    protected function isClassNameResolution(array $tokens, int $index): bool
     {
-        $tokenCount = count($tokens);
-        for ($j = $index + 1; $j < $tokenCount; $j++) {
-            $nextToken = $tokens[$j];
-            if ($nextToken[0] === T_WHITESPACE) {
-                continue;
-            }
-            if (
-                $tokens[$index - 2][0] === T_STRING
-                && $tokens[$index - 1][0] === T_PAAMAYIM_NEKUDOTAYIM
-                && $tokens[$index][0] === T_CLASS
-            ) {
-                return true;
-            }
-        }
-        return false;
+        return (
+            $this->isWithinBounds($tokens, $index, -2)
+            && $tokens[$index - 2][0] === T_STRING
+            && $tokens[$index - 1][0] === T_PAAMAYIM_NEKUDOTAYIM
+        );
     }
 
-    private function isFunctionDeclaration(array $tokens, int $index): bool
+    private function isFunctionImport(array $tokens, int $index): bool
     {
-        $tokenCount = count($tokens);
-        for ($j = $index + 1; $j < $tokenCount; $j++) {
-            $nextToken = $tokens[$j];
-            if (is_array($nextToken) && $nextToken[0] === T_STRING) {
-                continue;
-            }
-            if ($nextToken === '(') {
-                return true;
-            }
-            if ($nextToken === ';') {
-                return false;
-            }
-        }
-        return false;
+        return (
+            $this->isWithinBounds($tokens, $index, -1) && $this->isWhitespace($tokens[$index - 1])
+            && $this->isWithinBounds($tokens, $index, -2) && $tokens[$index - 2][0] === T_USE
+        );
     }
 
     public function getMissingDocblocks(array $tokens, string $filename): array
