@@ -16,12 +16,12 @@ final class CDSTest extends TestCase
         $calculator = new CDS([], $commentFactory);
 
         $commentStatistics = [
-            'docBlock' => 10,
-            'regular' => 5,
-            'todo' => 2,
-            'fixme' => 1,
-            'license' => 1,
-            'missingDocblock' => 3,
+            'docBlock' => ['count' => 10, 'lines' => 12],
+            'regular' => ['count' => 10, 'lines' => 12],
+            'todo' => ['count' => 10, 'lines' => 12],
+            'fixme' => ['count' => 10, 'lines' => 12],
+            'license' => ['count' => 10, 'lines' => 12],
+            'missingDocblock' => ['count' => 10, 'lines' => 12],
         ];
 
         $cds = $calculator->calculateCDS($commentStatistics);
