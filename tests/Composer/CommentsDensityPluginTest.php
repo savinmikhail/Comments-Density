@@ -96,8 +96,7 @@ final class CommentsDensityPluginTest extends TestCase
         $method->setAccessible(true);
         $method->invoke($plugin, $io);
 
-        $this->assertFileExists('comments_density.yaml');
-        unlink('comments_density.yaml'); // Clean up after the test
+        $this->assertFileExists('comments_density.php');
     }
 
     public function testPromptForPreCommitHook(): void
