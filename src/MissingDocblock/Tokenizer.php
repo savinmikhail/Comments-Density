@@ -82,7 +82,7 @@ final readonly class Tokenizer
     protected function isConstructPropertyDeclaration(array|string $token): bool
     {
         if (is_array($token)) {
-            return false;
+            return ($token[1] === '__construct');
         }
         return ($token === '(' || $token === ',');
     }
