@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
-use function in_array;
+use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use function is_array;
 
 use const T_CLASS;
@@ -18,20 +18,12 @@ use const T_VARIABLE;
 
 final class MissingDocBlockAnalyzer
 {
-    private const DOCBLOCKABLE_TOKENS = [
-        T_CLASS,
-        T_TRAIT,
-        T_INTERFACE,
-        T_ENUM,
-        T_FUNCTION,
-        T_CONST,
-        T_VARIABLE
-    ];
-
     private bool $exceedThreshold = false;
 
-    public function __construct(private readonly Tokenizer $tokenizer)
-    {
+    public function __construct(
+        private readonly Tokenizer $tokenizer,
+        private readonly MissingDocblockConfigDTO $missingDocblockConfigDTO,
+    ) {
     }
 
     /**
@@ -66,9 +58,23 @@ final class MissingDocBlockAnalyzer
         return $missingDocBlocks;
     }
 
+    private function shouldAnalyzeToken(array $token): bool
+    {
+        return match ($token[0]) {
+            T_CLASS => $this->missingDocblockConfigDTO->class,
+            T_TRAIT => $this->missingDocblockConfigDTO->trait,
+            T_INTERFACE => $this->missingDocblockConfigDTO->interface,
+            T_ENUM => $this->missingDocblockConfigDTO->enum,
+            T_FUNCTION => $this->missingDocblockConfigDTO->function,
+            T_CONST => $this->missingDocblockConfigDTO->constant,
+            T_VARIABLE => $this->missingDocblockConfigDTO->property,
+            default => false,
+        };
+    }
+
     private function isDocBlockRequired(array $token, array $tokens, int $index): bool
     {
-        if (! in_array($token[0], self::DOCBLOCKABLE_TOKENS, true)) {
+        if (!$this->shouldAnalyzeToken($token)) {
             return false;
         }
 

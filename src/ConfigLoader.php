@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity;
 
 use Exception;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
+use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 
 use function array_map;
 use function dirname;
@@ -50,6 +51,7 @@ final readonly class ConfigLoader
             $this->getOutput($config),
             $this->getDirectories($config),
             $this->getOnly($config),
+            $this->getMissingDocblockConfig($config)
         );
     }
 
@@ -84,5 +86,18 @@ final readonly class ConfigLoader
     protected function getProjectRoot(): string
     {
         return dirname(__DIR__, self::DIR_LEVEL);
+    }
+
+    protected function getMissingDocblockConfig(array $config): MissingDocblockConfigDTO
+    {
+        return new MissingDocblockConfigDTO(
+            class: $config['missingDocblock']['class'],
+            interface: $config['missingDocblock']['interface'],
+            trait: $config['missingDocblock']['trait'],
+            enum: $config['missingDocblock']['enum'],
+            function: $config['missingDocblock']['function'],
+            property: $config['missingDocblock']['property'],
+            constant: $config['missingDocblock']['constant'],
+        );
     }
 }
