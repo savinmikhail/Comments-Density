@@ -63,12 +63,7 @@ final readonly class Tokenizer
 
     protected function isVisibilityModificator(mixed $token): bool
     {
-        if (! is_array($token)) {
-            return false;
-        }
-        return $token[0] === T_PUBLIC
-            || $token[0] === T_PROTECTED
-            || $token[0] === T_PRIVATE;
+        return is_array($token) && in_array($token[0], [T_PUBLIC, T_PROTECTED, T_PRIVATE], true);
     }
 
     protected function isStatic(mixed $token): bool
@@ -94,21 +89,39 @@ final readonly class Tokenizer
 
     public function isPropertyOrConstant(array $tokens, int $index): bool
     {
-        return (
-            $this->isWhitespace($tokens[$index - 1])
-            && $this->isWithinBounds($tokens, $index, -2)
-            &&  (
-                $this->isTypeDeclaration($tokens[$index - 2])
-                || $this->isVisibilityModificator($tokens[$index - 2])
-                || $this->isStatic($tokens[$index - 2])
-                || $this->isReadonly($tokens[$index - 2])
-                || $this->isFinal($tokens[$index - 2])
-            )
-            && ! (
-                $this->isWithinBounds($tokens, $index, -4)
-                && $this->isConstructPropertyDeclaration($tokens[$index - 4])
-            )
-        );
+        $lineNumber = $tokens[$index][2];
+
+        return $this->hasSemicolonOnSameLine($tokens, $index, $lineNumber)
+            && $this->hasVisibilityModifierOnSameLine($tokens, $index, $lineNumber);
+    }
+
+    private function hasSemicolonOnSameLine(array $tokens, int $index, int $lineNumber): bool
+    {
+        for ($i = $index + 1; $i < count($tokens); $i++) {
+            if ($tokens[$i] === ';') {
+                return true;
+            }
+            if (is_array($tokens[$i]) && $tokens[$i][2] !== $lineNumber) {
+                break;
+            }
+        }
+        return false;
+    }
+
+    private function hasVisibilityModifierOnSameLine(array $tokens, int $index, int $lineNumber): bool
+    {
+        for ($i = $index - 1; $i >= 0; $i--) {
+            if (!is_array($tokens[$i]) || $tokens[$i][2] !== $lineNumber) {
+                break;
+            }
+            if (
+                ($this->isVisibilityModificator($tokens[$i]) || $this->isFinal($tokens[$i])) &&
+                !$this->isConstructPropertyDeclaration($tokens[$index])
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function isClassNameResolution(array $tokens, int $index): bool
