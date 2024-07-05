@@ -12,8 +12,10 @@ use const T_CONST;
 use const T_FINAL;
 use const T_FUNCTION;
 use const T_PAAMAYIM_NEKUDOTAYIM;
+use const T_PRIVATE;
+use const T_PROTECTED;
+use const T_PUBLIC;
 use const T_STATIC;
-use const T_STRING;
 use const T_VARIABLE;
 use const T_WHITESPACE;
 
@@ -64,8 +66,23 @@ readonly class TokenComparator
         return is_array($token) && $token[0] === T_VARIABLE;
     }
 
-    public function isFinal(mixed $token): bool
+    protected function isFinal(mixed $token): bool
     {
         return is_array($token) && $token[0] === T_FINAL;
+    }
+
+    protected function isPublic(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_PUBLIC;
+    }
+
+    protected function isProtected(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_PROTECTED;
+    }
+
+    protected function isPrivate(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_PRIVATE;
     }
 }

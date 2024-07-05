@@ -6,10 +6,6 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use function is_array;
 
-use const T_PRIVATE;
-use const T_PROTECTED;
-use const T_PUBLIC;
-
 final readonly class Tokenizer extends TokenComparator
 {
     private function isFollowingToken(array $tokens, int $index, string $expectedToken): bool
@@ -38,7 +34,12 @@ final readonly class Tokenizer extends TokenComparator
 
     protected function isVisibilityModificator(mixed $token): bool
     {
-        return is_array($token) && in_array($token[0], [T_PUBLIC, T_PROTECTED, T_PRIVATE], true);
+        return is_array($token)
+            && (
+                $this->isPublic($token)
+                || $this->isProtected($token)
+                || $this->isPrivate($token)
+            );
     }
 
     protected function isConstructPropertyDeclaration(array|string $token): bool
