@@ -44,6 +44,15 @@ return [
         'type' => 'console', // "console" or 'html'
         'file' => 'output.html', // file path for HTML output
     ],
+    'missingDocblock' => [
+        'class' => true,
+        'interface' => true,
+        'trait' => true,
+        'enum' => true,
+        'property' => true,
+        'constant' => true,
+        'function' => true,
+    ]
 ];
 
 PHP;
