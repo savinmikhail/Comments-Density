@@ -266,7 +266,7 @@ class Foo
      * @param  \Closure  $closure
      * @return void
      */
-    public function __construct(Closure $closure)
+    public function __construct(public Closure $closure)
     {}
     
     /**  */
