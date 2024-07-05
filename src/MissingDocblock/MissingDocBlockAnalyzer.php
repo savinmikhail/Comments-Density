@@ -73,33 +73,21 @@ final class MissingDocBlockAnalyzer
         }
 
         if ($this->tokenizer->isClass($token)) {
-            if (
-                $this->tokenizer->isAnonymousClass($tokens, $index)
-                || $this->tokenizer->isClassNameResolution($tokens, $index)
-            ) {
-                return false;
-            }
+               return ! $this->tokenizer->isAnonymousClass($tokens, $index)
+                && !$this->tokenizer->isClassNameResolution($tokens, $index);
         }
 
         if ($this->tokenizer->isFunction($token)) {
-            if (
-                $this->tokenizer->isAnonymousFunction($tokens, $index)
-                || $this->tokenizer->isFunctionImport($tokens, $index)
-            ) {
-                return false;
-            }
+             return  ! $this->tokenizer->isAnonymousFunction($tokens, $index)
+                && ! $this->tokenizer->isFunctionImport($tokens, $index);
         }
 
         if ($this->tokenizer->isVariable($token)) {
-            if (! $this->tokenizer->isPropertyOrConstant($tokens, $index)) {
-                return false;
-            }
+            return $this->tokenizer->isPropertyOrConstant($tokens, $index);
         }
 
         if ($this->tokenizer->isConst($token)) {
-            if (! $this->tokenizer->isPropertyOrConstant($tokens, $index)) {
-                return false;
-            }
+            return $this->tokenizer->isPropertyOrConstant($tokens, $index);
         }
 
         return true;
