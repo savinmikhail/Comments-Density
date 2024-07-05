@@ -23,7 +23,7 @@ final readonly class AnalyzerFactory
         ReporterInterface $reporter
     ): CommentDensity {
         $commentFactory = new CommentFactory($configDto->only);
-        $missingDocBlock = new MissingDocBlockAnalyzer(new Tokenizer(), $configDto->missingDocblockConfigDTO);
+        $missingDocBlock = new MissingDocBlockAnalyzer(new Tokenizer(), $configDto->docblockConfigDTO);
         $cds = new CDS($configDto->thresholds, $commentFactory);
 
         $fileAnalyzer = new FileAnalyzer(
