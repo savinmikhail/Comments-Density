@@ -8,6 +8,7 @@ use Exception;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 
+use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
 use function array_map;
 use function dirname;
 use function file_exists;
@@ -26,7 +27,7 @@ final readonly class ConfigLoader
     protected function parseConfigFile(string $configFile): array
     {
         if (! file_exists($configFile)) {
-            throw new Exception('Config file does not exists! Looking for ' . $configFile);
+            throw new CommentsDensityException('Config file does not exists! Looking for ' . $configFile);
         }
         return require_once $configFile;
     }
@@ -76,6 +77,9 @@ final readonly class ConfigLoader
         );
     }
 
+    /**
+     * @throws CommentsDensityException
+     */
     protected function getDirectories(array $config): array
     {
         $directories =  array_map(
@@ -84,7 +88,7 @@ final readonly class ConfigLoader
         );
         foreach ($directories as $dir) {
             if (! is_dir($dir)) {
-                throw new Exception($dir . 'directory does not exist');
+                throw new CommentsDensityException($dir . 'directory does not exist');
             }
         }
         return $directories;
