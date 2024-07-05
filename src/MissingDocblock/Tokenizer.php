@@ -6,22 +6,11 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use function is_array;
 
-use const T_ARRAY;
-use const T_CLASS;
-use const T_CONST;
-use const T_FINAL;
-use const T_FUNCTION;
-use const T_PAAMAYIM_NEKUDOTAYIM;
 use const T_PRIVATE;
 use const T_PROTECTED;
 use const T_PUBLIC;
-use const T_READONLY;
-use const T_STATIC;
-use const T_STRING;
-use const T_VARIABLE;
-use const T_WHITESPACE;
 
-final readonly class Tokenizer
+final readonly class Tokenizer extends TokenComparator
 {
     private function isFollowingToken(array $tokens, int $index, string $expectedToken): bool
     {
@@ -47,34 +36,9 @@ final readonly class Tokenizer
         return $this->isFollowingToken($tokens, $index, '(');
     }
 
-    protected function isWhitespace(array|string $token): bool
-    {
-        return is_array($token) && $token[0] === T_WHITESPACE;
-    }
-
-    protected function isTypeDeclaration(mixed $token): bool
-    {
-        return $this->isString($token) || $this->isArray($token);
-    }
-
-    protected function isArray(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_ARRAY;
-    }
-
-    protected function isString(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_STRING;
-    }
-
     protected function isVisibilityModificator(mixed $token): bool
     {
         return is_array($token) && in_array($token[0], [T_PUBLIC, T_PROTECTED, T_PRIVATE], true);
-    }
-
-    protected function isStatic(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_STATIC;
     }
 
     protected function isConstructPropertyDeclaration(array|string $token): bool
@@ -128,11 +92,6 @@ final readonly class Tokenizer
         return false;
     }
 
-    protected function isDoubleColon(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_PAAMAYIM_NEKUDOTAYIM;
-    }
-
     public function isClassNameResolution(array $tokens, int $index): bool
     {
         return (
@@ -141,46 +100,11 @@ final readonly class Tokenizer
         );
     }
 
-    protected function isUse(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_USE;
-    }
-
     public function isFunctionImport(array $tokens, int $index): bool
     {
         return (
             $this->isWithinBounds($tokens, $index, -1) && $this->isWhitespace($tokens[$index - 1])
             && $this->isWithinBounds($tokens, $index, -2) && $this->isUse($tokens[$index - 2])
         );
-    }
-
-    public function isClass(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_CLASS;
-    }
-
-    public function isFunction(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_FUNCTION;
-    }
-
-    public function isConst(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_CONST;
-    }
-
-    public function isVariable(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_VARIABLE;
-    }
-
-    public function isReadonly(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_READONLY;
-    }
-
-    public function isFinal(mixed $token): bool
-    {
-        return is_array($token) && $token[0] === T_FINAL;
     }
 }
