@@ -10,6 +10,7 @@ use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 
 use function array_map;
 use function dirname;
+use function file_exists;
 use function is_dir;
 
 use const DIRECTORY_SEPARATOR;
@@ -19,8 +20,14 @@ final readonly class ConfigLoader
     protected const CONFIG_FILE = 'comments_density.php';
     protected const DIR_LEVEL = 4;
 
+    /**
+     * @throws Exception
+     */
     protected function parseConfigFile(string $configFile): array
     {
+        if (! file_exists($configFile)) {
+            throw new Exception('Config file does not exists! Looking for ' . $configFile);
+        }
         return require_once $configFile;
     }
 
