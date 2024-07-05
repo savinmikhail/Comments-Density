@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\Tests\CommentsDensity;
+namespace SavinMikhail\Tests\CommentsDensity\MissingDocblock;
 
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -232,7 +232,7 @@ CODE
 /**  */
 class Foo {
     /**  */
-    public function foo(Closure $closure,
+    public function foo(Closure $closure, $baz
         DateTime $time, int $foo,
         array $var = 3,
         ?Bar $bar = null

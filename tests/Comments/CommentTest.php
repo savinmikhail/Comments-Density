@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\Tests\CommentsDensity;
+namespace SavinMikhail\Tests\CommentsDensity\Comments;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
