@@ -7,7 +7,8 @@ namespace SavinMikhail\Tests\CommentsDensity;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\MissingDocBlockAnalyzer;
+use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
+use SavinMikhail\CommentsDensity\MissingDocblock\Tokenizer;
 use function token_get_all;
 
 final class MissingDocBlockAnalyzerTest extends TestCase
@@ -16,7 +17,7 @@ final class MissingDocBlockAnalyzerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->analyzer = new MissingDocBlockAnalyzer();
+        $this->analyzer = new MissingDocBlockAnalyzer(new Tokenizer());
     }
 
     public function testFunctionDeclaration(): void
