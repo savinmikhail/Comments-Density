@@ -15,6 +15,7 @@ use const T_PAAMAYIM_NEKUDOTAYIM;
 use const T_PRIVATE;
 use const T_PROTECTED;
 use const T_PUBLIC;
+use const T_READONLY;
 use const T_STATIC;
 use const T_STRING;
 use const T_VARIABLE;
@@ -94,13 +95,14 @@ final readonly class Tokenizer
     public function isPropertyOrConstant(array $tokens, int $index): bool
     {
         return (
-            $this->isWithinBounds($tokens, $index, -2)
+            $this->isWhitespace($tokens[$index - 1])
+            && $this->isWithinBounds($tokens, $index, -2)
             &&  (
                 $this->isTypeDeclaration($tokens[$index - 2])
                 || $this->isVisibilityModificator($tokens[$index - 2])
                 || $this->isStatic($tokens[$index - 2])
-                || $tokens[$index - 2][0] === T_READONLY
-                || $tokens[$index - 2][0] === T_FINAL
+                || $this->isReadonly($tokens[$index - 2])
+                || $this->isFinal($tokens[$index - 2])
             )
             && ! (
                 $this->isWithinBounds($tokens, $index, -4)
@@ -112,8 +114,7 @@ final readonly class Tokenizer
     public function isClassNameResolution(array $tokens, int $index): bool
     {
         return (
-            $this->isWithinBounds($tokens, $index, -2)
-            && $tokens[$index - 2][0] === T_STRING
+            $this->isWithinBounds($tokens, $index, -1)
             && $tokens[$index - 1][0] === T_PAAMAYIM_NEKUDOTAYIM
         );
     }
@@ -144,5 +145,15 @@ final readonly class Tokenizer
     public function isVariable(mixed $token): bool
     {
         return is_array($token) && $token[0] === T_VARIABLE;
+    }
+
+    public function isReadonly(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_READONLY;
+    }
+
+    public function isFinal(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_FINAL;
     }
 }
