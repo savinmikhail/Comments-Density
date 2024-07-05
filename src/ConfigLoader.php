@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use Exception;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 
 use function array_map;
 use function dirname;
+use function is_dir;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -21,22 +23,33 @@ final readonly class ConfigLoader
         return require_once $configFile;
     }
 
+    protected function getOutput(array $config): array
+    {
+        $outputConfig = $config['output'];
+        $outputConfig['file'] = $this->getProjectRoot() . DIRECTORY_SEPARATOR . $outputConfig['file'];
+        return $outputConfig;
+    }
+
+    protected function getOnly(array $config): array
+    {
+        return $config['only'] ?? [];
+    }
+
+    protected function getThresholds(array $config): array
+    {
+        return $config['thresholds'] ?? [];
+    }
+
     public function getConfigDto(): ConfigDTO
     {
         $config = $this->getConfig();
-        $exclude = $this->getExcludes($config);
-        $thresholds = $config['thresholds'];
-        $outputConfig = $config['output'];
-        $outputConfig['file'] = $this->getProjectRoot() . DIRECTORY_SEPARATOR . $outputConfig['file'];
-        $directories = $this->getDirectories($config);
-        $only = $config['only'] ?? [];
 
         return new ConfigDTO(
-            $thresholds,
-            $exclude,
-            $outputConfig,
-            $directories,
-            $only
+            $this->getThresholds($config),
+            $this->getExcludes($config),
+            $this->getOutput($config),
+            $this->getDirectories($config),
+            $this->getOnly($config),
         );
     }
 
@@ -56,10 +69,16 @@ final readonly class ConfigLoader
 
     protected function getDirectories(array $config): array
     {
-        return array_map(
+        $directories =  array_map(
             fn($dir) => $this->getProjectRoot() . '/' . $dir,
             $config['directories']
         );
+        foreach ($directories as $dir) {
+            if (! is_dir($dir)) {
+                throw new Exception($dir . 'directory does not exist');
+            }
+        }
+        return $directories;
     }
 
     protected function getProjectRoot(): string
