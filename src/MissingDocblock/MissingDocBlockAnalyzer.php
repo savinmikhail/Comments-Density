@@ -30,7 +30,7 @@ final class MissingDocBlockAnalyzer
 
     private bool $exceedThreshold = false;
 
-    public function __construct(private Tokenizer $tokenizer)
+    public function __construct(private readonly Tokenizer $tokenizer)
     {
     }
 
@@ -90,7 +90,13 @@ final class MissingDocBlockAnalyzer
             }
         }
 
-        if ($this->tokenizer->isConst($token) || $this->tokenizer->isVariable($token)) {
+        if ($this->tokenizer->isVariable($token)) {
+            if (! $this->tokenizer->isPropertyOrConstant($tokens, $index)) {
+                return false;
+            }
+        }
+
+        if ($this->tokenizer->isConst($token)) {
             if (! $this->tokenizer->isPropertyOrConstant($tokens, $index)) {
                 return false;
             }
