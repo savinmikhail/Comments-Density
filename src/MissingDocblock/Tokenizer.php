@@ -37,7 +37,9 @@ final readonly class Tokenizer
 
     public function isAnonymousClass(array $tokens, int $index): bool
     {
-        return $this->isFollowingToken($tokens, $index, '{');
+        return
+            $this->isFollowingToken($tokens, $index, '(')
+            || $this->isFollowingToken($tokens, $index, '{');
     }
 
     public function isAnonymousFunction(array $tokens, int $index): bool
