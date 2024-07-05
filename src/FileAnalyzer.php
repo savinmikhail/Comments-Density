@@ -7,6 +7,7 @@ namespace SavinMikhail\CommentsDensity;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
+use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 

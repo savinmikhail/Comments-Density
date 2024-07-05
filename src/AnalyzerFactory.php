@@ -10,6 +10,7 @@ use SavinMikhail\CommentsDensity\Metrics\CDS;
 use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
+use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

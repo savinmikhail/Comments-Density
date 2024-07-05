@@ -12,6 +12,7 @@ use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
+use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use SplFileInfo;
 
