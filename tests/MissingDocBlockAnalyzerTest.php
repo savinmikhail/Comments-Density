@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\MissingDocblock\Tokenizer;
+
 use function token_get_all;
 
 final class MissingDocBlockAnalyzerTest extends TestCase
@@ -81,6 +82,12 @@ CODE;
             ],
             [
                 '<?php $closure = [Bar::class];',
+            ],
+            [
+                '<?php $closure = [$class::class];',
+            ],
+            [
+                '<?php $closure = [\'My\\Namespace\\Foo\'::class];',
             ],
             [
                 '<?php $closure = [Bar::class, \'method\'];',
@@ -225,12 +232,48 @@ CODE
 /**  */
 class Foo {
     /**  */
-    public function foo(
+    public function foo(Closure $closure,
         DateTime $time, int $foo,
         array $var = 3,
+        ?Bar $bar = null
     ): array {
         $regVar = 2;
     }
+}
+CODE
+            , 0
+        ];
+
+        yield 'untyped variable' => [
+            <<<'CODE'
+<?php
+
+foo($bar)
+
+CODE
+            , 0
+        ];
+
+        yield 'construct property declaration' => [
+            <<<'CODE'
+<?php
+/**  */
+class Foo
+{
+    /**
+     * Creates a new serializable closure instance.
+     *
+     * @param  \Closure  $closure
+     * @return void
+     */
+    public function __construct(Closure $closure)
+    {}
+    
+    /**  */
+    public function __construct(
+        Closure $closure
+    )
+    {}
 }
 CODE
             , 0
