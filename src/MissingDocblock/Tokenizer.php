@@ -47,18 +47,22 @@ final readonly class Tokenizer
 
     protected function isWhitespace(array|string $token): bool
     {
-        if (! is_array($token)) {
-            return false;
-        }
-        return $token[0] === T_WHITESPACE;
+        return is_array($token) && $token[0] === T_WHITESPACE;
     }
 
     protected function isTypeDeclaration(mixed $token): bool
     {
-        if (! is_array($token)) {
-            return false;
-        }
-        return $token[0] === T_STRING || $token[0] === T_ARRAY;
+        return $this->isString($token) || $this->isArray($token);
+    }
+
+    protected function isArray(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_ARRAY;
+    }
+
+    protected function isString(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_STRING;
     }
 
     protected function isVisibilityModificator(mixed $token): bool
@@ -68,10 +72,7 @@ final readonly class Tokenizer
 
     protected function isStatic(mixed $token): bool
     {
-        if (! is_array($token)) {
-            return false;
-        }
-        return $token[0] === T_STATIC;
+        return is_array($token) && $token[0] === T_STATIC;
     }
 
     protected function isConstructPropertyDeclaration(array|string $token): bool
@@ -97,7 +98,8 @@ final readonly class Tokenizer
 
     private function hasSemicolonOnSameLine(array $tokens, int $index, int $lineNumber): bool
     {
-        for ($i = $index + 1; $i < count($tokens); $i++) {
+        $count = count($tokens);
+        for ($i = $index + 1; $i < $count; $i++) {
             if ($tokens[$i] === ';') {
                 return true;
             }
@@ -115,8 +117,8 @@ final readonly class Tokenizer
                 break;
             }
             if (
-                ($this->isVisibilityModificator($tokens[$i]) || $this->isFinal($tokens[$i])) &&
-                !$this->isConstructPropertyDeclaration($tokens[$index])
+                ($this->isVisibilityModificator($tokens[$i]) || $this->isFinal($tokens[$i]))
+                && !$this->isConstructPropertyDeclaration($tokens[$index])
             ) {
                 return true;
             }
@@ -124,19 +126,29 @@ final readonly class Tokenizer
         return false;
     }
 
+    protected function isDoubleColon(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_PAAMAYIM_NEKUDOTAYIM;
+    }
+
     public function isClassNameResolution(array $tokens, int $index): bool
     {
         return (
             $this->isWithinBounds($tokens, $index, -1)
-            && $tokens[$index - 1][0] === T_PAAMAYIM_NEKUDOTAYIM
+            && $this->isDoubleColon($tokens[$index - 1])
         );
+    }
+
+    protected function isUse(mixed $token): bool
+    {
+        return is_array($token) && $token[0] === T_USE;
     }
 
     public function isFunctionImport(array $tokens, int $index): bool
     {
         return (
             $this->isWithinBounds($tokens, $index, -1) && $this->isWhitespace($tokens[$index - 1])
-            && $this->isWithinBounds($tokens, $index, -2) && $tokens[$index - 2][0] === T_USE
+            && $this->isWithinBounds($tokens, $index, -2) && $this->isUse($tokens[$index - 2])
         );
     }
 
