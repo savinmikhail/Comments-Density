@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
+
 use function is_array;
 
 use const T_CLASS;
