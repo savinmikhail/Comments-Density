@@ -45,28 +45,45 @@ php vendor/bin/comments_density analyze:comments
 ### Configuration
 
 On installation, you can allow plugin to create its configuration file.
-Customize your analysis by editing a comments_density.yaml configuration file:
+Customize your analysis by editing a comments_density.php configuration file:
 
-```yaml
-directories:
-  - "Comments-Density/src"
-  - "Comments-Density/vendor"
-exclude:
-  - "Comments-Density/src/Comments"
-thresholds:
-  docBlock: 90
-  regular: 5
-  todo: 5
-  fixme: 5
-  missingDocBlock: 10
-  Com/LoC: 0.1
-  CDS: 0.1
-only:
-  - 'todo'
-  - 'missingDocblock'
-output:
-  type: "console" #  "console" or 'html'
-  file: "output.html" # file path for HTML output
+```php
+d<?php
+
+return [
+    'directories' => [
+        'vendor',
+    ],
+    'exclude' => [
+        'src/DTO',
+    ],
+    'thresholds' => [
+        'docBlock' => 90,
+        'regular' => 5,
+        'todo' => 5,
+        'fixme' => 5,
+        'missingDocBlock' => 10,
+        'Com/LoC' => 0.1,
+        'CDS' => 0.1,
+    ],
+    'only' => [
+        'missingDocblock'
+    ],
+    'output' => [
+        'type' => 'console', // "console" or 'html'
+        'file' => 'output.html', // file path for HTML output
+    ],
+    'missingDocblock' => [
+        'class' => true,
+        'interface' => true,
+        'trait' => true,
+        'enum' => true,
+        'property' => true,
+        'constant' => true,
+        'function' => true,
+    ]
+];
+
 ```
 ## Contributing
 
