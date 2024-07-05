@@ -23,7 +23,7 @@ final class MissingDocBlockAnalyzer
 
     public function __construct(
         private readonly Tokenizer $tokenizer,
-        private readonly MissingDocblockConfigDTO $missingDocblockConfigDTO,
+        private readonly MissingDocblockConfigDTO $docblockConfigDTO,
     ) {
     }
 
@@ -62,13 +62,13 @@ final class MissingDocBlockAnalyzer
     private function shouldAnalyzeToken(array $token): bool
     {
         return match ($token[0]) {
-            T_CLASS => $this->missingDocblockConfigDTO->class,
-            T_TRAIT => $this->missingDocblockConfigDTO->trait,
-            T_INTERFACE => $this->missingDocblockConfigDTO->interface,
-            T_ENUM => $this->missingDocblockConfigDTO->enum,
-            T_FUNCTION => $this->missingDocblockConfigDTO->function,
-            T_CONST => $this->missingDocblockConfigDTO->constant,
-            T_VARIABLE => $this->missingDocblockConfigDTO->property,
+            T_CLASS => $this->docblockConfigDTO->class,
+            T_TRAIT => $this->docblockConfigDTO->trait,
+            T_INTERFACE => $this->docblockConfigDTO->interface,
+            T_ENUM => $this->docblockConfigDTO->enum,
+            T_FUNCTION => $this->docblockConfigDTO->function,
+            T_CONST => $this->docblockConfigDTO->constant,
+            T_VARIABLE => $this->docblockConfigDTO->property,
             default => false,
         };
     }

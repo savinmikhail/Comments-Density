@@ -12,7 +12,7 @@ final readonly class ConfigDTO
         public array $output,
         public array $directories,
         public array $only,
-        public MissingDocblockConfigDTO $missingDocblockConfigDTO
+        public MissingDocblockConfigDTO $docblockConfigDTO
     ) {
     }
 }
