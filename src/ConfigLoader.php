@@ -7,8 +7,8 @@ namespace SavinMikhail\CommentsDensity;
 use Exception;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
-
 use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
+
 use function array_map;
 use function dirname;
 use function file_exists;
