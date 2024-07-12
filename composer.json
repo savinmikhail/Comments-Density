@@ -22,6 +22,7 @@
     "require": {
         "php": ">=8.2",
         "composer-plugin-api": "^2.0",
+        "nikic/php-parser": "^5.1",
         "savinmikhail/primitive_wrappers": "^1.1",
         "symfony/console": "^6.1"
     },
