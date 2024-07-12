@@ -4,115 +4,45 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
+use PhpParser\NodeTraverser;
+use PhpParser\ParserFactory;
+use PhpParser\NodeVisitor\NameResolver;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
-
-use function is_array;
-
-use const T_CLASS;
-use const T_CONST;
-use const T_DOC_COMMENT;
-use const T_ENUM;
-use const T_FUNCTION;
-use const T_INTERFACE;
-use const T_TRAIT;
-use const T_VARIABLE;
 
 final class MissingDocBlockAnalyzer
 {
     private bool $exceedThreshold = false;
 
     public function __construct(
-        private readonly Tokenizer $tokenizer,
         private readonly MissingDocblockConfigDTO $docblockConfigDTO,
     ) {
     }
 
     /**
-     * Analyzes the tokens of a file for docblocks.
+     * Analyzes the AST of a file for missing docblocks.
      *
-     * @param array $tokens The tokens to analyze.
+     * @param string $code The code to analyze.
+     * @param string $filename The filename of the code.
      * @return array The analysis results.
      */
-    private function analyzeTokens(array $tokens, string $filename): array
+    public function analyze(string $code, string $filename): array
     {
-        $lastDocBlock = null;
-        $missingDocBlocks = [];
-        $tokenCount = count($tokens);
+        $parser = (new ParserFactory())->createForHostVersion();
+        $ast = $parser->parse($code);
 
-        for ($i = 0; $i < $tokenCount; $i++) {
-            $token = $tokens[$i];
+        $traverser = new NodeTraverser();
+        $visitor = new MissingDocBlockVisitor($filename, $this->docblockConfigDTO);
 
-            if (! is_array($token)) {
-                continue;
-            }
+        $traverser->addVisitor(new NameResolver());
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($ast);
 
-            if ($token[0] === T_DOC_COMMENT) {
-                $lastDocBlock = $token[1];
-            } elseif ($this->isDocBlockRequired($token, $tokens, $i)) {
-                if (empty($lastDocBlock)) {
-                    $missingDocBlocks[] = $this->createMissingDocBlockStat($token, $filename);
-                }
-                $lastDocBlock = null;
-            }
-        }
-
-        return $missingDocBlocks;
+        return $visitor->missingDocBlocks;
     }
 
-    private function shouldAnalyzeToken(array $token): bool
+    public function getMissingDocblocks(string $code, string $filename): array
     {
-        return match ($token[0]) {
-            T_CLASS => $this->docblockConfigDTO->class,
-            T_TRAIT => $this->docblockConfigDTO->trait,
-            T_INTERFACE => $this->docblockConfigDTO->interface,
-            T_ENUM => $this->docblockConfigDTO->enum,
-            T_FUNCTION => $this->docblockConfigDTO->function,
-            T_CONST => $this->docblockConfigDTO->constant,
-            T_VARIABLE => $this->docblockConfigDTO->property,
-            default => false,
-        };
-    }
-
-    private function isDocBlockRequired(array $token, array $tokens, int $index): bool
-    {
-        if (!$this->shouldAnalyzeToken($token)) {
-            return false;
-        }
-
-        if ($this->tokenizer->isClass($token)) {
-               return ! $this->tokenizer->isAnonymousClass($tokens, $index)
-                && !$this->tokenizer->isClassNameResolution($tokens, $index);
-        }
-
-        if ($this->tokenizer->isFunction($token)) {
-             return  ! $this->tokenizer->isAnonymousFunction($tokens, $index)
-                && ! $this->tokenizer->isFunctionImport($tokens, $index);
-        }
-
-        if ($this->tokenizer->isVariable($token)) {
-            return $this->tokenizer->isPropertyOrConstant($tokens, $index);
-        }
-
-        if ($this->tokenizer->isConst($token)) {
-            return $this->tokenizer->isPropertyOrConstant($tokens, $index);
-        }
-
-        return true;
-    }
-
-    private function createMissingDocBlockStat(array $token, string $filename): array
-    {
-        return [
-            'type' => 'missingDocblock',
-            'content' => '',
-            'file' => $filename,
-            'line' => $token[2]
-        ];
-    }
-
-    public function getMissingDocblocks(array $tokens, string $filename): array
-    {
-        return $this->analyzeTokens($tokens, $filename);
+        return $this->analyze($code, $filename);
     }
 
     public function getColor(): string
@@ -122,7 +52,7 @@ final class MissingDocBlockAnalyzer
 
     public function getStatColor(float $count, array $thresholds): string
     {
-        if (! isset($thresholds['missingDocBlock'])) {
+        if (!isset($thresholds['missingDocBlock'])) {
             return 'white';
         }
         if ($count <= $thresholds['missingDocBlock']) {
