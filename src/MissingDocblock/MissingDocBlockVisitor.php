@@ -5,67 +5,75 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassConst;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Enum_;
+use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\Interface_;
+use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\Stmt\Trait_;
 use PhpParser\NodeVisitorAbstract;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 
 final class MissingDocBlockVisitor extends NodeVisitorAbstract
 {
     public array $missingDocBlocks = [];
-    private string $filename;
-    private MissingDocblockConfigDTO $config;
 
-    public function __construct(string $filename, MissingDocblockConfigDTO $config)
-    {
-        $this->filename = $filename;
-        $this->config = $config;
+    public function __construct(
+        private readonly string $filename,
+        private readonly MissingDocblockConfigDTO $config
+    ) {
     }
 
     public function enterNode(Node $node): void
     {
-        if ($this->requiresDocBlock($node)) {
-            $docComment = $node->getDocComment();
-            if ($docComment === null) {
-                $this->missingDocBlocks[] = [
-                    'type' => 'missingDocblock',
-                    'content' => '',
-                    'file' => $this->filename,
-                    'line' => $node->getLine(),
-                ];
-            }
+        if (! $this->requiresDocBlock($node)) {
+            return;
         }
+        $docComment = $node->getDocComment();
+        if ($docComment !== null) {
+            return;
+        }
+        $this->missingDocBlocks[] = [
+            'type' => 'missingDocblock',
+            'content' => '',
+            'file' => $this->filename,
+            'line' => $node->getLine(),
+        ];
     }
 
     private function requiresDocBlock(Node $node): bool
     {
-        if ($node instanceof Node\Stmt\Class_ && $this->config->class) {
+        if ($node instanceof Class_ && $this->config->class) {
             return !$node->isAnonymous();
         }
 
-        if ($node instanceof Node\Stmt\Trait_ && $this->config->trait) {
+        if ($node instanceof Trait_ && $this->config->trait) {
             return true;
         }
 
-        if ($node instanceof Node\Stmt\Interface_ && $this->config->interface) {
+        if ($node instanceof Interface_ && $this->config->interface) {
             return true;
         }
 
-        if ($node instanceof Node\Stmt\Enum_ && $this->config->enum) {
+        if ($node instanceof Enum_ && $this->config->enum) {
             return true;
         }
 
-        if ($node instanceof Node\Stmt\Function_ && $this->config->function) {
+        if ($node instanceof Function_ && $this->config->function) {
             return true;
         }
 
-        if ($node instanceof Node\Stmt\ClassMethod && $this->config->function) {
+        if ($node instanceof ClassMethod && $this->config->function) {
             return true;
         }
 
-        if ($node instanceof Node\Stmt\Property && $this->config->property) {
+        if ($node instanceof Property && $this->config->property) {
             return true;
         }
 
-        if ($node instanceof Node\Stmt\ClassConst && $this->config->constant) {
+        if ($node instanceof ClassConst && $this->config->constant) {
             return true;
         }
 
