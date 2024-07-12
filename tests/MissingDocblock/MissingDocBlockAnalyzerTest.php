@@ -25,6 +25,7 @@ final class MissingDocBlockAnalyzerTest extends TestCase
                 true,
                 true,
                 true,
+                true
             )
         );
     }
@@ -308,5 +309,96 @@ CODE;
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(4, $missingDocBlocks);
+    }
+
+    public static function smartDocblockAnalyzisDataProvider(): Generator
+    {
+        yield 'simple method' => [
+            <<<'CODE'
+<?php
+
+class Foo 
+{
+    public function foo(): User
+    {
+        return new User;
+    }
+}
+
+CODE
+            , 0
+        ];
+
+        yield 'method with generic' => [
+            <<<'CODE'
+<?php
+
+class Foo 
+{
+    public function bar(): array
+    {
+        return [new User];
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with uncaught exception' => [
+            <<<'CODE'
+<?php
+
+class Foo 
+{
+    public function baz(): array
+    {
+        throw new Exception();
+    }
+}
+
+CODE
+            , 1
+        ];
+
+//        yield 'method with caught exception' => [
+//            <<<'CODE'
+//<?php
+//
+//class Foo
+//{
+//    public function baz(): array
+//    {
+//        try {
+//            throw new Exception();
+//        } catch (Exception $e) {
+//            //do something
+//        }
+//    }
+//}
+//
+//CODE
+//            , 0
+//        ];
+    }
+
+    #[DataProvider('smartDocblockAnalyzisDataProvider')]
+    public function testSmartDocblockAnalysis(string $code, int $expectedCount): void
+    {
+        $analyzer = new MissingDocBlockAnalyzer(
+            new MissingDocblockConfigDTO(
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false
+            )
+        );
+
+        $missingDocBlocks = $analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
     }
 }
