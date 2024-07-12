@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\Node;
-use PhpParser\Node\Expr\Throw_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -97,29 +96,21 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
             return true;
         }
 
-        if ($this->methodThrowsExceptions($node)) {
+        if ($this->methodThrowsUncaughtExceptions($node)) {
             return true;
         }
 
         return false;
     }
 
-    private function methodThrowsExceptions(Node $node): bool
+    private function methodThrowsUncaughtExceptions(Node $node): bool
     {
         $traverser = new NodeTraverser();
-        $visitor = new class extends NodeVisitorAbstract {
-            public bool $throwsExceptions = false;
+        $visitor = new UncaughtExceptionVisitor();
 
-            public function enterNode(Node $node): void
-            {
-                if ($node instanceof Throw_) {
-                    $this->throwsExceptions = true;
-                }
-            }
-        };
         $traverser->addVisitor($visitor);
         $traverser->traverse([$node]);
 
-        return $visitor->throwsExceptions;
+        return $visitor->throwsUncaughtExceptions;
     }
 }
