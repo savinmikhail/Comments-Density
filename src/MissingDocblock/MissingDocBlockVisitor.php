@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -93,7 +96,7 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
         $returnType = $node->getReturnType();
 
         if ($returnType instanceof Node\Identifier && $returnType->toString() === 'array') {
-            return true;
+            return $this->arrayElementsHaveConsistentTypes($node);
         }
 
         if ($this->methodThrowsUncaughtExceptions($node)) {
@@ -101,6 +104,17 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
         }
 
         return false;
+    }
+
+    private function arrayElementsHaveConsistentTypes(Node $node): bool
+    {
+        $traverser = new NodeTraverser();
+        $visitor = new MissingGenericVisitor();
+
+        $traverser->addVisitor($visitor);
+        $traverser->traverse([$node]);
+
+        return $visitor->hasConsistentTypes;
     }
 
     private function methodThrowsUncaughtExceptions(Node $node): bool
