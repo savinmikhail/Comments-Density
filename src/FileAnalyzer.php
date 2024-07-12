@@ -84,7 +84,7 @@ final readonly class FileAnalyzer
         ) {
             $missingDocBlocks = $this
                 ->docBlockAnalyzer
-                ->getMissingDocblocks($tokens, $filename);
+                ->getMissingDocblocks($code, $filename);
             $commentStatistic['missingDocblock']['count'] = count($missingDocBlocks);
             $commentStatistic['missingDocblock']['lines'] = 0;
             $comments = array_merge($missingDocBlocks, $comments);
