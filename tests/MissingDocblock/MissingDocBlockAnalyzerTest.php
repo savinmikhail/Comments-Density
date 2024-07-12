@@ -311,13 +311,13 @@ CODE;
         $this->assertCount(4, $missingDocBlocks);
     }
 
-    public static function smartDocblockAnalyzisDataProvider(): Generator
+    public static function smartDocblockAnalysisDataProvider(): Generator
     {
         yield 'simple method' => [
             <<<'CODE'
 <?php
 
-class Foo 
+class Foo
 {
     public function foo(): User
     {
@@ -333,7 +333,7 @@ CODE
             <<<'CODE'
 <?php
 
-class Foo 
+class Foo
 {
     public function bar(): array
     {
@@ -349,7 +349,7 @@ CODE
             <<<'CODE'
 <?php
 
-class Foo 
+class Foo
 {
     public function baz(): array
     {
@@ -361,28 +361,28 @@ CODE
             , 1
         ];
 
-//        yield 'method with caught exception' => [
-//            <<<'CODE'
-//<?php
-//
-//class Foo
-//{
-//    public function baz(): array
-//    {
-//        try {
-//            throw new Exception();
-//        } catch (Exception $e) {
-//            //do something
-//        }
-//    }
-//}
-//
-//CODE
-//            , 0
-//        ];
+        yield 'method with caught exception' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function baz(): bool
+    {
+        try {
+            throw new Exception();
+        } catch (Exception $e) {
+            //do something
+        }
+    }
+}
+
+CODE
+            , 0
+        ];
     }
 
-    #[DataProvider('smartDocblockAnalyzisDataProvider')]
+    #[DataProvider('smartDocblockAnalysisDataProvider')]
     public function testSmartDocblockAnalysis(string $code, int $expectedCount): void
     {
         $analyzer = new MissingDocBlockAnalyzer(
