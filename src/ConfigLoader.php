@@ -49,6 +49,9 @@ final readonly class ConfigLoader
         return $config['thresholds'] ?? [];
     }
 
+    /**
+     * @throws CommentsDensityException
+     */
     public function getConfigDto(): ConfigDTO
     {
         $config = $this->getConfig();
