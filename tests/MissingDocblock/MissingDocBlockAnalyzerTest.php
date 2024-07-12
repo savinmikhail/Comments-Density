@@ -9,9 +9,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
-use SavinMikhail\CommentsDensity\MissingDocblock\Tokenizer;
-
-use function token_get_all;
 
 final class MissingDocBlockAnalyzerTest extends TestCase
 {
@@ -20,7 +17,6 @@ final class MissingDocBlockAnalyzerTest extends TestCase
     protected function setUp(): void
     {
         $this->analyzer = new MissingDocBlockAnalyzer(
-            new Tokenizer(),
             new MissingDocblockConfigDTO(
                 true,
                 true,
@@ -37,12 +33,11 @@ final class MissingDocBlockAnalyzerTest extends TestCase
     {
         $code = <<<'CODE'
 <?php
-function testFunctionn() {
+function testFunction() {
     // function body
 }
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
     }
@@ -60,8 +55,7 @@ class TestClass {
     }
 }
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
     }
@@ -78,8 +72,7 @@ namespace SavinMikhail\CommentsDensity;
 use function in_array;
 use function is_array;
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(0, $missingDocBlocks);
     }
@@ -113,8 +106,7 @@ CODE;
     #[DataProvider('closureDataProvider')]
     public function testClosuresAndArrowFunctions(string $code): void
     {
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
         $this->assertCount(0, $missingDocBlocks);
     }
 
@@ -124,8 +116,7 @@ CODE;
 <?php
 class TestClass {}
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
     }
@@ -136,8 +127,7 @@ CODE;
 <?php
 trait TestTrait {}
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
     }
@@ -148,8 +138,7 @@ CODE;
 <?php
 interface TestInterface {}
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
     }
@@ -162,8 +151,7 @@ $instance = new class {};
 return $baseHydrator->bindTo(new class() extends \Error {
     });
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(0, $missingDocBlocks);
     }
@@ -177,8 +165,7 @@ enum Status {
     case COMPLETED;
 }
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(1, $missingDocBlocks);
     }
@@ -246,7 +233,7 @@ CODE
 /**  */
 class Foo {
     /**  */
-    public function foo(Closure $closure, $baz
+    public function foo(Closure $closure, $baz,
         DateTime $time, int $foo,
         array $var = 3,
         ?Bar $bar = null
@@ -262,7 +249,7 @@ CODE
             <<<'CODE'
 <?php
 
-foo($bar)
+foo($bar);
 
 CODE
             , 0
@@ -297,8 +284,7 @@ CODE
     #[DataProvider('propertyDataProvider')]
     public function testProperties(string $code, int $expectedCount): void
     {
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
         $this->assertCount($expectedCount, $missingDocBlocks);
     }
 
@@ -306,6 +292,8 @@ CODE
     {
         $code = <<<'CODE'
 <?php
+
+const METHOD = 'foo';
 /**
 * 
  */
@@ -315,18 +303,9 @@ class Foo
   public const PUBLIC = 3;
   protected const int TYPED = 4;
   private const PRIVATE = 5;
-   
-   /**
-    * 
-    */
-    public function foo()
-    {
-        const METHOD = 'foo';
-    }
 }
 CODE;
-        $tokens = token_get_all($code);
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($tokens, 'test.php');
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
 
         $this->assertCount(4, $missingDocBlocks);
     }
