@@ -345,6 +345,26 @@ CODE
             , 1
         ];
 
+        yield 'method with non-generic' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function bar(): array
+    {
+        return [
+        [],
+        'asdf' => 12,
+        'asdf'
+];
+    }
+}
+
+CODE
+            , 0
+        ];
+
         yield 'method with uncaught exception' => [
             <<<'CODE'
 <?php
