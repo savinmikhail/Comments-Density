@@ -112,6 +112,7 @@ final readonly class ConfigLoader
             function: $config['missingDocblock']['function'],
             property: $config['missingDocblock']['property'],
             constant: $config['missingDocblock']['constant'],
+            requireDocblocksForAllMethods: $config['missingDocblock']['requireDocblocksForAllMethods']
         );
     }
 }
