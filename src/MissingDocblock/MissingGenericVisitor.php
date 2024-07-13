@@ -12,7 +12,8 @@ use PhpParser\NodeVisitorAbstract;
 
 use function array_unique;
 
-class MissingGenericVisitor extends NodeVisitorAbstract {
+class MissingGenericVisitor extends NodeVisitorAbstract
+{
     public bool $hasConsistentTypes = false;
     public array $elementTypes = [];
 
@@ -23,7 +24,6 @@ class MissingGenericVisitor extends NodeVisitorAbstract {
                 if ($item->value instanceof New_) {
                     $this->elementTypes[] = $item->value->class->toString();
                 } elseif ($item->value instanceof Variable) {
-                    // Here you can add logic to infer variable types if necessary
                     $this->elementTypes[] = 'variable';
                 }
             }
