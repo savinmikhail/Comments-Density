@@ -4,42 +4,16 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Comments;
 
-final class DocBlockComment extends Comment implements CommentTypeInterface
+final class DocBlockComment extends Comment
 {
-    public function getPattern(): string
-    {
-        return '/\/\*\*(?!.*\b(?:license|copyright|permission)\b).+?\*\//is';
-    }
+    public const PATTERN = '/\/\*\*(?!.*\b(?:license|copyright|permission)\b).+?\*\//is';
+    public const COLOR = 'green';
+    public const WEIGHT = 1;
+    public const ATTITUDE = 'good';
+    public const NAME = 'docBlock';
 
-    public function getColor(): string
+    protected function isWithinThreshold(int $count, array $thresholds): bool
     {
-        return 'green';
-    }
-
-    public function getStatColor(int $count, array $thresholds): string
-    {
-        if (! isset($thresholds[$this->getName()])) {
-            return 'white';
-        }
-        if ($count >= $thresholds[$this->getName()]) {
-            return 'green';
-        }
-        $this->exceedThreshold = true;
-        return 'red';
-    }
-
-    public function getWeight(): float
-    {
-        return 1;
-    }
-
-    public function getAttitude(): string
-    {
-        return 'good';
-    }
-
-    public function getName(): string
-    {
-        return 'docBlock';
+        return $count >= $thresholds[static::NAME];
     }
 }

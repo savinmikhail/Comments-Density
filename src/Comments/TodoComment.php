@@ -2,42 +2,16 @@
 
 namespace SavinMikhail\CommentsDensity\Comments;
 
-class TodoComment extends Comment implements CommentTypeInterface
+final class TodoComment extends Comment
 {
-    public function getPattern(): string
-    {
-        return '/(?:\/\/|#|\/\*|\*|<!--).*?\btodo\b.*/i';
-    }
+    public const PATTERN = '/(?:\/\/|#|\/\*|\*|<!--).*?\btodo\b.*/i';
+    public const COLOR = 'yellow';
+    public const WEIGHT = -0.3;
+    public const ATTITUDE = 'unwanted';
+    public const NAME = 'todo';
 
-    public function getColor(): string
+    protected function isWithinThreshold(int $count, array $thresholds): bool
     {
-        return 'yellow';
-    }
-
-    public function getStatColor(int $count, array $thresholds): string
-    {
-        if (! isset($thresholds[$this->getName()])) {
-            return 'white';
-        }
-        if ($count <= $thresholds[$this->getName()]) {
-            return 'green';
-        }
-        $this->exceedThreshold = true;
-        return 'red';
-    }
-
-    public function getWeight(): float
-    {
-        return -0.3;
-    }
-
-    public function getAttitude(): string
-    {
-        return 'unwanted';
-    }
-
-    public function getName(): string
-    {
-        return 'todo';
+        return $count <= $thresholds[static::NAME];
     }
 }

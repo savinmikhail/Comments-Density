@@ -2,43 +2,16 @@
 
 namespace SavinMikhail\CommentsDensity\Comments;
 
-class RegularComment extends Comment implements CommentTypeInterface
+final class RegularComment extends Comment
 {
-    public function getPattern(): string
-    {
-        // phpcs:ignore Generic.Files.LineLength.TooLong
-        return '/(#(?!.*\b(?:todo|fixme)\b:?).*?$)|(\/\/(?!.*\b(?:todo|fixme)\b:?).*?$)|\/\*(?!\*)(?!.*\b(?:todo|fixme)\b:?).*?\*\//ms';
-    }
+    public const PATTERN = '/(#(?!.*\b(?:todo|fixme)\b:?).*?$)|(\/\/(?!.*\b(?:todo|fixme)\b:?).*?$)|\/\*(?!\*)(?!.*\b(?:todo|fixme)\b:?).*?\*\//ms';
+    public const COLOR = 'red';
+    public const WEIGHT = -1;
+    public const ATTITUDE = 'bad';
+    public const NAME = 'regular';
 
-    public function getColor(): string
+    protected function isWithinThreshold(int $count, array $thresholds): bool
     {
-        return 'red';
-    }
-
-    public function getStatColor(int $count, array $thresholds): string
-    {
-        if (! isset($thresholds[$this->getName()])) {
-            return 'white';
-        }
-        if ($count <= $thresholds[$this->getName()]) {
-            return 'green';
-        }
-        $this->exceedThreshold = true;
-        return 'red';
-    }
-
-    public function getWeight(): float
-    {
-        return -1;
-    }
-
-    public function getAttitude(): string
-    {
-        return 'bad';
-    }
-
-    public function getName(): string
-    {
-        return 'regular';
+        return $count <= $thresholds[static::NAME];
     }
 }

@@ -6,7 +6,7 @@ namespace SavinMikhail\CommentsDensity\Comments;
 
 use Stringable;
 
-abstract class Comment implements Stringable
+abstract class Comment implements Stringable, CommentTypeInterface
 {
     protected bool $exceedThreshold = false;
 
@@ -23,5 +23,44 @@ abstract class Comment implements Stringable
     public function __toString(): string
     {
         return $this->getName();
+    }
+
+    abstract protected function isWithinThreshold(int $count, array $thresholds): bool;
+
+    public function getStatColor(int $count, array $thresholds): string
+    {
+        if (!isset($thresholds[$this->getName()])) {
+            return 'white';
+        }
+        if ($this->isWithinThreshold($count, $thresholds)) {
+            return 'green';
+        }
+        $this->exceedThreshold = true;
+        return 'red';
+    }
+
+    public function getPattern(): string
+    {
+        return static::PATTERN;
+    }
+
+    public function getColor(): string
+    {
+        return static::COLOR;
+    }
+
+    public function getWeight(): float
+    {
+        return static::WEIGHT;
+    }
+
+    public function getAttitude(): string
+    {
+        return static::ATTITUDE;
+    }
+
+    public function getName(): string
+    {
+        return static::NAME;
     }
 }

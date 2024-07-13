@@ -2,42 +2,16 @@
 
 namespace SavinMikhail\CommentsDensity\Comments;
 
-class FixMeComment extends Comment implements CommentTypeInterface
+final class FixMeComment extends Comment
 {
-    public function getPattern(): string
-    {
-        return '/(?:\/\/|#|\/\*|\*|<!--).*?\bfixme\b.*/i';
-    }
+    public const PATTERN = '/(?:\/\/|#|\/\*|\*|<!--).*?\bfixme\b.*/i';
+    public const COLOR = 'yellow';
+    public const WEIGHT = -0.3;
+    public const ATTITUDE = 'unwanted';
+    public const NAME = 'fixme';
 
-    public function getColor(): string
+    protected function isWithinThreshold(int $count, array $thresholds): bool
     {
-        return 'yellow';
-    }
-
-    public function getStatColor(int $count, array $thresholds): string
-    {
-        if (! isset($thresholds[$this->getName()])) {
-            return 'white';
-        }
-        if ($count <= $thresholds[$this->getName()]) {
-            return 'green';
-        }
-        $this->exceedThreshold = true;
-        return 'red';
-    }
-
-    public function getWeight(): float
-    {
-        return -0.3;
-    }
-
-    public function getAttitude(): string
-    {
-        return 'unwanted';
-    }
-
-    public function getName(): string
-    {
-        return 'fixme';
+        return $count <= $thresholds[static::NAME];
     }
 }

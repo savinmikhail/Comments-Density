@@ -6,7 +6,7 @@ namespace SavinMikhail\CommentsDensity\Comments;
 
 use function in_array;
 
-class CommentFactory
+final class CommentFactory
 {
     /** @var array<array-key, CommentTypeInterface> */
     private array $commentTypes;
