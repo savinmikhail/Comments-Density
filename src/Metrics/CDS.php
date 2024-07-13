@@ -64,7 +64,7 @@ final class CDS
                 $minScore += self::MISSING_DOCBLOCK_WEIGHT * $stat['count'];
                 continue;
             }
-            if (in_array($comment->getAttitude(), ['bad', 'unwanted'])) {
+            if ($comment->getWeight() < 0) {
                 $minScore += $comment->getWeight() * $stat['count'];
                 continue;
             }
