@@ -459,7 +459,7 @@ class Foo
 {
     public function bar(): array
     {
-        return [new User];
+        return [new User()];
     }
 }
 
@@ -476,15 +476,235 @@ class Foo
     public function bar(): array
     {
         return [
-        [],
-        'asdf' => 12,
-        'asdf'
-];
+            [],
+            'asdf' => 12,
+            'asdf'
+        ];
     }
 }
 
 CODE
             , 0
+        ];
+
+        yield 'method with mixed array' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function mixedArray(): array
+    {
+        return [
+            new User(),
+            new Order(),
+        ];
+    }
+}
+
+CODE
+            , 0
+        ];
+
+        yield 'method with empty array' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function emptyArray(): array
+    {
+        return [];
+    }
+}
+
+CODE
+            , 0
+        ];
+
+        yield 'method with nested generic' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function nestedArray(): array
+    {
+        return [
+            [new User()],
+            [new User()]
+        ];
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with associative array' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function associativeArray(): array
+    {
+        return [
+            'user1' => new User(),
+            'user2' => new User()
+        ];
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with other iterable' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function iterableReturn(): iterable
+    {
+        return new \ArrayIterator([new User()]);
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with array of integers' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function integerArray(): array
+    {
+        return [1, 2, 3];
+    }
+}
+
+CODE
+            , 0
+        ];
+
+        yield 'method with generator' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function generatorReturn(): \Generator
+    {
+        yield new User();
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with class implementing Iterator' => [
+            <<<'CODE'
+<?php
+
+class UserCollection implements \Iterator
+{
+    private array $users = [];
+    private int $position = 0;
+
+    public function __construct(array $users)
+    {
+        $this->users = $users;
+    }
+
+    public function current(): User
+    {
+        return $this->users[$this->position];
+    }
+
+    public function next(): void
+    {
+        ++$this->position;
+    }
+
+    public function key(): int
+    {
+        return $this->position;
+    }
+
+    public function valid(): bool
+    {
+        return isset($this->users[$this->position]);
+    }
+
+    public function rewind(): void
+    {
+        $this->position = 0;
+    }
+}
+
+class Foo
+{
+    public function userCollectionReturn(): UserCollection
+    {
+        return new UserCollection([new User()]);
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with class implementing ArrayAccess' => [
+            <<<'CODE'
+<?php
+
+class UserArray implements \ArrayAccess
+{
+    private array $container = [];
+
+    public function offsetSet($offset, $value): void
+    {
+        if (is_null($offset)) {
+            $this->container[] = $value;
+        } else {
+            $this->container[$offset] = $value;
+        }
+    }
+
+    public function offsetExists($offset): bool
+    {
+        return isset($this->container[$offset]);
+    }
+
+    public function offsetUnset($offset): void
+    {
+        unset($this->container[$offset]);
+    }
+
+    public function offsetGet($offset): mixed
+    {
+        return $this->container[$offset] ?? null;
+    }
+}
+
+class Foo
+{
+    public function userArrayReturn(): UserArray
+    {
+        $array = new UserArray();
+        $array[] = new User();
+        return $array;
+    }
+}
+
+CODE
+            , 1
         ];
     }
 
