@@ -612,41 +612,7 @@ CODE
             <<<'CODE'
 <?php
 
-class UserCollection implements \Iterator
-{
-    private array $users = [];
-    private int $position = 0;
-
-    public function __construct(array $users)
-    {
-        $this->users = $users;
-    }
-
-    public function current(): User
-    {
-        return $this->users[$this->position];
-    }
-
-    public function next(): void
-    {
-        ++$this->position;
-    }
-
-    public function key(): int
-    {
-        return $this->position;
-    }
-
-    public function valid(): bool
-    {
-        return isset($this->users[$this->position]);
-    }
-
-    public function rewind(): void
-    {
-        $this->position = 0;
-    }
-}
+use SavinMikhail\Tests\CommentsDensity\TestFiles\UserCollection;
 
 class Foo
 {
@@ -664,34 +630,7 @@ CODE
             <<<'CODE'
 <?php
 
-class UserArray implements \ArrayAccess
-{
-    private array $container = [];
-
-    public function offsetSet($offset, $value): void
-    {
-        if (is_null($offset)) {
-            $this->container[] = $value;
-        } else {
-            $this->container[$offset] = $value;
-        }
-    }
-
-    public function offsetExists($offset): bool
-    {
-        return isset($this->container[$offset]);
-    }
-
-    public function offsetUnset($offset): void
-    {
-        unset($this->container[$offset]);
-    }
-
-    public function offsetGet($offset): mixed
-    {
-        return $this->container[$offset] ?? null;
-    }
-}
+use SavinMikhail\Tests\CommentsDensity\TestFiles\UserArray;
 
 class Foo
 {
