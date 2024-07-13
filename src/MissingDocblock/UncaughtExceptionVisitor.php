@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\Throw_;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
@@ -27,8 +28,14 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof Throw_) {
-            if (!$this->isInCatchBlock($node) && !$this->isInTryBlock($node)) {
+
+            if (!$this->isInTryBlock($node)) {
                 $this->hasUncaughtThrows = true;
+            } elseif ($this->isInCatchBlock($node)) {
+                // Check if the throw inside a catch block is rethrowing the caught exception
+                if (!$this->isRethrowingCaughtException($node)) {
+                    $this->hasUncaughtThrows = true;
+                }
             }
         }
     }
@@ -63,6 +70,26 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
                 }
             }
         }
+        return false;
+    }
+
+    private function isRethrowingCaughtException(Node $throwNode): bool
+    {
+        // Get the throw expression (e.g., `throw $e`)
+        $throwExpr = $throwNode->expr;
+
+        // Ensure throwExpr is a variable and has a name
+        if (!$throwExpr instanceof Variable || !isset($throwExpr->name)) {
+            return false;
+        }
+
+        // Check if the throw expression matches any variable from the catch blocks
+        foreach ($this->catchStack as $catch) {
+            if ($catch->var instanceof Variable && $catch->var->name === $throwExpr->name) {
+                return true;
+            }
+        }
+
         return false;
     }
 
