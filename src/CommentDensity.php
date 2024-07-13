@@ -149,7 +149,7 @@ final class CommentDensity
                 );
                 continue;
             }
-            if ($commentType->getAttitude() === 'good') {
+            if ($commentType->getWeight() > 0) {
                 continue;
             }
             $preparedComments[] = new CommentDTO(

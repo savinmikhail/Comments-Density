@@ -63,11 +63,6 @@ abstract class Comment implements Stringable, CommentTypeInterface
         return static::WEIGHT;
     }
 
-    public function getAttitude(): string
-    {
-        return static::ATTITUDE;
-    }
-
     public function getName(): string
     {
         return static::NAME;
