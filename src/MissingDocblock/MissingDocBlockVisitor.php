@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
+use ArrayAccess;
+use Iterator;
 use PhpParser\Node;
+use PhpParser\Node\ComplexType;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -15,7 +20,11 @@ use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
+use ReflectionClass;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
+
+use function class_exists;
+use function in_array;
 
 final class MissingDocBlockVisitor extends NodeVisitorAbstract
 {
@@ -90,17 +99,52 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
      */
     private function methodRequiresAdditionalDocBlock(Node $node): bool
     {
+        return
+            $this->methodNeedsGeneric($node)
+            || $this->methodThrowsUncaughtExceptions($node);
+    }
+
+    private function methodNeedsGeneric(Node $node): bool
+    {
         $returnType = $node->getReturnType();
 
-        if ($returnType instanceof Node\Identifier && in_array($returnType->toString(), ['array', 'iterable'], true)) {
+        if ($returnType === null) {
+            return false;
+        }
+
+        if ($returnType instanceof Identifier && in_array($returnType->toString(), ['array', 'iterable'], true)) {
             return $this->arrayElementsHaveConsistentTypes($node);
         }
 
-        if ($returnType instanceof Node\Name && $returnType->toString() === 'Generator') {
+        if ($returnType instanceof Name && in_array($returnType->toString(), ['Generator', 'Traversable'], true)) {
             return $this->arrayElementsHaveConsistentTypes($node);
         }
 
-        return $this->methodThrowsUncaughtExceptions($node);
+        if ($this->isReturnClassTraversable($returnType)) {
+            return $this->arrayElementsHaveConsistentTypes($node);
+        }
+
+        return false;
+    }
+
+    private function isReturnClassTraversable(ComplexType|Identifier|Name $returnType): bool
+    {
+        if (!($returnType instanceof Name)) {
+            return false;
+        }
+
+        $returnTypeName = $returnType->toString();
+        if (!class_exists($returnTypeName)) {
+            return false;
+        }
+        $reflectionClass = new ReflectionClass($returnTypeName);
+        if (
+            ! $reflectionClass->implementsInterface(Iterator::class)
+            && !$reflectionClass->implementsInterface(ArrayAccess::class)
+        ) {
+            return false;
+        }
+        return true;
     }
 
     private function arrayElementsHaveConsistentTypes(Node $node): bool
