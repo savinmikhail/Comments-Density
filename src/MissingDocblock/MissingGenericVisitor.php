@@ -21,6 +21,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node\Expr\Assign;
+
 use function array_unique;
 
 class MissingGenericVisitor extends NodeVisitorAbstract
@@ -30,8 +31,8 @@ class MissingGenericVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): void
     {
-        if ($node instanceof Return_) {
-            $this->analyzeExpression($node->expr);
+        if ($node instanceof Return_ || $node instanceof Yield_ || $node instanceof YieldFrom) {
+            $this->analyzeExpression($node instanceof Yield_ || $node instanceof YieldFrom ? $node->value : $node->expr);
         }
     }
 
