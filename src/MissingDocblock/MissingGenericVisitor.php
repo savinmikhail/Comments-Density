@@ -31,8 +31,11 @@ class MissingGenericVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): void
     {
-        if ($node instanceof Return_ || $node instanceof Yield_ || $node instanceof YieldFrom) {
-            $this->analyzeExpression($node instanceof Yield_ || $node instanceof YieldFrom ? $node->value : $node->expr);
+        if ($node instanceof Return_) {
+            $this->analyzeExpression($node->expr);
+        }
+        if ($node instanceof Yield_ || $node instanceof YieldFrom) {
+            $this->analyzeExpression($node->value);
         }
     }
 
