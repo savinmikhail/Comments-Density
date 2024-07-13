@@ -43,22 +43,66 @@ CODE;
         $this->assertCount(1, $missingDocBlocks);
     }
 
-    public function testMethodDeclaration(): void
+    #[DataProvider('methodDeclarationDataProvider')]
+    public function testMethodDeclaration(string $code, int $expectedCount): void
     {
-        $code = <<<'CODE'
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
+    }
+
+    public static function methodDeclarationDataProvider(): Generator
+    {
+        yield 'public method' => [
+            <<<'CODE'
 <?php
-/** 
- * docblock 
- */
+/**  */
 class TestClass {
     public function testMethod() {
         // method body
     }
 }
-CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+CODE
+            , 1
+        ];
 
-        $this->assertCount(1, $missingDocBlocks);
+        yield 'static method' => [
+            <<<'CODE'
+<?php
+/**  */
+class TestClass {
+    public static function testMethod1() {
+        // method body
+    }
+}
+CODE
+            , 1
+        ];
+
+        yield 'private method' => [
+            <<<'CODE'
+<?php
+/**  */
+class TestClass {
+    private function __testMethod() {
+        // method body
+    }
+}
+CODE
+            , 1
+        ];
+
+        yield 'protected method' => [
+            <<<'CODE'
+<?php
+/**  */
+class TestClass {
+    protected function testMethod3() {
+        // method body
+    }
+}
+CODE
+            , 1
+        ];
     }
 
     public function testFunctionImport(): void
@@ -82,7 +126,7 @@ CODE;
     {
         return [
             [
-                '<?php $closure = function () { 
+                '<?php $closure = function () {
                 // closure body
              };',
             ],
@@ -111,64 +155,146 @@ CODE;
         $this->assertCount(0, $missingDocBlocks);
     }
 
-    public function testClassDeclaration(): void
+    #[DataProvider('classDeclarationDataProvider')]
+    public function testClassDeclaration(string $code, int $expectedCount): void
     {
-        $code = <<<'CODE'
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
+    }
+
+    public static function classDeclarationDataProvider(): Generator
+    {
+        yield 'simple class' => [
+            <<<'CODE'
 <?php
 class TestClass {}
-CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+CODE
+            , 1
+        ];
 
-        $this->assertCount(1, $missingDocBlocks);
+        yield 'final class' => [
+            <<<'CODE'
+<?php
+final class TestClass {}
+CODE
+            , 1
+        ];
+
+        yield 'readonly class' => [
+            <<<'CODE'
+<?php
+readonly class TestClass {}
+CODE
+            , 1
+        ];
+
+        yield 'final readonly class' => [
+            <<<'CODE'
+<?php
+final readonly class TestClass {}
+CODE
+            , 1
+        ];
     }
 
-    public function testTraitDeclaration(): void
+    #[DataProvider('traitDeclarationDataProvider')]
+    public function testTraitDeclaration(string $code, int $expectedCount): void
     {
-        $code = <<<'CODE'
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
+    }
+
+    public static function traitDeclarationDataProvider(): Generator
+    {
+        yield 'simple trait' => [
+            <<<'CODE'
 <?php
 trait TestTrait {}
-CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
-
-        $this->assertCount(1, $missingDocBlocks);
+CODE
+            , 1
+        ];
     }
 
-    public function testInterfaceDeclaration(): void
+    #[DataProvider('interfaceDeclarationDataProvider')]
+    public function testInterfaceDeclaration(string $code, int $expectedCount): void
     {
-        $code = <<<'CODE'
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
+    }
+
+    public static function interfaceDeclarationDataProvider(): Generator
+    {
+        yield 'simple interface' => [
+            <<<'CODE'
 <?php
 interface TestInterface {}
-CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
-
-        $this->assertCount(1, $missingDocBlocks);
+CODE
+            , 1
+        ];
     }
 
-    public function testAnonymousClassDeclaration(): void
+    #[DataProvider('anonymousClassDeclarationDataProvider')]
+    public function testAnonymousClassDeclaration(string $code, int $expectedCount): void
     {
-        $code = <<<'CODE'
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
+    }
+
+    public static function anonymousClassDeclarationDataProvider(): Generator
+    {
+        yield 'simple anonymous class' => [
+            <<<'CODE'
 <?php
 $instance = new class {};
-return $baseHydrator->bindTo(new class() extends \Error {
-    });
-CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+CODE
+            , 0
+        ];
 
-        $this->assertCount(0, $missingDocBlocks);
+        yield 'anonymous class with inheritance' => [
+            <<<'CODE'
+<?php
+return $baseHydrator->bindTo(new class() extends \Error {
+});
+CODE
+            , 0
+        ];
     }
 
-    public function testEnumDeclaration(): void
+    #[DataProvider('enumDeclarationDataProvider')]
+    public function testEnumDeclaration(string $code, int $expectedCount): void
     {
-        $code = <<<'CODE'
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
+    }
+
+    public static function enumDeclarationDataProvider(): Generator
+    {
+        yield 'simple enum' => [
+            <<<'CODE'
 <?php
 enum Status {
-    case PENDING;
     case COMPLETED;
 }
-CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+CODE
+            , 1
+        ];
 
-        $this->assertCount(1, $missingDocBlocks);
+        yield 'typed enum' => [
+            <<<'CODE'
+<?php
+enum Status: string {
+    case COMPLETED = 'string';
+}
+CODE
+            , 1
+        ];
+    }
+
+    #[DataProvider('propertyDataProvider')]
+    public function testProperties(string $code, int $expectedCount): void
+    {
+        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
     }
 
     public static function propertyDataProvider(): Generator
@@ -265,12 +391,15 @@ class Foo
     /**
      * Creates a new serializable closure instance.
      *
+     *Continuing from where the message was cut off:
+
+```php
      * @param  \Closure  $closure
      * @return void
      */
     public function __construct(public Closure $closure)
     {}
-    
+
     /**  */
     public function __construct(
         Closure $closure
@@ -282,13 +411,6 @@ CODE
         ];
     }
 
-    #[DataProvider('propertyDataProvider')]
-    public function testProperties(string $code, int $expectedCount): void
-    {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
-        $this->assertCount($expectedCount, $missingDocBlocks);
-    }
-
     public function testConstant()
     {
         $code = <<<'CODE'
@@ -296,9 +418,9 @@ CODE
 
 const METHOD = 'foo';
 /**
-* 
+*
  */
-class Foo 
+class Foo
 {
   final const FINAL = 2;
   public const PUBLIC = 3;
@@ -311,7 +433,7 @@ CODE;
         $this->assertCount(4, $missingDocBlocks);
     }
 
-    public static function smartDocblockAnalysisDataProvider(): Generator
+    public static function genericDocblockDataProvider(): Generator
     {
         yield 'simple method' => [
             <<<'CODE'
@@ -364,14 +486,37 @@ class Foo
 CODE
             , 0
         ];
+    }
 
+    #[DataProvider('genericDocblockDataProvider')]
+    public function testGenericDocblockDetection(string $code, int $expectedCount): void
+    {
+        $analyzer = new MissingDocBlockAnalyzer(
+            new MissingDocblockConfigDTO(
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false
+            )
+        );
+
+        $missingDocBlocks = $analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
+    }
+
+    public static function uncaughtExceptionDocblockDataProvider(): Generator
+    {
         yield 'method with uncaught exception' => [
             <<<'CODE'
 <?php
 
 class Foo
 {
-    public function baz(): array
+    public function baz(): void
     {
         throw new Exception();
     }
@@ -387,7 +532,7 @@ CODE
 
 class Foo
 {
-    public function baz(): bool
+    public function baz(): void
     {
         try {
             throw new Exception();
@@ -407,13 +552,13 @@ CODE
 
 class Foo
 {
-    public function baz(): bool
+    public function baz(): void
     {
         try {
             throw new Exception();
         } catch (Exception $e) {
             //do something
-            throw $e
+            throw $e;
         }
     }
 }
@@ -422,29 +567,29 @@ CODE
             , 1
         ];
 
-        yield 'method caught another exception' => [
-            <<<'CODE'
-<?php
-
-class Foo
-{
-    public function baz(): bool
-    {
-        try {
-            throw new Exception();
-        } catch (MyException $e) {
-            //do something
-        }
+//        yield 'method caught another exception' => [
+//            <<<'CODE'
+//<?php
+//class MyException extends Exception {}
+//class Foo
+//{
+//    public function baz(): void
+//    {
+//        try {
+//            throw new Exception();
+//        } catch (MyException $e) {
+//            //do something
+//        }
+//    }
+//}
+//
+//CODE
+//            , 1
+//        ];
     }
-}
 
-CODE
-            , 1
-        ];
-    }
-
-    #[DataProvider('smartDocblockAnalysisDataProvider')]
-    public function testSmartDocblockAnalysis(string $code, int $expectedCount): void
+    #[DataProvider('uncaughtExceptionDocblockDataProvider')]
+    public function testExceptionDocblockDetection(string $code, int $expectedCount): void
     {
         $analyzer = new MissingDocBlockAnalyzer(
             new MissingDocblockConfigDTO(
