@@ -52,6 +52,7 @@ return [
         'property' => true,
         'constant' => true,
         'function' => true,
+        'requireForAllMethods' => true
     ]
 ];
 
