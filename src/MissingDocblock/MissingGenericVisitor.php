@@ -6,10 +6,21 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\Cast;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\Yield_;
+use PhpParser\Node\Expr\YieldFrom;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticPropertyFetch;
+use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
-
+use PhpParser\Node\Expr\Assign;
 use function array_unique;
 
 class MissingGenericVisitor extends NodeVisitorAbstract
@@ -19,14 +30,37 @@ class MissingGenericVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): void
     {
-        if ($node instanceof Node\Stmt\Return_ && $node->expr instanceof Array_) {
-            foreach ($node->expr->items as $item) {
-                if ($item->value instanceof New_) {
-                    $this->elementTypes[] = $item->value->class->toString();
-                } elseif ($item->value instanceof Variable) {
-                    $this->elementTypes[] = 'variable';
-                }
+        if ($node instanceof Return_) {
+            $this->analyzeExpression($node->expr);
+        }
+    }
+
+    private function analyzeExpression($expr): void
+    {
+        if ($expr instanceof Array_) {
+            foreach ($expr->items as $item) {
+                $this->analyzeExpression($item->value);
             }
+        } elseif ($expr instanceof New_) {
+            if ($expr->class instanceof Name) {
+                $this->elementTypes[] = $expr->class->toString();
+            }
+        } elseif ($expr instanceof Variable) {
+            $this->elementTypes[] = 'variable';
+        } elseif ($expr instanceof FuncCall || $expr instanceof StaticCall || $expr instanceof MethodCall) {
+            $this->elementTypes[] = 'function_call';
+        } elseif ($expr instanceof Cast) {
+            $this->analyzeExpression($expr->expr);
+        } elseif ($expr instanceof Yield_ || $expr instanceof YieldFrom) {
+            $this->analyzeExpression($expr->value);
+        } elseif ($expr instanceof StaticPropertyFetch) {
+            $this->elementTypes[] = 'static_property';
+        } elseif ($expr instanceof Assign) {
+            $this->analyzeExpression($expr->expr);
+        } elseif ($expr instanceof Instanceof_) {
+            $this->analyzeExpression($expr->expr);
+        } elseif ($expr instanceof ConstFetch) {
+            $this->elementTypes[] = 'constant';
         }
     }
 
