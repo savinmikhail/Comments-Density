@@ -14,7 +14,7 @@ final readonly class MissingDocblockConfigDTO
         public bool $function,
         public bool $property,
         public bool $constant,
-        public bool $requireDocblocksForAllMethods,
+        public bool $requireForAllMethods,
     ) {
     }
 }
