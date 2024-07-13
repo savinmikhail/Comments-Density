@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
-use Exception;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Throw_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
-use Throwable;
 
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
@@ -26,7 +25,6 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof Throw_) {
-
             if (!$this->isInTryBlock($node)) {
                 $this->hasUncaughtThrows = true;
             } elseif (!$this->isExceptionCaught($node)) {
@@ -103,7 +101,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 
         foreach ($this->getCurrentCatchStack() as $catch) {
             foreach ($catch->types as $catchType) {
-                if ($this->isSubclassOf($thrownExceptionType, (string)$catchType)) {
+                if ($this->isSubclassOf($thrownExceptionType, (string)$catchType) || (string)$catchType === 'Throwable') {
                     return true;
                 }
             }
