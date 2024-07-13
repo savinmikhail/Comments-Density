@@ -25,8 +25,6 @@ abstract class Comment implements Stringable, CommentTypeInterface
         return $this->getName();
     }
 
-    abstract protected function isWithinThreshold(int $count, array $thresholds): bool;
-
     public function getStatColor(int $count, array $thresholds): string
     {
         if (!isset($thresholds[$this->getName()])) {
@@ -37,6 +35,17 @@ abstract class Comment implements Stringable, CommentTypeInterface
         }
         $this->exceedThreshold = true;
         return 'red';
+    }
+
+    protected function isWithinThreshold(int $count, array $thresholds): bool
+    {
+        $comparisonValue = $thresholds[static::NAME];
+
+        if (static::COMPARISON_TYPE === '>=') {
+            return $count >= $comparisonValue;
+        }
+
+        return $count <= $comparisonValue;
     }
 
     public function getPattern(): string
