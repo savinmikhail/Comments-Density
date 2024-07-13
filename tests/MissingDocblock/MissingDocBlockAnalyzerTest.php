@@ -567,25 +567,67 @@ CODE
             , 1
         ];
 
-//        yield 'method caught another exception' => [
-//            <<<'CODE'
-//<?php
-//class MyException extends Exception {}
-//class Foo
-//{
-//    public function baz(): void
-//    {
-//        try {
-//            throw new Exception();
-//        } catch (MyException $e) {
-//            //do something
-//        }
-//    }
-//}
-//
-//CODE
-//            , 1
-//        ];
+        yield 'method caught another exception' => [
+            <<<'CODE'
+<?php
+class MyException extends Exception {}
+class Foo
+{
+    public function baz(): void
+    {
+        try {
+            throw new Exception();
+        } catch (MyException $e) {
+            //do something
+        }
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method caught throwable' => [
+            <<<'CODE'
+<?php
+class Foo
+{
+    public function baz(): void
+    {
+        try {
+            throw new Exception();
+        } catch (Throwable $th) {
+            //do something
+        }
+    }
+}
+
+CODE
+            , 0
+        ];
+
+        yield 'method with multiple catches' => [
+            <<<'CODE'
+<?php
+class MyException extends Exception {}
+
+class Foo
+{
+    public function baz(): void
+    {
+        try {
+            throw new Exception();
+        } catch (MyException $e) {
+            //do something
+        } catch (Exception $e) {
+            //do something
+        }
+    }
+}
+
+CODE
+            , 0
+        ];
     }
 
     #[DataProvider('uncaughtExceptionDocblockDataProvider')]
