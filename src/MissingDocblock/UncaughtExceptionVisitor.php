@@ -100,7 +100,10 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 
         foreach ($this->getCurrentCatchStack() as $catch) {
             foreach ($catch->types as $catchType) {
-                if ($this->isSubclassOf($thrownExceptionType, (string)$catchType) || (string)$catchType === 'Throwable') {
+                if (
+                    $this->isSubclassOf($thrownExceptionType, (string)$catchType)
+                    || (string)$catchType === 'Throwable'
+                ) {
                     return true;
                 }
             }
