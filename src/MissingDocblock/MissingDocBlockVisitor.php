@@ -112,11 +112,17 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
             return false;
         }
 
-        if ($returnType instanceof Identifier && in_array($returnType->toString(), ['array', 'iterable'], true)) {
+        if (
+            $returnType instanceof Identifier
+            && in_array($returnType->toString(), ['array', 'iterable'], true)
+        ) {
             return $this->arrayElementsHaveConsistentTypes($node);
         }
 
-        if ($returnType instanceof Name && in_array($returnType->toString(), ['Generator', 'Traversable'], true)) {
+        if (
+            $returnType instanceof Name
+            && in_array($returnType->toString(), ['Generator', 'Traversable', 'Iterator', 'ArrayAccess'], true)
+        ) {
             return $this->arrayElementsHaveConsistentTypes($node);
         }
 
