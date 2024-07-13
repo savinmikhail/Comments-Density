@@ -91,7 +91,7 @@ final readonly class ConfigLoader
         );
         foreach ($directories as $dir) {
             if (! is_dir($dir)) {
-                throw new CommentsDensityException($dir . 'directory does not exist');
+                throw new CommentsDensityException($dir . ' directory does not exist');
             }
         }
         return $directories;
