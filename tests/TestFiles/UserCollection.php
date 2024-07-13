@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
-class UserCollection implements \Iterator
+use Iterator;
+
+class UserCollection implements Iterator
 {
     private array $users;
     private int $position = 0;

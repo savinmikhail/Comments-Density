@@ -626,6 +626,25 @@ CODE
             , 1
         ];
 
+        yield 'method returning Iterator' => [
+            <<<'CODE'
+<?php
+
+use SavinMikhail\Tests\CommentsDensity\TestFiles\UserCollection;
+use Iterator;
+
+class Foo
+{
+    public function userCollectionReturn(): Iterator
+    {
+        return new UserCollection([new User()]);
+    }
+}
+
+CODE
+            , 1
+        ];
+
         yield 'method with class implementing ArrayAccess' => [
             <<<'CODE'
 <?php
@@ -635,6 +654,26 @@ use SavinMikhail\Tests\CommentsDensity\TestFiles\UserArray;
 class Foo
 {
     public function userArrayReturn(): UserArray
+    {
+        $array = new UserArray();
+        $array[] = new User();
+        return $array;
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method returning ArrayAccess' => [
+            <<<'CODE'
+<?php
+
+use SavinMikhail\Tests\CommentsDensity\TestFiles\UserArray;
+
+class Foo
+{
+    public function userArrayReturn(): ArrayAccess
     {
         $array = new UserArray();
         $array[] = new User();
