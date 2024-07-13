@@ -10,6 +10,8 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
+use ReflectionClass;
+use function dd;
 
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
@@ -28,14 +30,12 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof Throw_) {
-
             if (!$this->isInTryBlock($node)) {
                 $this->hasUncaughtThrows = true;
-            } elseif ($this->isInCatchBlock($node)) {
-                // Check if the throw inside a catch block is rethrowing the caught exception
-                if (!$this->isRethrowingCaughtException($node)) {
-                    $this->hasUncaughtThrows = true;
-                }
+            } elseif (!$this->isExceptionCaught($node)) {
+                $this->hasUncaughtThrows = true;
+            } elseif ($this->isInCatchBlock($node) && $this->isRethrowingCaughtException($node)) {
+                $this->hasUncaughtThrows = true;
             }
         }
     }
@@ -97,5 +97,46 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
     {
         return $node->getStartFilePos() >= $container->getStartFilePos() &&
             $node->getEndFilePos() <= $container->getEndFilePos();
+    }
+
+    private function isExceptionCaught(Node $throwNode): bool
+    {
+        $throwExpr = $throwNode->expr;
+        if (!($throwExpr instanceof Variable)) {
+            return false;
+        }
+
+        $thrownExceptionType = $this->getVariableType($throwExpr->name);
+
+        foreach ($this->catchStack as $catch) {
+            foreach ($catch->types as $catchType) {
+                if ($this->isSubclassOf($thrownExceptionType, (string) $catchType)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function getVariableType(string $varName): ?string
+    {
+        // For simplicity, assume that the variable name matches the class name of the exception
+        // In a real-world scenario, you would need to analyze the code to determine the actual type
+        return $varName;
+    }
+
+    private function isSubclassOf(?string $className, string $parentClassName): bool
+    {
+        if ($className === null) {
+            return false;
+        }
+
+        if (!class_exists($className) || !class_exists($parentClassName)) {
+            return false;
+        }
+
+        $reflectionClass = new ReflectionClass($className);
+        return $reflectionClass->isSubclassOf($parentClassName) || $className === $parentClassName;
     }
 }
