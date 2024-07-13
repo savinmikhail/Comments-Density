@@ -400,6 +400,47 @@ class Foo
 CODE
             , 0
         ];
+
+        yield 'method with rethrown exception' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function baz(): bool
+    {
+        try {
+            throw new Exception();
+        } catch (Exception $e) {
+            //do something
+            throw $e
+        }
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method caught another exception' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function baz(): bool
+    {
+        try {
+            throw new Exception();
+        } catch (MyException $e) {
+            //do something
+        }
+    }
+}
+
+CODE
+            , 1
+        ];
     }
 
     #[DataProvider('smartDocblockAnalysisDataProvider')]
