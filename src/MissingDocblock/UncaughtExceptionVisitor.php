@@ -12,7 +12,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
-    public bool $throwsUncaughtExceptions = false;
+    public bool $hasUncaughtThrows = false;
     private array $tryCatchStack = [];
     private array $catchStack = [];
 
@@ -28,7 +28,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 
         if ($node instanceof Throw_) {
             if (!$this->isInCatchBlock($node) && !$this->isInTryBlock($node)) {
-                $this->throwsUncaughtExceptions = true;
+                $this->hasUncaughtThrows = true;
             }
         }
     }
