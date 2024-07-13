@@ -85,14 +85,18 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
     }
 
     /**
-     * here we want to find methods that has uncaught throws statements or their return type will be better
+     * here we want to find methods that have uncaught throw statements or their return type will be better
      * described as generic
      */
     private function methodRequiresAdditionalDocBlock(Node $node): bool
     {
         $returnType = $node->getReturnType();
 
-        if ($returnType instanceof Node\Identifier && $returnType->toString() === 'array') {
+        if ($returnType instanceof Node\Identifier && in_array($returnType->toString(), ['array', 'iterable'], true)) {
+            return $this->arrayElementsHaveConsistentTypes($node);
+        }
+
+        if ($returnType instanceof Node\Name && $returnType->toString() === 'Generator') {
             return $this->arrayElementsHaveConsistentTypes($node);
         }
 
