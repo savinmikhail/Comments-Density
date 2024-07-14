@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Commands;
 
 use Generator;
-use SavinMikhail\CommentsDensity\AnalyzerFactory;
+use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
+use SplFileInfo;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use SplFileInfo;
 
 class AnalyzeFilesCommand extends Command
 {
