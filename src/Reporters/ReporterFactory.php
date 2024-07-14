@@ -11,7 +11,7 @@ final readonly class ReporterFactory
 {
     public function createReporter(OutputInterface $output, ConfigDTO $configDto): ReporterInterface
     {
-        if (! empty($configDto->outputConfig)) {
+        if (empty($configDto->output)) {
             return new ConsoleReporter($output);
         }
         if ($configDto->output['type'] === 'html') {
