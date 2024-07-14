@@ -11,7 +11,6 @@ use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
-use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final readonly class AnalyzerFactory
@@ -19,7 +18,7 @@ final readonly class AnalyzerFactory
     public function getAnalyzer(
         ConfigDTO $configDto,
         OutputInterface $output,
-    ): CommentDensity {
+    ): Analyzer {
         $commentFactory = new CommentFactory($configDto->only);
         $missingDocBlock = new MissingDocBlockAnalyzer($configDto->docblockConfigDTO);
         $cds = new CDS($configDto->thresholds, $commentFactory);
@@ -30,14 +29,14 @@ final readonly class AnalyzerFactory
             new PerformanceMonitor()
         );
 
-        return new CommentDensity(
+        return new Analyzer(
             $configDto,
             $commentFactory,
             $missingDocBlock,
             $metrics,
             $output,
             $missingDocBlock,
-            (new BaselineManager())->init(),
+            BaselineManager::getInstance(),
         );
     }
 }
