@@ -44,6 +44,11 @@ Analyze the comment density in your PHP files with:
 php vendor/bin/comments_density analyze:comments
 ```
 
+Generate baseline with:
+```bash
+php vendor/bin/comments_density generate:baseline
+```
+
 ### Configuration
 
 On installation, you can allow plugin to create its configuration file.
