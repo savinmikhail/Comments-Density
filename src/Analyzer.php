@@ -14,11 +14,10 @@ use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SplFileInfo;
-
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function array_merge;
 use function array_push;
-use function dd;
 use function file;
 use function file_get_contents;
 use function in_array;
@@ -31,19 +30,20 @@ use const PHP_EOL;
 use const T_COMMENT;
 use const T_DOC_COMMENT;
 
-final class CommentDensity
+final class Analyzer
 {
     private bool $exceedThreshold = false;
 
     public function __construct(
-        private readonly ConfigDTO $configDTO,
-        private readonly CommentFactory $commentFactory,
+        private readonly ConfigDTO               $configDTO,
+        private readonly CommentFactory          $commentFactory,
         private readonly MissingDocBlockAnalyzer $missingDocBlock,
-        private readonly MetricsFacade $metrics,
-        private readonly OutputInterface $output,
+        private readonly MetricsFacade           $metrics,
+        private readonly OutputInterface         $output,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private readonly BaselineManager $baselineManager,
-    ) {
+        private readonly BaselineManager         $baselineManager,
+    )
+    {
     }
 
     public function analyze(Generator $files): OutputDTO
@@ -54,7 +54,7 @@ final class CommentDensity
         $filesAnalyzed = 0;
 
         foreach ($files as $file) {
-            if (! ($file instanceof SplFileInfo)) {
+            if (!($file instanceof SplFileInfo)) {
                 continue;
             }
             if ($this->isInWhitelist($file->getRealPath())) {
@@ -63,7 +63,7 @@ final class CommentDensity
             if ($file->getSize() === 0) {
                 continue;
             }
-            if (! $this->isPhpFile($file) || ! $file->isReadable()) {
+            if (!$this->isPhpFile($file) || !$file->isReadable()) {
                 continue;
             }
 
@@ -94,7 +94,8 @@ final class CommentDensity
 
     public function analyzeFile(
         string $filename,
-    ): array {
+    ): array
+    {
         $this->output->writeln("<info>Analyzing $filename</info>");
 
         $code = file_get_contents($filename);
@@ -123,10 +124,10 @@ final class CommentDensity
     {
         $comments = [];
         foreach ($tokens as $token) {
-            if (! is_array($token)) {
+            if (!is_array($token)) {
                 continue;
             }
-            if (! in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
+            if (!in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
                 continue;
             }
             $commentType = $this->commentFactory->classifyComment($token[1]);
@@ -157,7 +158,7 @@ final class CommentDensity
     {
         $lineCounts = [];
         foreach ($comments as $comment) {
-            $typeName = (string) $comment['type'];
+            $typeName = (string)$comment['type'];
             if (!isset($lineCounts[$typeName])) {
                 $lineCounts[$typeName] = [
                     'lines' => 0,
@@ -173,10 +174,11 @@ final class CommentDensity
     private function createOutputDTO(
         array $comments,
         array $commentStatistics,
-        int $linesOfCode,
+        int   $linesOfCode,
         float $cds,
-        int $filesAnalyzed,
-    ): OutputDTO {
+        int   $filesAnalyzed,
+    ): OutputDTO
+    {
         $preparedCommentStatistic = $this->prepareCommentStatistics($commentStatistics);
         $preparedComments = $this->prepareComments($comments);
         $performanceMetrics = $this->metrics->getPerformanceMetrics();
@@ -273,6 +275,10 @@ final class CommentDensity
     private function filterBaselineComments(array $comments): array
     {
         $baselineComments = $this->baselineManager->getAllComments();
+        if (empty($baselineComments)) {
+            return $comments;
+        }
+
         $baselineCommentKeys = array_map(
             fn($comment) => $comment['file_path'] . ':' . $comment['line_number'], $baselineComments
         );
@@ -286,5 +292,4 @@ final class CommentDensity
             )
         );
     }
-
 }
