@@ -13,6 +13,7 @@ final readonly class OutputDTO
         public PerformanceMetricsDTO $performanceDTO,
         public ComToLocDTO $comToLocDTO,
         public CdsDTO $cdsDTO,
+        public bool $exceedThreshold,
     ) {
     }
 }
