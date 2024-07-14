@@ -20,6 +20,10 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
 
     public function setComments(array $comments): void
     {
+        //avoid conflicts
+        unlink($this->path);
+        $this->init($this->path);
+
         foreach ($comments as $comment) {
             $this->baselineData[$comment->file][$comment->line] = [
                 'comment' => $comment->content,
