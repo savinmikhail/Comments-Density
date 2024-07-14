@@ -26,13 +26,12 @@ final class CommentDensity
         private readonly ConfigDTO $configDTO,
         private readonly CommentFactory $commentFactory,
         private readonly FileAnalyzer $fileAnalyzer,
-        private readonly ReporterInterface $reporter,
         private readonly MissingDocBlockAnalyzer $missingDocBlock,
         private readonly MetricsFacade $metrics,
     ) {
     }
 
-    public function analyze(Generator $files): bool
+    public function analyze(Generator $files): OutputDTO
     {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];
@@ -64,18 +63,18 @@ final class CommentDensity
 
         $this->metrics->stopPerformanceMonitoring();
 
-        $averageCds = $totalLinesOfCode === 0 ? 0 : $cdsSum / $totalLinesOfCode;
-        $outputDTO = $this->createOutputDTO(
+        return $this->createOutputDTO(
             $comments,
             $commentStatistics,
             $totalLinesOfCode,
-            $averageCds,
+            $this->calcAvgCDS($totalLinesOfCode, $cdsSum),
             $filesAnalyzed,
         );
+    }
 
-        $this->reporter->report($outputDTO);
-
-        return $this->exceedThreshold;
+    private function calcAvgCDS(int $totalLinesOfCode, float $cdsSum): float
+    {
+        return $totalLinesOfCode === 0 ? 0 : $cdsSum / $totalLinesOfCode;
     }
 
     private function createOutputDTO(
@@ -85,18 +84,23 @@ final class CommentDensity
         float $cds,
         int $filesAnalyzed,
     ): OutputDTO {
-        $outputDTO = new OutputDTO(
-            $filesAnalyzed,
-            $this->prepareCommentStatistics($commentStatistics),
-            $this->prepareComments($comments),
-            $this->metrics->getPerformanceMetrics(),
-            $this->metrics->prepareComToLoc($commentStatistics, $linesOfCode),
-            $this->metrics->prepareCDS($cds)
-        );
+        $preparedCommentStatistic = $this->prepareCommentStatistics($commentStatistics);
+        $preparedComments = $this->prepareComments($comments);
+        $performanceMetrics = $this->metrics->getPerformanceMetrics();
+        $comToLoc = $this->metrics->prepareComToLoc($commentStatistics, $linesOfCode);
+        $cds = $this->metrics->prepareCDS($cds);
         if ($this->metrics->hasExceededThreshold()) {
             $this->exceedThreshold = true;
         }
-        return $outputDTO;
+        return new OutputDTO(
+            $filesAnalyzed,
+            $preparedCommentStatistic,
+            $preparedComments,
+            $performanceMetrics,
+            $comToLoc,
+            $cds,
+            $this->exceedThreshold
+        );
     }
 
     private function prepareCommentStatistics(array $commentStatistics): array
