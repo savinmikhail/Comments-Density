@@ -14,17 +14,30 @@ use function touch;
 
 final class BaselineManager
 {
+    private static ?self $instance = null;
     private Connection $connection;
 
-    public function init(): self
+    private function __construct()
+    {
+        $this->init();
+    }
+
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private function init(): void
     {
         $databaseFile = __DIR__ . '/../../comments_density.sqlite';
-        if (! file_exists($databaseFile)) {
+        if (!file_exists($databaseFile)) {
             touch($databaseFile);
         }
         $dbManager = new SQLiteDatabaseManager($databaseFile);
         $this->connection = $dbManager->getConnection();
-        return $this;
     }
 
     /**
@@ -66,18 +79,6 @@ final class BaselineManager
         $query = $this->connection->createQueryBuilder()
             ->select('*')
             ->from('comments')
-            ->executeQuery();
-
-        return $query->fetchAllAssociative();
-    }
-
-    public function getCommentsByFilePath(string $filePath): array
-    {
-        $query = $this->connection->createQueryBuilder()
-            ->select('*')
-            ->from('comments')
-            ->where('file_path = :file_path')
-            ->setParameter('file_path', $filePath)
             ->executeQuery();
 
         return $query->fetchAllAssociative();
