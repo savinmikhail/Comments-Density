@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity;
+namespace SavinMikhail\CommentsDensity\Analyzer;
 
 use Generator;
+use SavinMikhail\CommentsDensity\Baseline\BaselineManager;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
@@ -73,7 +74,7 @@ final class Analyzer
             $filesAnalyzed++;
         }
         if ($this->configDTO->useBaseline) {
-            $comments = $this->filterBaselineComments($comments);
+            $comments = $this->baselineManager->filterComments($comments);
         }
 
         $commentStatistics = $this->countCommentOccurrences($comments);
@@ -267,27 +268,5 @@ final class Analyzer
             }
         }
         return false;
-    }
-
-    private function filterBaselineComments(array $comments): array
-    {
-        $baselineComments = $this->baselineManager->getAllComments();
-        if (empty($baselineComments)) {
-            return $comments;
-        }
-
-        $baselineCommentKeys = array_map(
-            fn($comment) => $comment['file_path'] . ':' . $comment['line_number'],
-            $baselineComments
-        );
-
-        return array_filter(
-            $comments,
-            fn($comment) => !in_array(
-                $comment['file'] . ':' . $comment['line'],
-                $baselineCommentKeys,
-                true
-            )
-        );
     }
 }

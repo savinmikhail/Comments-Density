@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity;
+namespace SavinMikhail\CommentsDensity\Analyzer;
 
+use SavinMikhail\CommentsDensity\Baseline\BaselineManager;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
@@ -18,6 +19,7 @@ final readonly class AnalyzerFactory
     public function getAnalyzer(
         ConfigDTO $configDto,
         OutputInterface $output,
+        BaselineManager $baselineManager,
     ): Analyzer {
         $commentFactory = new CommentFactory($configDto->only);
         $missingDocBlock = new MissingDocBlockAnalyzer($configDto->docblockConfigDTO);
@@ -36,7 +38,7 @@ final readonly class AnalyzerFactory
             $metrics,
             $output,
             $missingDocBlock,
-            BaselineManager::getInstance(),
+            $baselineManager,
         );
     }
 }
