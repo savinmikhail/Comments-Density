@@ -62,7 +62,8 @@ final readonly class ConfigLoader
             $this->getOutput($config),
             $this->getDirectories($config),
             $this->getOnly($config),
-            $this->getMissingDocblockConfig($config)
+            $this->getMissingDocblockConfig($config),
+            $config['use_baseline'],
         );
     }
 
