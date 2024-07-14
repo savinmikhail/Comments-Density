@@ -52,8 +52,9 @@ return [
         'property' => true,
         'constant' => true,
         'function' => true,
-        'requireForAllMethods' => true
-    ]
+        'requireForAllMethods' => true,
+    ],
+    'use_baseline' => true,
 ];
 
 PHP;
