@@ -26,13 +26,7 @@ final class BaselineCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $databaseFile = __DIR__ . '/../../comments_density.sqlite';
-        if (! file_exists($databaseFile)) {
-            touch($databaseFile);
-        }
-        $dbManager = new SQLiteDatabaseManager($databaseFile);
-        $connection = $dbManager->getConnection();
-        $baselineManager = new BaselineManager($connection);
+        $baselineManager = new BaselineManager();
 
         $configDto = $this->getConfigDto();
 
@@ -42,7 +36,7 @@ final class BaselineCommand extends Command
         $analyzer = $analyzerFactory->getAnalyzer($configDto, $output);
         $outputDTO = $analyzer->analyze($files);
 
-        $baselineManager->set($outputDTO);
+        $baselineManager->init()->set($outputDTO);
 
         $output->writeln('<info>Baseline generated successfully!</info>');
 
