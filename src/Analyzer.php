@@ -35,15 +35,14 @@ final class Analyzer
     private bool $exceedThreshold = false;
 
     public function __construct(
-        private readonly ConfigDTO               $configDTO,
-        private readonly CommentFactory          $commentFactory,
+        private readonly ConfigDTO $configDTO,
+        private readonly CommentFactory $commentFactory,
         private readonly MissingDocBlockAnalyzer $missingDocBlock,
-        private readonly MetricsFacade           $metrics,
-        private readonly OutputInterface         $output,
+        private readonly MetricsFacade $metrics,
+        private readonly OutputInterface $output,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private readonly BaselineManager         $baselineManager,
-    )
-    {
+        private readonly BaselineManager $baselineManager,
+    ) {
     }
 
     public function analyze(Generator $files): OutputDTO
@@ -94,8 +93,7 @@ final class Analyzer
 
     public function analyzeFile(
         string $filename,
-    ): array
-    {
+    ): array {
         $this->output->writeln("<info>Analyzing $filename</info>");
 
         $code = file_get_contents($filename);
@@ -174,11 +172,10 @@ final class Analyzer
     private function createOutputDTO(
         array $comments,
         array $commentStatistics,
-        int   $linesOfCode,
+        int $linesOfCode,
         float $cds,
-        int   $filesAnalyzed,
-    ): OutputDTO
-    {
+        int $filesAnalyzed,
+    ): OutputDTO {
         $preparedCommentStatistic = $this->prepareCommentStatistics($commentStatistics);
         $preparedComments = $this->prepareComments($comments);
         $performanceMetrics = $this->metrics->getPerformanceMetrics();
@@ -280,7 +277,8 @@ final class Analyzer
         }
 
         $baselineCommentKeys = array_map(
-            fn($comment) => $comment['file_path'] . ':' . $comment['line_number'], $baselineComments
+            fn($comment) => $comment['file_path'] . ':' . $comment['line_number'],
+            $baselineComments
         );
 
         return array_filter(

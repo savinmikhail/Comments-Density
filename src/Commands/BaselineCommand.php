@@ -6,13 +6,9 @@ namespace SavinMikhail\CommentsDensity\Commands;
 
 use SavinMikhail\CommentsDensity\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\BaselineManager;
-use SavinMikhail\CommentsDensity\Database\SQLiteDatabaseManager;
-use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function file_exists;
-use function touch;
 
 final class BaselineCommand extends Command
 {
