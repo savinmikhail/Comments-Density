@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\Commands;
 
 use Generator;
 use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
+use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use SplFileInfo;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
@@ -25,6 +26,11 @@ class AnalyzeFilesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $path = __DIR__ . '/../../baseline.php';
+
+        $storage = new TreePhpBaselineStorage();
+        $storage->init($path);
+
         $configDto = $this->getConfigDto();
 
         $filePaths = $input->getArgument('files');
@@ -32,7 +38,7 @@ class AnalyzeFilesCommand extends Command
         $files = $this->generateFiles($filePaths);
 
         $analyzerFactory = new AnalyzerFactory();
-        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output);
+        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output, $storage);
         $outputDTO = $analyzer->analyze($files);
 
         $reporter = new ConsoleReporter($output);
