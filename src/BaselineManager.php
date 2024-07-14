@@ -6,13 +6,25 @@ namespace SavinMikhail\CommentsDensity;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use SavinMikhail\CommentsDensity\Database\SQLiteDatabaseManager;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
+
+use function file_exists;
+use function touch;
 
 final class BaselineManager
 {
-    public function __construct(
-        private Connection $connection
-    ) {
+    private Connection $connection;
+
+    public function init(): self
+    {
+        $databaseFile = __DIR__ . '/../../comments_density.sqlite';
+        if (! file_exists($databaseFile)) {
+            touch($databaseFile);
+        }
+        $dbManager = new SQLiteDatabaseManager($databaseFile);
+        $this->connection = $dbManager->getConnection();
+        return $this;
     }
 
     /**
