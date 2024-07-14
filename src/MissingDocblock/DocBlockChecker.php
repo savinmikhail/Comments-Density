@@ -15,11 +15,18 @@ use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 
-final readonly class DocBlockChecker
+final class DocBlockChecker
 {
+    private const MISSING_DOC = 'missing doc';
+    private const MISSING_THROWS_TAG = 'missing @throws tag';
+    private const MISSING_GENERIC = 'missing generic';
+
+    private bool $needsGeneric = false;
+    private bool $throwsUncaught = false;
+
     public function __construct(
-        private MissingDocblockConfigDTO $config,
-        private MethodAnalyzer $methodAnalyzer,
+        private readonly MissingDocblockConfigDTO $config,
+        private readonly MethodAnalyzer $methodAnalyzer,
     ) {
     }
 
@@ -69,8 +76,24 @@ final readonly class DocBlockChecker
      */
     private function methodRequiresAdditionalDocBlock(Node $node): bool
     {
-        return
-            $this->methodAnalyzer->methodNeedsGeneric($node)
-            || $this->methodAnalyzer->methodThrowsUncaughtExceptions($node);
+        $this->needsGeneric = $this->methodAnalyzer->methodNeedsGeneric($node);
+        $this->throwsUncaught = $this->methodAnalyzer->methodThrowsUncaughtExceptions($node);
+
+        return $this->needsGeneric || $this->throwsUncaught;
+    }
+
+    public function determineMissingContent(): string
+    {
+        if ($this->needsGeneric) {
+            $this->needsGeneric = false;
+            return self::MISSING_GENERIC;
+        }
+
+        if ($this->throwsUncaught) {
+            $this->throwsUncaught = false;
+            return self::MISSING_THROWS_TAG;
+        }
+
+        return self::MISSING_DOC;
     }
 }

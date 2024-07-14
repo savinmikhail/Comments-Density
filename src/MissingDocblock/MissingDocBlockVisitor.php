@@ -45,9 +45,10 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
         if ($docComment !== null) {
             return;
         }
+
         $this->missingDocBlocks[] = [
             'type' => 'missingDocblock',
-            'content' => '',
+            'content' => $this->docBlockChecker->determineMissingContent(),
             'file' => $this->filename,
             'line' => $node->getLine(),
         ];
