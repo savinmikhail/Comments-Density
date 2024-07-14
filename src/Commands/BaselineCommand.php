@@ -26,7 +26,7 @@ final class BaselineCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $baselineManager = new BaselineManager();
+        $baselineManager = BaselineManager::getInstance();
 
         $configDto = $this->getConfigDto();
 
@@ -36,7 +36,7 @@ final class BaselineCommand extends Command
         $analyzer = $analyzerFactory->getAnalyzer($configDto, $output);
         $outputDTO = $analyzer->analyze($files);
 
-        $baselineManager->init()->set($outputDTO);
+        $baselineManager->set($outputDTO);
 
         $output->writeln('<info>Baseline generated successfully!</info>');
 
