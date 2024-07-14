@@ -25,9 +25,11 @@ if (!$autoloadFound) {
 
 use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
 use SavinMikhail\CommentsDensity\Commands\AnalyzeFilesCommand;
+use SavinMikhail\CommentsDensity\Commands\BaselineCommand;
 use Symfony\Component\Console\Application;
 
 $app = new Application();
 $app->add(new AnalyzeCommentCommand());
 $app->add(new AnalyzeFilesCommand());
+$app->add(new BaselineCommand());
 $app->run();
