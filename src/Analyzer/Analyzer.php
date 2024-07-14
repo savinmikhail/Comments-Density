@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
 use Generator;
-use SavinMikhail\CommentsDensity\Baseline\BaselineManager;
+use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
@@ -42,7 +42,7 @@ final class Analyzer
         private readonly MetricsFacade $metrics,
         private readonly OutputInterface $output,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private readonly BaselineManager $baselineManager,
+        private readonly BaselineStorageInterface $baselineStorage,
     ) {
     }
 
@@ -74,7 +74,7 @@ final class Analyzer
             $filesAnalyzed++;
         }
         if ($this->configDTO->useBaseline) {
-            $comments = $this->baselineManager->filterComments($comments);
+            $comments = $this->baselineStorage->filterComments($comments);
         }
 
         $commentStatistics = $this->countCommentOccurrences($comments);
