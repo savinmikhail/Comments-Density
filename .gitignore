@@ -4,4 +4,5 @@
 /.phpunit.result.cache
 /composer.lock
 /output.html
-/comments_density.sqlite
+/baseline.sqlite
+/baseline.php
