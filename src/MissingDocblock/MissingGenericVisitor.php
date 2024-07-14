@@ -17,7 +17,6 @@ use PhpParser\Node\Expr\Yield_;
 use PhpParser\Node\Expr\YieldFrom;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
-use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node\Expr\Assign;
@@ -29,42 +28,109 @@ class MissingGenericVisitor extends NodeVisitorAbstract
     public bool $hasConsistentTypes = false;
     public array $elementTypes = [];
 
+    private array $nodeHandlers;
+
+    public function __construct()
+    {
+        $this->nodeHandlers = [
+            Return_::class => 'handleReturn',
+            Yield_::class => 'handleYield',
+            YieldFrom::class => 'handleYieldFrom',
+            Array_::class => 'handleArray',
+            New_::class => 'handleNew',
+            Variable::class => 'handleVariable',
+            FuncCall::class => 'handleFunctionCall',
+            StaticCall::class => 'handleFunctionCall',
+            MethodCall::class => 'handleFunctionCall',
+            Cast::class => 'handleCast',
+            StaticPropertyFetch::class => 'handleStaticPropertyFetch',
+            Assign::class => 'handleAssign',
+            Instanceof_::class => 'handleInstanceof',
+            ConstFetch::class => 'handleConstFetch',
+        ];
+    }
+
     public function enterNode(Node $node): void
     {
-        if ($node instanceof Return_) {
-            $this->analyzeExpression($node->expr);
+        foreach ($this->nodeHandlers as $nodeClass => $handlerMethod) {
+            if ($node instanceof $nodeClass) {
+                $this->{$handlerMethod}($node);
+                break;
+            }
         }
-        if ($node instanceof Yield_ || $node instanceof YieldFrom) {
-            $this->analyzeExpression($node->value);
+    }
+
+    private function handleReturn(Return_ $node): void
+    {
+        $this->analyzeExpression($node->expr);
+    }
+
+    private function handleYield(Yield_ $node): void
+    {
+        $this->analyzeExpression($node->value);
+    }
+
+    private function handleYieldFrom(YieldFrom $node): void
+    {
+        $this->analyzeExpression($node->expr);
+    }
+
+    private function handleArray(Array_ $node): void
+    {
+        foreach ($node->items as $item) {
+            $this->analyzeExpression($item->value);
         }
+    }
+
+    private function handleNew(New_ $node): void
+    {
+        if ($node->class instanceof Node\Name) {
+            $this->elementTypes[] = $node->class->toString();
+        }
+    }
+
+    private function handleVariable(Variable $node): void
+    {
+        $this->elementTypes[] = 'variable';
+    }
+
+    private function handleFunctionCall(Node $node): void
+    {
+        $this->elementTypes[] = 'function_call';
+    }
+
+    private function handleCast(Cast $node): void
+    {
+        $this->analyzeExpression($node->expr);
+    }
+
+    private function handleStaticPropertyFetch(StaticPropertyFetch $node): void
+    {
+        $this->elementTypes[] = 'static_property';
+    }
+
+    private function handleAssign(Assign $node): void
+    {
+        $this->analyzeExpression($node->expr);
+    }
+
+    private function handleInstanceof(Instanceof_ $node): void
+    {
+        $this->analyzeExpression($node->expr);
+    }
+
+    private function handleConstFetch(ConstFetch $node): void
+    {
+        $this->elementTypes[] = 'constant';
     }
 
     private function analyzeExpression($expr): void
     {
-        if ($expr instanceof Array_) {
-            foreach ($expr->items as $item) {
-                $this->analyzeExpression($item->value);
+        foreach ($this->nodeHandlers as $nodeClass => $handlerMethod) {
+            if ($expr instanceof $nodeClass) {
+                $this->{$handlerMethod}($expr);
+                break;
             }
-        } elseif ($expr instanceof New_) {
-            if ($expr->class instanceof Name) {
-                $this->elementTypes[] = $expr->class->toString();
-            }
-        } elseif ($expr instanceof Variable) {
-            $this->elementTypes[] = 'variable';
-        } elseif ($expr instanceof FuncCall || $expr instanceof StaticCall || $expr instanceof MethodCall) {
-            $this->elementTypes[] = 'function_call';
-        } elseif ($expr instanceof Cast) {
-            $this->analyzeExpression($expr->expr);
-        } elseif ($expr instanceof Yield_ || $expr instanceof YieldFrom) {
-            $this->analyzeExpression($expr->value);
-        } elseif ($expr instanceof StaticPropertyFetch) {
-            $this->elementTypes[] = 'static_property';
-        } elseif ($expr instanceof Assign) {
-            $this->analyzeExpression($expr->expr);
-        } elseif ($expr instanceof Instanceof_) {
-            $this->analyzeExpression($expr->expr);
-        } elseif ($expr instanceof ConstFetch) {
-            $this->elementTypes[] = 'constant';
         }
     }
 
