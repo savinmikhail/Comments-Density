@@ -96,6 +96,11 @@ return [
 ];
 
 ```
+
+## Acknowledgments
+
+This project was inspired by Yegor Bugayenko. See [opensource ideas](https://gist.github.com/yegor256/5bddb12ce88a6cba44d578c567031508).
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
