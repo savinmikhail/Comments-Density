@@ -25,8 +25,8 @@ use function in_array;
 use function is_array;
 use function str_contains;
 use function substr_count;
-
 use function token_get_all;
+
 use const PHP_EOL;
 use const T_COMMENT;
 use const T_DOC_COMMENT;
@@ -42,6 +42,7 @@ final class CommentDensity
         private readonly MetricsFacade $metrics,
         private readonly OutputInterface $output,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
+        private readonly BaselineManager $baselineManager,
     ) {
     }
 
@@ -72,6 +73,10 @@ final class CommentDensity
 
             $filesAnalyzed++;
         }
+        if ($this->configDTO->useBaseline) {
+            $comments = $this->filterBaselineComments($comments);
+        }
+
         $commentStatistics = $this->countCommentOccurrences($comments);
 
         $this->metrics->stopPerformanceMonitoring();
@@ -264,4 +269,22 @@ final class CommentDensity
         }
         return false;
     }
+
+    private function filterBaselineComments(array $comments): array
+    {
+        $baselineComments = $this->baselineManager->getAllComments();
+        $baselineCommentKeys = array_map(
+            fn($comment) => $comment['file_path'] . ':' . $comment['line_number'], $baselineComments
+        );
+
+        return array_filter(
+            $comments,
+            fn($comment) => !in_array(
+                $comment['file'] . ':' . $comment['line'],
+                $baselineCommentKeys,
+                true
+            )
+        );
+    }
+
 }
