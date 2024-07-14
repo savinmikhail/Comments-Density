@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
-use Generator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -32,18 +30,17 @@ class AnalyzeCommentCommand extends Command
         $reporter = (new ReporterFactory())->createReporter($output, $configDto);
         $analyzerFactory = new AnalyzerFactory();
 
-        $analyzer = $this->getAnalyzer($analyzerFactory, $configDto, $output, $reporter);
+        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output);
 
-        return $this->analyze($analyzer, $files, $output);
-    }
+        $outputDTO = $analyzer->analyze($files);
 
-    protected function getFilesFromDirectories(array $directories): Generator
-    {
-        foreach ($directories as $directory) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
-            foreach ($iterator as $file) {
-                yield $file;
-            }
+        $reporter->report($outputDTO);
+
+        if ($outputDTO->exceedThreshold) {
+            $output->writeln('<error>Comment thresholds were exceeded!</error>');
+            return SymfonyCommand::FAILURE;
         }
+        $output->writeln('<info>Comment thresholds are passed!</info>');
+        return SymfonyCommand::SUCCESS;
     }
 }

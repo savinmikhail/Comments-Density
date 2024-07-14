@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Commands;
 
 use Generator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\CommentDensity;
 use SavinMikhail\CommentsDensity\ConfigLoader;
@@ -21,24 +23,13 @@ abstract class Command extends SymfonyCommand
         return $configLoader->getConfigDto();
     }
 
-    protected function analyze(CommentDensity $analyzer, Generator $files, OutputInterface $output): int
+    protected function getFilesFromDirectories(array $directories): Generator
     {
-        $limitExceeded = $analyzer->analyze($files);
-
-        if ($limitExceeded) {
-            $output->writeln('<error>Comment thresholds were exceeded!</error>');
-            return SymfonyCommand::FAILURE;
+        foreach ($directories as $directory) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+            foreach ($iterator as $file) {
+                yield $file;
+            }
         }
-        $output->writeln('<info>Comment thresholds are passed!</info>');
-        return SymfonyCommand::SUCCESS;
-    }
-
-    protected function getAnalyzer(
-        AnalyzerFactory $factory,
-        ConfigDTO $configDto,
-        OutputInterface $output,
-        ReporterInterface $reporter
-    ): CommentDensity {
-        return $factory->getAnalyzer($configDto, $output, $reporter);
     }
 }

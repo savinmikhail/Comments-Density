@@ -7,6 +7,7 @@ namespace SavinMikhail\CommentsDensity\Commands;
 use Generator;
 use SavinMikhail\CommentsDensity\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,12 +31,20 @@ class AnalyzeFilesCommand extends Command
 
         $files = $this->generateFiles($filePaths);
 
-        $reporter = new ConsoleReporter($output);
         $analyzerFactory = new AnalyzerFactory();
+        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output);
+        $outputDTO = $analyzer->analyze($files);
 
-        $analyzer = $this->getAnalyzer($analyzerFactory, $configDto, $output, $reporter);
+        $reporter = new ConsoleReporter($output);
+        $reporter->report($outputDTO);
 
-        return $this->analyze($analyzer, $files, $output);
+        if ($outputDTO->exceedThreshold) {
+            $output->writeln('<error>Comment thresholds were exceeded!</error>');
+            return SymfonyCommand::FAILURE;
+        }
+
+        $output->writeln('<info>Comment thresholds are passed!</info>');
+        return SymfonyCommand::SUCCESS;
     }
 
     protected function generateFiles(array $filePaths): Generator
