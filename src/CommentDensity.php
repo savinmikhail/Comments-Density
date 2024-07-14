@@ -13,10 +13,23 @@ use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
-use SavinMikhail\CommentsDensity\Reporters\ReporterInterface;
 use SplFileInfo;
 
+use Symfony\Component\Console\Output\OutputInterface;
+use function array_merge;
+use function array_push;
+use function dd;
+use function file;
+use function file_get_contents;
+use function in_array;
+use function is_array;
 use function str_contains;
+use function substr_count;
+
+use function token_get_all;
+use const PHP_EOL;
+use const T_COMMENT;
+use const T_DOC_COMMENT;
 
 final class CommentDensity
 {
@@ -25,9 +38,10 @@ final class CommentDensity
     public function __construct(
         private readonly ConfigDTO $configDTO,
         private readonly CommentFactory $commentFactory,
-        private readonly FileAnalyzer $fileAnalyzer,
         private readonly MissingDocBlockAnalyzer $missingDocBlock,
         private readonly MetricsFacade $metrics,
+        private readonly OutputInterface $output,
+        private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
     ) {
     }
 
@@ -35,9 +49,7 @@ final class CommentDensity
     {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];
-        $commentStatistics = [];
         $totalLinesOfCode = 0;
-        $cdsSum = 0;
         $filesAnalyzed = 0;
 
         foreach ($files as $file) {
@@ -50,16 +62,17 @@ final class CommentDensity
             if ($file->getSize() === 0) {
                 continue;
             }
+            if (! $this->isPhpFile($file) || ! $file->isReadable()) {
+                continue;
+            }
 
-            $this->fileAnalyzer->analyzeFile(
-                $file,
-                $commentStatistics,
-                $comments,
-                $totalLinesOfCode,
-                $cdsSum
-            );
+            $commentsAndLines = $this->analyzeFile($file->getRealPath());
+            $totalLinesOfCode += $commentsAndLines['linesOfCode'];
+            array_push($comments, ...$commentsAndLines['comments']);
+
             $filesAnalyzed++;
         }
+        $commentStatistics = $this->countCommentOccurrences($comments);
 
         $this->metrics->stopPerformanceMonitoring();
 
@@ -67,14 +80,89 @@ final class CommentDensity
             $comments,
             $commentStatistics,
             $totalLinesOfCode,
-            $this->calcAvgCDS($totalLinesOfCode, $cdsSum),
+            $this
+                ->metrics
+                ->calculateCDS($commentStatistics),
             $filesAnalyzed,
         );
     }
 
-    private function calcAvgCDS(int $totalLinesOfCode, float $cdsSum): float
+    public function analyzeFile(
+        string $filename,
+    ): array {
+        $this->output->writeln("<info>Analyzing $filename</info>");
+
+        $code = file_get_contents($filename);
+        $tokens = token_get_all($code);
+
+        $comments = $this->getCommentsFromFile($tokens, $filename);
+        if (
+            empty($this->configDto->only)
+            || in_array('missingDocblock', $this->configDto->only, true)
+        ) {
+            $missingDocBlocks = $this
+                ->docBlockAnalyzer
+                ->getMissingDocblocks($code, $filename);
+            $comments = array_merge($missingDocBlocks, $comments);
+        }
+
+        $linesOfCode = $this->countTotalLines($filename);
+
+        return [
+            'comments' => $comments,
+            'linesOfCode' => $linesOfCode,
+        ];
+    }
+
+    private function getCommentsFromFile(array $tokens, string $filename): array
     {
-        return $totalLinesOfCode === 0 ? 0 : $cdsSum / $totalLinesOfCode;
+        $comments = [];
+        foreach ($tokens as $token) {
+            if (! is_array($token)) {
+                continue;
+            }
+            if (! in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
+                continue;
+            }
+            $commentType = $this->commentFactory->classifyComment($token[1]);
+            if ($commentType) {
+                $comments[] = [
+                    'content' => $token[1],
+                    'type' => $commentType,
+                    'line' => $token[2],
+                    'file' => $filename
+                ];
+            }
+        }
+        return $comments;
+    }
+
+    private function countTotalLines(string $filename): int
+    {
+        $fileContent = file($filename);
+        return count($fileContent);
+    }
+
+    private function isPhpFile(SplFileInfo $file): bool
+    {
+        return $file->isFile() && $file->getExtension() === 'php';
+    }
+
+    private function countCommentOccurrences(array $comments): array
+    {
+        $lineCounts = [];
+        foreach ($comments as $comment) {
+            $typeName = (string) $comment['type'];
+            if (!isset($lineCounts[$typeName])) {
+                $lineCounts[$typeName] = [
+                    'lines' => 0,
+                    'count' => 0,
+                ];
+            }
+            $lineCounts[$typeName]['lines'] += substr_count($comment['content'], PHP_EOL) + 1;
+            $lineCounts[$typeName]['count']++;
+        }
+        return $lineCounts;
     }
 
     private function createOutputDTO(

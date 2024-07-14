@@ -24,14 +24,6 @@ final readonly class AnalyzerFactory
         $missingDocBlock = new MissingDocBlockAnalyzer($configDto->docblockConfigDTO);
         $cds = new CDS($configDto->thresholds, $commentFactory);
 
-        $fileAnalyzer = new FileAnalyzer(
-            $output,
-            $missingDocBlock,
-            $cds,
-            $commentFactory,
-            $configDto,
-        );
-
         $metrics = new MetricsFacade(
             $cds,
             new ComToLoc($configDto->thresholds),
@@ -41,9 +33,10 @@ final readonly class AnalyzerFactory
         return new CommentDensity(
             $configDto,
             $commentFactory,
-            $fileAnalyzer,
             $missingDocBlock,
-            $metrics
+            $metrics,
+            $output,
+            $missingDocBlock,
         );
     }
 }
