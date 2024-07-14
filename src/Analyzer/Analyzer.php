@@ -79,8 +79,6 @@ final class Analyzer
 
         $commentStatistics = $this->countCommentOccurrences($comments);
 
-        $this->metrics->stopPerformanceMonitoring();
-
         return $this->createOutputDTO(
             $comments,
             $commentStatistics,
@@ -179,12 +177,14 @@ final class Analyzer
     ): OutputDTO {
         $preparedStatistics = $this->prepareCommentStatistics($commentStatistics);
         $preparedComments = $this->prepareComments($comments);
-        $performanceMetrics = $this->metrics->getPerformanceMetrics();
         $comToLoc = $this->metrics->prepareComToLoc($commentStatistics, $linesOfCode);
         $cds = $this->metrics->prepareCDS($cds);
         if ($this->metrics->hasExceededThreshold()) {
             $this->exceedThreshold = true;
         }
+        $this->metrics->stopPerformanceMonitoring();
+        $performanceMetrics = $this->metrics->getPerformanceMetrics();
+
         return new OutputDTO(
             $filesAnalyzed,
             $preparedStatistics,
