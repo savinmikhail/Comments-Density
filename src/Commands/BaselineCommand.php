@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Commands;
 
 use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
-use SavinMikhail\CommentsDensity\Baseline\BaselineManager;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,19 +23,18 @@ final class BaselineCommand extends Command
     {
         $path = __DIR__ . '/../../baseline.php';
 
-        $storage =  new TreePhpBaselineStorage();
-
-        $baselineManager = (new BaselineManager($storage))->init($path);
+        $storage = new TreePhpBaselineStorage();
+        $storage->init($path);
 
         $configDto = $this->getConfigDto();
 
         $files = $this->getFilesFromDirectories($configDto->directories);
         $analyzerFactory = new AnalyzerFactory();
 
-        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output, $baselineManager);
+        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output, $storage);
         $outputDTO = $analyzer->analyze($files);
 
-        $baselineManager->setComments($outputDTO->comments);
+        $storage->setComments($outputDTO->comments);
 
         $output->writeln('<info>Baseline generated successfully!</info>');
 
