@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\Baseline\Storage;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 final class SQLiteBaselineStorage implements BaselineStorageInterface
 {
@@ -42,12 +43,23 @@ final class SQLiteBaselineStorage implements BaselineStorageInterface
     public function setComments(array $comments): void
     {
         foreach ($comments as $comment) {
-            $this->connection->insert('comments', [
-                'file_path' => $comment->file,
-                'line_number' => $comment->line,
-                'comment' => $comment->content,
-                'type' => $comment->commentType,
-            ]);
+            try {
+                $this->connection->insert('comments', [
+                    'file_path' => $comment->file,
+                    'line_number' => $comment->line,
+                    'comment' => $comment->content,
+                    'type' => $comment->commentType,
+                ]);
+            } catch (UniqueConstraintViolationException) {
+                // Handle the unique constraint violation by updating the existing entry
+                $this->connection->update('comments', [
+                    'comment' => $comment->content,
+                    'type' => $comment->commentType,
+                ], [
+                    'file_path' => $comment->file,
+                    'line_number' => $comment->line,
+                ]);
+            }
         }
     }
 
@@ -60,8 +72,8 @@ final class SQLiteBaselineStorage implements BaselineStorageInterface
                 ->from('comments')
                 ->where('file_path = :file_path')
                 ->andWhere('line_number = :line_number')
-                ->setParameter('file_path', $comment->file)
-                ->setParameter('line_number', $comment->line)
+                ->setParameter('file_path', $comment['file'])
+                ->setParameter('line_number', $comment['line'])
                 ->executeQuery();
 
             if (!$query->fetchAssociative()) {
