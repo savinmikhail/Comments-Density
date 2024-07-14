@@ -18,7 +18,6 @@ class AnalyzeCommentCommand extends Command
     {
         $this->setName('analyze:comments')
             ->setDescription('Analyzes the comment density in files within a directory.')
-            ->addOption('storage', 's', InputOption::VALUE_REQUIRED, 'The type of storage to use (sqlite, tree, simple)', 'sqlite')
             ->setHelp('This command allows you to analyze the comments in PHP files within a specified directory.');
     }
 
