@@ -4,6 +4,7 @@ namespace SavinMikhail\CommentsDensity\Comments;
 
 final class RegularComment extends Comment
 {
+    // phpcs:ignore Generic.Files.LineLength.TooLong
     public const PATTERN = '/(#(?!.*\b(?:todo|fixme)\b:?).*?$)|(\/\/(?!.*\b(?:todo|fixme)\b:?).*?$)|\/\*(?!\*)(?!.*\b(?:todo|fixme)\b:?).*?\*\//ms';
     public const COLOR = 'red';
     public const WEIGHT = -1;

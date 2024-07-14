@@ -19,7 +19,6 @@ final class BaselineCommand extends Command
             ->setHelp('This command allows you to ignore old tech debt and start this quality check from this point');
     }
 
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $baselineManager = BaselineManager::getInstance();
