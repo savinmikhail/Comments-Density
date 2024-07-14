@@ -76,14 +76,20 @@ final class DocBlockChecker
      */
     private function methodRequiresAdditionalDocBlock(Node $node): bool
     {
-        $this->needsGeneric = $this->methodAnalyzer->methodNeedsGeneric($node);
         $this->throwsUncaught = $this->methodAnalyzer->methodThrowsUncaughtExceptions($node);
+        $this->needsGeneric = $this->methodAnalyzer->methodNeedsGeneric($node);
 
-        return $this->needsGeneric || $this->throwsUncaught;
+        return $this->throwsUncaught || $this->needsGeneric;
     }
 
     public function determineMissingContent(): string
     {
+        if ($this->needsGeneric && $this->throwsUncaught) {
+            $this->needsGeneric = false;
+            $this->throwsUncaught = false;
+            return self::MISSING_THROWS_TAG . ' and ' . self::MISSING_GENERIC;
+        }
+
         if ($this->needsGeneric) {
             $this->needsGeneric = false;
             return self::MISSING_GENERIC;
