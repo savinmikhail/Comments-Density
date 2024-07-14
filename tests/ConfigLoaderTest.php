@@ -122,8 +122,9 @@ class ConfigLoaderTest extends TestCase
                     "function" => true,
                     "property" => true,
                     "constant" => true,
-                    "requireForAllMethods" => true
-                ]
+                    "requireForAllMethods" => true,
+                ],
+                "use_baseline" => true,
             ];'
         ]);
 
