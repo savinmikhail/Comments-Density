@@ -19,7 +19,6 @@ final readonly class AnalyzerFactory
     public function getAnalyzer(
         ConfigDTO $configDto,
         OutputInterface $output,
-        ReporterInterface $reporter
     ): CommentDensity {
         $commentFactory = new CommentFactory($configDto->only);
         $missingDocBlock = new MissingDocBlockAnalyzer($configDto->docblockConfigDTO);
@@ -43,7 +42,6 @@ final readonly class AnalyzerFactory
             $configDto,
             $commentFactory,
             $fileAnalyzer,
-            $reporter,
             $missingDocBlock,
             $metrics
         );
