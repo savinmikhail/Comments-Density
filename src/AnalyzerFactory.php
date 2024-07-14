@@ -37,6 +37,7 @@ final readonly class AnalyzerFactory
             $metrics,
             $output,
             $missingDocBlock,
+            (new BaselineManager())->init(),
         );
     }
 }
