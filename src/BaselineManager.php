@@ -69,9 +69,9 @@ final class BaselineManager
         }
     }
 
-    private function isUniqueConstraintViolation(Exception $e): bool
+    private function isUniqueConstraintViolation(Exception $exception): bool
     {
-        return str_contains($e->getMessage(), 'UNIQUE constraint failed');
+        return str_contains($exception->getMessage(), 'UNIQUE constraint failed');
     }
 
     public function getAllComments(): array
