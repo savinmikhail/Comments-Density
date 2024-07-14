@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
-use SavinMikhail\CommentsDensity\Baseline\BaselineManager;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
