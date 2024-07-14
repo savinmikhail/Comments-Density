@@ -54,7 +54,8 @@ return [
         'property' => true, // Check for missing docblocks in properties
         'constant' => true, // Check for missing docblocks in constants
         'function' => true, // Check for missing docblocks in functions
-        'requireForAllMethods' => true, // If false, only methods where @throws tag or generic can be applied will be checked
+         // If false, only methods where @throws tag or generic can be applied will be checked
+        'requireForAllMethods' => true,
     ],
     'use_baseline' => true, // Filter collected comments against the baseline stored in comments_density.sqlite
 ];
