@@ -18,10 +18,6 @@ use function in_array;
 
 final readonly class MethodAnalyzer
 {
-    public function __construct(
-    ) {
-    }
-
     public function methodNeedsGeneric(Node $node): bool
     {
         $returnType = $node->getReturnType();
