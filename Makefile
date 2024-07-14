@@ -7,7 +7,7 @@ check:
 	php ./vendor/bin/grumphp run
 
 run:
-	php ./bin/comments_density analyze:comments --storage tree
+	php ./bin/comments_density analyze:comments
 
 base:
-	php ./bin/comments_density generate:baseline --storage tree
+	php ./bin/comments_density generate:baseline
