@@ -176,7 +176,7 @@ final class Analyzer
         float $cds,
         int $filesAnalyzed,
     ): OutputDTO {
-        $preparedCommentStatistic = $this->prepareCommentStatistics($commentStatistics);
+        $preparedStatistics = $this->prepareCommentStatistics($commentStatistics);
         $preparedComments = $this->prepareComments($comments);
         $performanceMetrics = $this->metrics->getPerformanceMetrics();
         $comToLoc = $this->metrics->prepareComToLoc($commentStatistics, $linesOfCode);
@@ -186,7 +186,7 @@ final class Analyzer
         }
         return new OutputDTO(
             $filesAnalyzed,
-            $preparedCommentStatistic,
+            $preparedStatistics,
             $preparedComments,
             $performanceMetrics,
             $comToLoc,
