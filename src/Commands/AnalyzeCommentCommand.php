@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Commands;
 
 use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
-use SavinMikhail\CommentsDensity\Baseline\BaselineManager;
-use SavinMikhail\CommentsDensity\Baseline\Storage\SimplePhpBaselineStorage;
-use SavinMikhail\CommentsDensity\Baseline\Storage\SQLiteBaselineStorage;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
@@ -30,20 +27,10 @@ class AnalyzeCommentCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $storageType = $input->getOption('storage');
-        $path = __DIR__ . '/../../baseline';
+        $path = __DIR__ . '/../../baseline.php';
 
-        $storage = match ($storageType) {
-            'tree' => new TreePhpBaselineStorage(),
-            'simple' => new SimplePhpBaselineStorage(),
-            default => new SQLiteBaselineStorage(),
-        };
-        $extension = match ($storageType) {
-            'tree', 'simple' => 'php',
-            default => 'sqlite',
-        };
-
-        $baselineManager = (new BaselineManager($storage))->init($path . '.' . $extension);
+        $storage = new TreePhpBaselineStorage();
+        $storage->init($path);
 
         $configDto = $this->getConfigDto();
 
@@ -51,7 +38,7 @@ class AnalyzeCommentCommand extends Command
         $reporter = (new ReporterFactory())->createReporter($output, $configDto);
         $analyzerFactory = new AnalyzerFactory();
 
-        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output, $baselineManager);
+        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output, $storage);
 
         $outputDTO = $analyzer->analyze($files);
 
