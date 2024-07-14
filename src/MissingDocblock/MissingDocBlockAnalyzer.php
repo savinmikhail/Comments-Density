@@ -31,7 +31,10 @@ final class MissingDocBlockAnalyzer
         $ast = $parser->parse($code);
 
         $traverser = new NodeTraverser();
-        $visitor = new MissingDocBlockVisitor($filename, $this->docblockConfigDTO);
+        $visitor = new MissingDocBlockVisitor(
+            $filename,
+            new DocBlockChecker($this->docblockConfigDTO, new MethodAnalyzer())
+        );
 
         $traverser->addVisitor(new NameResolver());
         $traverser->addVisitor($visitor);
