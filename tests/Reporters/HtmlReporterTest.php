@@ -44,7 +44,7 @@ final class HtmlReporterTest extends TestCase
             new CommentDTO('docblock', '#000000', 'some/file.php', 10, 'This is a docblock comment'),
             new CommentDTO('inline', '#FF0000', 'another/file.php', 20, 'This is an inline comment'),
         ];
-        $outputDTO = new OutputDTO(2, $commentsStatistics, $comments, $performanceDTO, $comToLocDTO, $cdsDTO);
+        $outputDTO = new OutputDTO(2, $commentsStatistics, $comments, $performanceDTO, $comToLocDTO, $cdsDTO, false);
 
         $reporter->report($outputDTO);
 
