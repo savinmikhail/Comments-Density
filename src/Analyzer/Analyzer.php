@@ -54,16 +54,7 @@ final class Analyzer
         $filesAnalyzed = 0;
 
         foreach ($files as $file) {
-            if (!($file instanceof SplFileInfo)) {
-                continue;
-            }
-            if ($this->isInWhitelist($file->getRealPath())) {
-                continue;
-            }
-            if ($file->getSize() === 0) {
-                continue;
-            }
-            if (!$this->isPhpFile($file) || !$file->isReadable()) {
+            if ($this->shouldSkipFile($file)) {
                 continue;
             }
 
@@ -73,39 +64,35 @@ final class Analyzer
 
             $filesAnalyzed++;
         }
+
         if ($this->configDTO->useBaseline) {
             $comments = $this->baselineStorage->filterComments($comments);
         }
 
         $commentStatistics = $this->countCommentOccurrences($comments);
 
-        return $this->createOutputDTO(
-            $comments,
-            $commentStatistics,
-            $totalLinesOfCode,
-            $this
-                ->metrics
-                ->calculateCDS($commentStatistics),
-            $filesAnalyzed,
-        );
+        return $this->createOutputDTO($comments, $commentStatistics, $totalLinesOfCode, $filesAnalyzed);
     }
 
-    public function analyzeFile(
-        string $filename,
-    ): array {
+    private function shouldSkipFile(SplFileInfo $file): bool
+    {
+        return
+            $this->isInWhitelist($file->getRealPath()) ||
+            $file->getSize() === 0 ||
+            !$this->isPhpFile($file) ||
+            !$file->isReadable();
+    }
+
+    private function analyzeFile(string $filename): array
+    {
         $this->output->writeln("<info>Analyzing $filename</info>");
 
         $code = file_get_contents($filename);
         $tokens = token_get_all($code);
 
         $comments = $this->getCommentsFromFile($tokens, $filename);
-        if (
-            empty($this->configDto->only)
-            || in_array('missingDocblock', $this->configDto->only, true)
-        ) {
-            $missingDocBlocks = $this
-                ->docBlockAnalyzer
-                ->getMissingDocblocks($code, $filename);
+        if ($this->shouldAnalyzeMissingDocBlocks()) {
+            $missingDocBlocks = $this->docBlockAnalyzer->getMissingDocblocks($code, $filename);
             $comments = array_merge($missingDocBlocks, $comments);
         }
 
@@ -117,14 +104,18 @@ final class Analyzer
         ];
     }
 
+    private function shouldAnalyzeMissingDocBlocks(): bool
+    {
+        return
+            empty($this->configDTO->only)
+            || in_array($this->missingDocBlock->getName(), $this->configDTO->only, true);
+    }
+
     private function getCommentsFromFile(array $tokens, string $filename): array
     {
         $comments = [];
         foreach ($tokens as $token) {
-            if (!is_array($token)) {
-                continue;
-            }
-            if (!in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
+            if (!is_array($token) || !in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
                 continue;
             }
             $commentType = $this->commentFactory->classifyComment($token[1]);
@@ -171,14 +162,13 @@ final class Analyzer
     private function createOutputDTO(
         array $comments,
         array $commentStatistics,
-        int $linesOfCode,
-        float $cds,
-        int $filesAnalyzed,
+        int $totalLinesOfCode,
+        int $filesAnalyzed
     ): OutputDTO {
         $preparedStatistics = $this->prepareCommentStatistics($commentStatistics);
         $preparedComments = $this->prepareComments($comments);
-        $comToLoc = $this->metrics->prepareComToLoc($commentStatistics, $linesOfCode);
-        $cds = $this->metrics->prepareCDS($cds);
+        $comToLoc = $this->metrics->prepareComToLoc($commentStatistics, $totalLinesOfCode);
+        $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($commentStatistics));
         if ($this->metrics->hasExceededThreshold()) {
             $this->exceedThreshold = true;
         }
@@ -200,34 +190,35 @@ final class Analyzer
     {
         $preparedStatistics = [];
         foreach ($commentStatistics as $type => $stat) {
-            if ($type === 'missingDocblock') {
-                $preparedStatistics[] = new CommentStatisticsDTO(
-                    $this->missingDocBlock->getColor(),
-                    $this->missingDocBlock->getName(),
-                    $stat['lines'],
-                    $this->missingDocBlock->getStatColor($stat['count'], $this->configDTO->thresholds),
-                    $stat['count']
-                );
-                if ($this->missingDocBlock->hasExceededThreshold()) {
-                    $this->exceedThreshold = true;
-                }
-                continue;
-            }
-            $commentType = $this->commentFactory->getCommentType($type);
-            if ($commentType) {
-                $preparedStatistics[] = new CommentStatisticsDTO(
-                    $commentType->getColor(),
-                    $commentType->getName(),
-                    $stat['lines'],
-                    $commentType->getStatColor($stat['count'], $this->configDTO->thresholds),
-                    $stat['count']
-                );
-                if ($commentType->hasExceededThreshold()) {
-                    $this->exceedThreshold = true;
-                }
-            }
+            $preparedStatistics[] = $this->prepareCommentStatistic($type, $stat);
         }
         return $preparedStatistics;
+    }
+
+    private function prepareCommentStatistic(string $type, array $stat): CommentStatisticsDTO
+    {
+        if ($type === $this->missingDocBlock->getName()) {
+            return new CommentStatisticsDTO(
+                $this->missingDocBlock->getColor(),
+                $this->missingDocBlock->getName(),
+                $stat['lines'],
+                $this->missingDocBlock->getStatColor($stat['count'], $this->configDTO->thresholds),
+                $stat['count']
+            );
+        }
+
+        $commentType = $this->commentFactory->getCommentType($type);
+        if ($commentType) {
+            return new CommentStatisticsDTO(
+                $commentType->getColor(),
+                $commentType->getName(),
+                $stat['lines'],
+                $commentType->getStatColor($stat['count'], $this->configDTO->thresholds),
+                $stat['count']
+            );
+        }
+
+        return new CommentStatisticsDTO('', $type, $stat['lines'], '', $stat['count']);
     }
 
     private function prepareComments(array $comments): array
@@ -236,26 +227,23 @@ final class Analyzer
         foreach ($comments as $comment) {
             /** @var CommentTypeInterface|string $commentType */
             $commentType = $comment['type'];
-            if ($commentType === 'missingDocblock') {
+            if ($commentType === $this->missingDocBlock->getName()) {
                 $preparedComments[] = new CommentDTO(
-                    'missingDocblock',
-                    'red',
+                    $this->missingDocBlock->getName(),
+                    $this->missingDocBlock->getColor(),
                     $comment['file'],
                     $comment['line'],
                     $comment['content']
                 );
-                continue;
+            } elseif ($commentType->getWeight() <= 0) {
+                $preparedComments[] = new CommentDTO(
+                    $commentType->getName(),
+                    $commentType->getColor(),
+                    $comment['file'],
+                    $comment['line'],
+                    $comment['content']
+                );
             }
-            if ($commentType->getWeight() > 0) {
-                continue;
-            }
-            $preparedComments[] = new CommentDTO(
-                $commentType->getName(),
-                $commentType->getColor(),
-                $comment['file'],
-                $comment['line'],
-                $comment['content']
-            );
         }
         return $preparedComments;
     }
