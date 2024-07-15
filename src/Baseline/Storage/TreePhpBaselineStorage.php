@@ -21,7 +21,7 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
     public function setComments(array $comments): void
     {
         foreach ($comments as $comment) {
-            $pathParts = explode(DIRECTORY_SEPARATOR, $comment->file);
+            $pathParts = explode(DIRECTORY_SEPARATOR, ltrim($comment->file, DIRECTORY_SEPARATOR));
             $this->addCommentToTree($this->baselineData, $pathParts, $comment);
         }
         file_put_contents($this->path, "<?php return " . var_export($this->baselineData, true) . ";");
@@ -45,8 +45,8 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
 
     public function filterComments(array $comments): array
     {
-        return array_filter($comments, function ($comment) {
-            $pathParts = explode(DIRECTORY_SEPARATOR, $comment['file']);
+        return array_filter($comments, function ($comment): bool {
+            $pathParts = explode(DIRECTORY_SEPARATOR, ltrim($comment['file'], DIRECTORY_SEPARATOR));
             return !$this->commentExistsInTree($this->baselineData, $pathParts, $comment['line']);
         });
     }
