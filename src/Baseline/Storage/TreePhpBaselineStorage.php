@@ -45,10 +45,12 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
 
     public function filterComments(array $comments): array
     {
-        return array_filter($comments, function ($comment): bool {
+        $filteredComments = array_filter($comments, function ($comment): bool {
             $pathParts = explode(DIRECTORY_SEPARATOR, ltrim($comment['file'], DIRECTORY_SEPARATOR));
             return !$this->commentExistsInTree($this->baselineData, $pathParts, $comment['line']);
         });
+
+        return array_values($filteredComments);
     }
 
     private function commentExistsInTree(array $tree, array $pathParts, int $line): bool
