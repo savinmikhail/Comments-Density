@@ -21,19 +21,46 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
     public function setComments(array $comments): void
     {
         foreach ($comments as $comment) {
-            $this->baselineData[$comment->file][$comment->line] = [
-                'comment' => $comment->content,
-                'type' => $comment->commentType,
-            ];
+            $pathParts = explode(DIRECTORY_SEPARATOR, $comment->file);
+            $this->addCommentToTree($this->baselineData, $pathParts, $comment);
         }
         file_put_contents($this->path, "<?php return " . var_export($this->baselineData, true) . ";");
     }
 
+    private function addCommentToTree(array &$tree, array $pathParts, $comment): void
+    {
+        $currentPart = array_shift($pathParts);
+        if (!isset($tree[$currentPart])) {
+            $tree[$currentPart] = [];
+        }
+        if (empty($pathParts)) {
+            $tree[$currentPart][$comment->line] = [
+                'comment' => $comment->content,
+                'type' => $comment->commentType,
+            ];
+        } else {
+            $this->addCommentToTree($tree[$currentPart], $pathParts, $comment);
+        }
+    }
+
     public function filterComments(array $comments): array
     {
-        return array_filter(
-            $comments,
-            fn(array $comment) => !isset($this->baselineData[$comment['file']][$comment['line']])
-        );
+        return array_filter($comments, function ($comment) {
+            $pathParts = explode(DIRECTORY_SEPARATOR, $comment['file']);
+            return !$this->commentExistsInTree($this->baselineData, $pathParts, $comment['line']);
+        });
+    }
+
+    private function commentExistsInTree(array $tree, array $pathParts, int $line): bool
+    {
+        $currentPart = array_shift($pathParts);
+        if (!isset($tree[$currentPart])) {
+            return false;
+        }
+        if (empty($pathParts)) {
+            return isset($tree[$currentPart][$line]);
+        } else {
+            return $this->commentExistsInTree($tree[$currentPart], $pathParts, $line);
+        }
     }
 }
