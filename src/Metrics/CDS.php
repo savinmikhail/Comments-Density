@@ -34,7 +34,7 @@ final class CDS
         try {
             return (new Integer(0))
                 ->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
-        } catch (InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException) {
             return 0;
         }
     }
