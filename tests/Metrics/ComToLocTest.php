@@ -7,7 +7,7 @@ namespace SavinMikhail\Tests\CommentsDensity\Metrics;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
 
-final class ComToLocTest  extends TestCase
+final class ComToLocTest extends TestCase
 {
     public function testPrepareComToLocAboveThreshold(): void
     {
