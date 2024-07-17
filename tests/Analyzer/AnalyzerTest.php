@@ -13,6 +13,7 @@ use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
+use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
@@ -35,7 +36,6 @@ final class AnalyzerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->configDTO = $this->createMock(ConfigDTO::class);
         $this->commentFactory = $this->createMock(CommentFactory::class);
         $this->missingDocBlock = $this->createMock(MissingDocBlockAnalyzer::class);
         $this->metrics = $this->createMock(MetricsFacade::class);
@@ -43,9 +43,21 @@ final class AnalyzerTest extends TestCase
         $this->docBlockAnalyzer = $this->createMock(MissingDocBlockAnalyzer::class);
         $this->baselineStorage = $this->createMock(BaselineStorageInterface::class);
 
-        $this->analyzer = $this->getMockBuilder(Analyzer::class)
+        // Initialize ConfigDTO with necessary properties
+        $configDTO = new ConfigDTO(
+            thresholds: [],
+            exclude: ['/excluded/dir'],
+            output: [],
+            directories: [],
+            only: [],
+            docblockConfigDTO: $this->createMock(MissingDocblockConfigDTO::class),
+            useBaseline: false
+        );
+
+        $this->analyzer = $this
+            ->getMockBuilder(Analyzer::class)
             ->setConstructorArgs([
-                $this->configDTO,
+                $configDTO,
                 $this->commentFactory,
                 $this->missingDocBlock,
                 $this->metrics,
@@ -60,6 +72,64 @@ final class AnalyzerTest extends TestCase
         vfsStream::setup('root', null, [
             'file1.php' => "<?php\n// Test comment\n/** Test doc comment */\n"
         ]);
+    }
+
+    public function testShouldSkipFile(): void
+    {
+        // Use reflection to access the private shouldSkipFile method
+        $reflection = new ReflectionClass($this->analyzer);
+        $method = $reflection->getMethod('shouldSkipFile');
+        $method->setAccessible(true);
+
+        // Case 1: File is in whitelist
+        $file = $this->createConfiguredMock(SplFileInfo::class, [
+            'getRealPath' => '/excluded/dir/file1.php',
+            'getSize' => 100,
+            'getExtension' => 'php',
+            'isFile' => true,
+            'isReadable' => true,
+        ]);
+        $this->assertTrue($method->invokeArgs($this->analyzer, [$file]));
+
+        // Case 2: File size is 0
+        $file = $this->createConfiguredMock(SplFileInfo::class, [
+            'getRealPath' => '/root/file1.php',
+            'getSize' => 0,
+            'getExtension' => 'php',
+            'isFile' => true,
+            'isReadable' => true,
+        ]);
+        $this->assertTrue($method->invokeArgs($this->analyzer, [$file]));
+
+        // Case 3: File is not a PHP file
+        $file = $this->createConfiguredMock(SplFileInfo::class, [
+            'getRealPath' => '/root/file1.txt',
+            'getSize' => 100,
+            'getExtension' => 'txt',
+            'isFile' => true,
+            'isReadable' => true,
+        ]);
+        $this->assertTrue($method->invokeArgs($this->analyzer, [$file]));
+
+        // Case 4: File is not readable
+        $file = $this->createConfiguredMock(SplFileInfo::class, [
+            'getRealPath' => '/root/file1.php',
+            'getSize' => 100,
+            'getExtension' => 'php',
+            'isReadable' => false,
+            'isFile' => true,
+        ]);
+        $this->assertTrue($method->invokeArgs($this->analyzer, [$file]));
+
+        // Case 5: File should not be skipped
+        $file = $this->createConfiguredMock(SplFileInfo::class, [
+            'getRealPath' => '/root/file1.php',
+            'getSize' => 100,
+            'getExtension' => 'php',
+            'isReadable' => true,
+            'isFile' => true,
+        ]);
+        $this->assertFalse($method->invokeArgs($this->analyzer, [$file]));
     }
 
     public function testAnalyzeWithFiles(): void
