@@ -847,4 +847,46 @@ CODE
         $missingDocBlocks = $analyzer->getMissingDocblocks($code, 'test.php');
         $this->assertCount($expectedCount, $missingDocBlocks);
     }
+
+    public function testGetColor(): void
+    {
+        $this->assertEquals('red', $this->analyzer->getColor());
+    }
+
+    public function testGetStatColor(): void
+    {
+        $thresholds = [
+            'missingDocBlock' => 10
+        ];
+
+        // Case 1: Count below threshold
+        $this->assertEquals('green', $this->analyzer->getStatColor(5, $thresholds));
+        $this->assertFalse($this->analyzer->hasExceededThreshold());
+
+        // Case 2: Count at threshold
+        $this->assertEquals('green', $this->analyzer->getStatColor(10, $thresholds));
+        $this->assertFalse($this->analyzer->hasExceededThreshold());
+
+        // Case 3: Count above threshold
+        $this->assertEquals('red', $this->analyzer->getStatColor(15, $thresholds));
+        $this->assertTrue($this->analyzer->hasExceededThreshold());
+
+        // Case 4: Threshold not set
+        $this->assertEquals('white', $this->analyzer->getStatColor(15, []));
+    }
+
+    public function testHasExceededThreshold(): void
+    {
+        $thresholds = [
+            'missingDocBlock' => 10
+        ];
+
+        $this->analyzer->getStatColor(15, $thresholds);
+        $this->assertTrue($this->analyzer->hasExceededThreshold());
+    }
+
+    public function testGetName(): void
+    {
+        $this->assertEquals('missingDocblock', $this->analyzer->getName());
+    }
 }
