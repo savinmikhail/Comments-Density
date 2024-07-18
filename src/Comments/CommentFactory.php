@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Comments;
 
+use Generator;
 use function in_array;
 
 final class CommentFactory
@@ -23,6 +24,13 @@ final class CommentFactory
         ];
 
         $this->allowedTypes = $allowedTypes;
+    }
+
+    public function getCommentTypes(): Generator
+    {
+        foreach ($this->commentTypes as $commentType) {
+            yield $commentType;
+        }
     }
 
     public function getCommentType(string $name): ?CommentTypeInterface
