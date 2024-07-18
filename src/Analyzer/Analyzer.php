@@ -159,19 +159,20 @@ final class Analyzer
         return $lineCounts;
     }
 
-    private function checkThresholdExceeded(): void
+    private function checkThresholdsExceeded(): bool
     {
         if ($this->metrics->hasExceededThreshold()) {
-            $this->exceedThreshold = true;
+            return true;
         }
         if ($this->missingDocBlock->hasExceededThreshold()) {
-            $this->exceedThreshold = true;
+            return true;
         }
         foreach ($this->commentFactory->getCommentTypes() as $commentType) {
             if ($commentType->hasExceededThreshold()) {
-                $this->exceedThreshold = true;
+                return true;
             }
         }
+        return false;
     }
 
     private function createOutputDTO(
@@ -184,7 +185,7 @@ final class Analyzer
         $preparedComments = $this->prepareComments($comments);
         $comToLoc = $this->metrics->prepareComToLoc($commentStatistics, $totalLinesOfCode);
         $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($commentStatistics));
-        $this->checkThresholdExceeded();
+        $this->exceedThreshold = $this->checkThresholdsExceeded();
         $this->metrics->stopPerformanceMonitoring();
         $performanceMetrics = $this->metrics->getPerformanceMetrics();
 
