@@ -52,7 +52,10 @@ final class DocBlockChecker
             return true;
         }
 
-        if ($node instanceof ClassMethod && $this->config->function) {
+        if (
+            ($node instanceof ClassMethod || $node instanceof Function_)
+            && $this->config->function
+        ) {
             if ($this->config->requireForAllMethods) {
                 return true;
             }
