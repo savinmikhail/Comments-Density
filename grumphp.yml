@@ -51,5 +51,5 @@ grumphp:
             ignore_patterns: []
             triggered_by: ['php']
             memory_limit: "-1"
-            use_grumphp_paths: true
+            use_grumphp_paths: false
 
