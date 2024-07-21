@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
 use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
 
 final class CDSTest extends TestCase
@@ -24,12 +25,12 @@ final class CDSTest extends TestCase
     public function testCalculateCDS(): void
     {
         $commentStatistics = [
-            'docBlock' => ['count' => 10, 'lines' => 12],
-            'regular' => ['count' => 10, 'lines' => 12],
-            'todo' => ['count' => 10, 'lines' => 12],
-            'fixme' => ['count' => 10, 'lines' => 12],
-            'license' => ['count' => 10, 'lines' => 12],
-            'missingDocblock' => ['count' => 10, 'lines' => 12],
+            new CommentStatisticsDTO('red', 'docBlock', 12, 'red', 10),
+            new CommentStatisticsDTO('red', 'regular', 12, 'red', 10),
+            new CommentStatisticsDTO('red', 'todo', 12, 'red', 10),
+            new CommentStatisticsDTO('red', 'fixme', 12, 'red', 10),
+            new CommentStatisticsDTO('red', 'license', 12, 'red', 10),
+            new CommentStatisticsDTO('red', 'missingDocblock', 12, 'red', 10),
         ];
 
         $cdsValue = $this->cds->calculateCDS($commentStatistics);
@@ -69,10 +70,12 @@ final class CDSTest extends TestCase
     {
         $this->assertFalse($this->cds->hasExceededThreshold());
 
-        $cds = $this->cds->calculateCDS([
-            'docBlock' => ['count' => 1, 'lines' => 12],
-            'missingDocblock' => ['count' => 10, 'lines' => 12],
-        ]);
+        $commentStatistics = [
+            new CommentStatisticsDTO('red', 'docBlock', 12, 'red', 1),
+            new CommentStatisticsDTO('red', 'missingDocblock', 12, 'red', 10),
+        ];
+
+        $cds = $this->cds->calculateCDS($commentStatistics);
         $this->cds->prepareCDS($cds);
 
         $this->assertTrue($this->cds->hasExceededThreshold());
