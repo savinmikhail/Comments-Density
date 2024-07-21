@@ -57,7 +57,7 @@ return [
          // If false, only methods where @throws tag or generic can be applied will be checked
         'requireForAllMethods' => true,
     ],
-    'use_baseline' => true, // Filter collected comments against the baseline stored in comments_density.sqlite
+    'use_baseline' => true, // Filter collected comments against the baseline stored in baseline.php
 ];
 
 PHP;
