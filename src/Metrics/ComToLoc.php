@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Metrics;
 
+use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 
-use function array_sum;
 use function round;
 
 final class ComToLoc
@@ -17,6 +17,11 @@ final class ComToLoc
     {
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @param int $linesOfCode
+     * @return ComToLocDTO
+     */
     public function prepareComToLoc(array $commentStatistics, int $linesOfCode): ComToLocDTO
     {
         $ratio = $this->getRatio($commentStatistics, $linesOfCode);
@@ -31,6 +36,11 @@ final class ComToLoc
         return $this->exceedThreshold;
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @param int $linesOfCode
+     * @return float
+     */
     private function getRatio(array $commentStatistics, int $linesOfCode): float
     {
         if ($linesOfCode === 0) {
@@ -40,7 +50,7 @@ final class ComToLoc
         $totalComments = 0;
 
         foreach ($commentStatistics as $stat) {
-            $totalComments += $stat['lines'];
+            $totalComments += $stat->lines;
         }
 
         return round($totalComments / $linesOfCode, 2);
