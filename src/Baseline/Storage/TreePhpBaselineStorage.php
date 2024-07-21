@@ -20,6 +20,10 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
         $this->baselineData = include $path;
     }
 
+    /**
+     * @param CommentDTO[] $comments
+     * @return void
+     */
     public function setComments(array $comments): void
     {
         foreach ($comments as $comment) {
@@ -29,6 +33,12 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
         file_put_contents($this->path, "<?php return " . var_export($this->baselineData, true) . ";");
     }
 
+    /**
+     * @param array $tree
+     * @param string[] $pathParts
+     * @param CommentDTO $comment
+     * @return void
+     */
     private function addCommentToTree(array &$tree, array $pathParts, CommentDTO $comment): void
     {
         $currentPart = array_shift($pathParts);
@@ -45,6 +55,10 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
         }
     }
 
+    /**
+     * @param CommentDTO[] $comments
+     * @return CommentDTO[]
+     */
     public function filterComments(array $comments): array
     {
         $filteredComments = array_filter($comments, function (CommentDTO $comment): bool {
@@ -55,6 +69,12 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
         return array_values($filteredComments);
     }
 
+    /**
+     * @param array $tree
+     * @param string[] $pathParts
+     * @param int $line
+     * @return bool
+     */
     private function commentExistsInTree(array $tree, array $pathParts, int $line): bool
     {
         $currentPart = array_shift($pathParts);
