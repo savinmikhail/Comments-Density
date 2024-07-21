@@ -25,6 +25,12 @@ abstract class Comment implements Stringable, CommentTypeInterface, CommentConst
         return $this->getName();
     }
 
+    /**
+     * @param int $count
+     * @param array<string, float> $thresholds
+     *
+     * @return string
+     */
     public function getStatColor(int $count, array $thresholds): string
     {
         if (!isset($thresholds[$this->getName()])) {
