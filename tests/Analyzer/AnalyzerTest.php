@@ -190,12 +190,13 @@ final class AnalyzerTest extends TestCase
 
         $this->assertIsArray($comments);
         $this->assertCount(2, $comments);
-        $this->assertEquals([
-            'content' => '// Test comment',
-            'type' => $commentTypeMock,
-            'line' => 1,
-            'file' => $filename
-        ], $comments[0]);
+        $this->assertEquals(new CommentDTO(
+            $commentTypeMock->getName(),
+            $commentTypeMock->getColor(),
+            $filename,
+            1,
+            '// Test comment',
+        ), $comments[0]);
     }
 
     public function testCountTotalLines(): void
@@ -225,18 +226,20 @@ final class AnalyzerTest extends TestCase
     public function testCountCommentOccurrences(): void
     {
         $comments = [
-            [
-                'content' => '// Test comment',
-                'type' => 'regular',
-                'line' => 1,
-                'file' => '/path/to/file1.php'
-            ],
-            [
-                'content' => '/** Test doc comment */',
-                'type' => 'docBlock',
-                'line' => 2,
-                'file' => '/path/to/file1.php'
-            ]
+            new CommentDTO(
+                'regular',
+                'red',
+                '/path/to/file1.php',
+                1,
+                '// Test comment',
+            ),
+            new CommentDTO(
+                'docBlock',
+                'green',
+                '/path/to/file1.php',
+                2,
+                '/** Test doc comment */',
+            ),
         ];
 
         $reflection = new ReflectionClass($this->analyzer);

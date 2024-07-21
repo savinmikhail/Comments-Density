@@ -78,14 +78,14 @@ final class TreePhpBaselineStorageTest extends TestCase
         $this->storage->setComments($existingComments);
 
         $comments = [
-            ['file' => '/path/to/file1.php', 'line' => 10, 'content' => 'Test comment 1', 'commentType' => 'regular'],
-            ['file' => '/path/to/file2.php', 'line' => 20, 'content' => 'Test comment 2', 'commentType' => 'regular'],
+            new CommentDTO('regular', 'red', '/path/to/file1.php', 10, 'Test comment 1'),
+            new CommentDTO('regular', 'red', '/path/to/file2.php', 20, 'Test comment 2'),
         ];
 
         $filteredComments = $this->storage->filterComments($comments);
 
         $expectedFilteredComments = [
-            ['file' => '/path/to/file2.php', 'line' => 20, 'content' => 'Test comment 2', 'commentType' => 'regular'],
+            new CommentDTO('regular', 'red', '/path/to/file2.php', 20, 'Test comment 2')
         ];
 
         $this->assertEquals($expectedFilteredComments, $filteredComments);
