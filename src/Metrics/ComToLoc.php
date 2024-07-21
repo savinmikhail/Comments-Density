@@ -13,6 +13,9 @@ final class ComToLoc
 {
     private bool $exceedThreshold = false;
 
+    /**
+     * @param array<string, float> $thresholds
+     */
     public function __construct(private readonly array $thresholds)
     {
     }
