@@ -8,6 +8,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\NodeVisitor\NameResolver;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 
 final class MissingDocBlockAnalyzer
 {
@@ -23,7 +24,8 @@ final class MissingDocBlockAnalyzer
      *
      * @param string $code The code to analyze.
      * @param string $filename The filename of the code.
-     * @return array The analysis results.
+     *
+     * @return CommentDTO[] The analysis results.
      */
     public function analyze(string $code, string $filename): array
     {
@@ -43,6 +45,12 @@ final class MissingDocBlockAnalyzer
         return $visitor->missingDocBlocks;
     }
 
+    /**
+     * @param string $code
+     * @param string $filename
+     *
+     * @return CommentDTO[]
+     */
     public function getMissingDocblocks(string $code, string $filename): array
     {
         return $this->analyze($code, $filename);
