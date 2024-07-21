@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Metrics;
 
 use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 
@@ -47,6 +48,11 @@ final readonly class MetricsFacade
         return $this->cds->prepareCDS($cds);
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @param int $linesOfCode
+     * @return ComToLocDTO
+     */
     public function prepareComToLoc(array $commentStatistics, int $linesOfCode): ComToLocDTO
     {
         return $this->comToLoc->prepareComToLoc($commentStatistics, $linesOfCode);
