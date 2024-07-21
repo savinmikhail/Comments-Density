@@ -53,6 +53,10 @@ class AnalyzeFilesCommand extends Command
         return SymfonyCommand::SUCCESS;
     }
 
+    /**
+     * @param string[] $filePaths
+     * @return Generator
+     */
     protected function generateFiles(array $filePaths): Generator
     {
         foreach ($filePaths as $filePath) {
