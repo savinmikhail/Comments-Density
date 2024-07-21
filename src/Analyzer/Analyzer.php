@@ -189,7 +189,7 @@ final class Analyzer
     ): OutputDTO {
         $preparedStatistics = $this->prepareCommentStatistics($commentStatistics);
         $comToLoc = $this->metrics->prepareComToLoc($preparedStatistics, $totalLinesOfCode);
-        $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($commentStatistics));
+        $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($preparedStatistics));
         $this->exceedThreshold = $this->checkThresholdsExceeded();
         $this->metrics->stopPerformanceMonitoring();
         $performanceMetrics = $this->metrics->getPerformanceMetrics();
