@@ -12,9 +12,11 @@ final class CommentFactory
 {
     /** @var array<array-key, CommentTypeInterface> */
     private array $commentTypes;
-    private array $allowedTypes;
 
-    public function __construct(array $allowedTypes = [])
+    /**
+     * @param string[] $allowedTypes
+     */
+    public function __construct(private readonly array $allowedTypes = [])
     {
         $this->commentTypes =  [
             new TodoComment(),
@@ -23,8 +25,6 @@ final class CommentFactory
             new LicenseComment(),
             new DocBlockComment(),
         ];
-
-        $this->allowedTypes = $allowedTypes;
     }
 
     public function getCommentTypes(): Generator
