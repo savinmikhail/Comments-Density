@@ -120,12 +120,14 @@ final class Analyzer
             }
             $commentType = $this->commentFactory->classifyComment($token[1]);
             if ($commentType) {
-                $comments[] = [
-                    'content' => $token[1],
-                    'type' => $commentType,
-                    'line' => $token[2],
-                    'file' => $filename
-                ];
+                $comments[] =
+                    new CommentDTO(
+                        $commentType->getName(),
+                        $commentType->getColor(),
+                        $filename,
+                        $token[2],
+                        $token[1],
+                    );
             }
         }
         return $comments;
@@ -142,18 +144,22 @@ final class Analyzer
         return $file->isFile() && $file->getExtension() === 'php';
     }
 
+    /**
+     * @param CommentDTO[] $comments
+     * @return array
+     */
     private function countCommentOccurrences(array $comments): array
     {
         $lineCounts = [];
         foreach ($comments as $comment) {
-            $typeName = (string)$comment['type'];
+            $typeName = $comment->commentType;
             if (!isset($lineCounts[$typeName])) {
                 $lineCounts[$typeName] = [
                     'lines' => 0,
                     'count' => 0,
                 ];
             }
-            $lineCounts[$typeName]['lines'] += substr_count($comment['content'], PHP_EOL) + 1;
+            $lineCounts[$typeName]['lines'] += substr_count($comment->content, PHP_EOL) + 1;
             $lineCounts[$typeName]['count']++;
         }
         return $lineCounts;
@@ -182,7 +188,6 @@ final class Analyzer
         int $filesAnalyzed
     ): OutputDTO {
         $preparedStatistics = $this->prepareCommentStatistics($commentStatistics);
-        $preparedComments = $this->prepareComments($comments);
         $comToLoc = $this->metrics->prepareComToLoc($commentStatistics, $totalLinesOfCode);
         $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($commentStatistics));
         $this->exceedThreshold = $this->checkThresholdsExceeded();
@@ -192,7 +197,7 @@ final class Analyzer
         return new OutputDTO(
             $filesAnalyzed,
             $preparedStatistics,
-            $preparedComments,
+            $comments,
             $performanceMetrics,
             $comToLoc,
             $cds,
@@ -233,33 +238,6 @@ final class Analyzer
         }
 
         return new CommentStatisticsDTO('', $type, $stat['lines'], '', $stat['count']);
-    }
-
-    private function prepareComments(array $comments): array
-    {
-        $preparedComments = [];
-        foreach ($comments as $comment) {
-            /** @var CommentTypeInterface|string $commentType */
-            $commentType = $comment['type'];
-            if ($commentType === $this->missingDocBlock->getName()) {
-                $preparedComments[] = new CommentDTO(
-                    $this->missingDocBlock->getName(),
-                    $this->missingDocBlock->getColor(),
-                    $comment['file'],
-                    $comment['line'],
-                    $comment['content']
-                );
-            } elseif ($commentType->getWeight() <= 0) {
-                $preparedComments[] = new CommentDTO(
-                    $commentType->getName(),
-                    $commentType->getColor(),
-                    $comment['file'],
-                    $comment['line'],
-                    $comment['content']
-                );
-            }
-        }
-        return $preparedComments;
     }
 
     private function isInWhitelist(string $filePath): bool
