@@ -77,7 +77,7 @@ final class DocBlockChecker
      * here we want to find methods that have uncaught throw statements or their return type will be better
      * described as generic
      */
-    private function methodRequiresAdditionalDocBlock(Node $node): bool
+    private function methodRequiresAdditionalDocBlock(ClassMethod|Function_ $node): bool
     {
         $this->throwsUncaught = $this->methodAnalyzer->methodThrowsUncaughtExceptions($node);
         $this->needsGeneric = $this->methodAnalyzer->methodNeedsGeneric($node);

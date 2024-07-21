@@ -41,7 +41,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         }
     }
 
-    private function isInCatchBlock(Node $node): bool
+    private function isInCatchBlock(Throw_ $node): bool
     {
         foreach ($this->getCurrentCatchStack() as $catch) {
             if ($this->nodeIsWithin($node, $catch)) {
@@ -51,7 +51,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         return false;
     }
 
-    private function isInTryBlock(Node $node): bool
+    private function isInTryBlock(Throw_ $node): bool
     {
         foreach ($this->tryCatchStack as $tryCatch) {
             foreach ($tryCatch->stmts as $stmt) {
@@ -63,7 +63,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         return false;
     }
 
-    private function isRethrowingCaughtException(Node $throwNode): bool
+    private function isRethrowingCaughtException(Throw_ $throwNode): bool
     {
         $throwExpr = $throwNode->expr;
 
@@ -86,7 +86,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
             $node->getEndFilePos() <= $container->getEndFilePos();
     }
 
-    private function isExceptionCaught(Node $throwNode): bool
+    private function isExceptionCaught(Throw_ $throwNode): bool
     {
         $throwExpr = $throwNode->expr;
 

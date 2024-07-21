@@ -10,6 +10,8 @@ use PhpParser\Node;
 use PhpParser\Node\ComplexType;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
 use ReflectionClass;
 
@@ -18,7 +20,7 @@ use function in_array;
 
 final readonly class MethodAnalyzer
 {
-    public function methodNeedsGeneric(Node $node): bool
+    public function methodNeedsGeneric(ClassMethod|Function_ $node): bool
     {
         $returnType = $node->getReturnType();
 
