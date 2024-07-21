@@ -35,9 +35,12 @@ final readonly class ConsoleReporter implements ReporterInterface
         $this->output->writeln("<fg=white>Files analyzed: $filesAnalyzed</>");
     }
 
+    /**
+     * @param CommentDTO[] $comments
+     * @return void
+     */
     private function printDetailedComments(array $comments): void
     {
-        /** @var CommentDTO $commentDTO */
         foreach ($comments as $commentDTO) {
             $this->output->writeln(
                 "<fg=$commentDTO->commentTypeColor>$commentDTO->commentType comment</> in "
@@ -63,13 +66,17 @@ final readonly class ConsoleReporter implements ReporterInterface
         $this->output->writeln(["<fg=$dto->color>CDS: $dto->cds</>"]);
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @return void
+     */
     private function printTable(array $commentStatistics): void
     {
         $table = new Table($this->output);
         $table
             ->setHeaders(['Comment Type', 'Lines', 'Times'])
             ->setRows(
-                array_map(function (CommentStatisticsDTO $dto): array {
+                array_map(static function (CommentStatisticsDTO $dto): array {
                     return [
                         "<fg=" . $dto->typeColor . ">$dto->type</>",
                         "<fg=white>$dto->lines</>",
