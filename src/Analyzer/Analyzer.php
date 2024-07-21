@@ -33,7 +33,7 @@ use const T_DOC_COMMENT;
 
 final class Analyzer
 {
-    private bool $exceedThreshold = false;
+    private int $totalLinesOfCode = 0;
 
     public function __construct(
         private readonly ConfigDTO $configDTO,
@@ -50,7 +50,6 @@ final class Analyzer
     {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];
-        $totalLinesOfCode = 0;
         $filesAnalyzed = 0;
 
         foreach ($files as $file) {
@@ -58,9 +57,8 @@ final class Analyzer
                 continue;
             }
 
-            $commentsAndLines = $this->analyzeFile($file->getRealPath());
-            $totalLinesOfCode += $commentsAndLines['linesOfCode'];
-            array_push($comments, ...$commentsAndLines['comments']);
+            $newComments = $this->analyzeFile($file->getRealPath());
+            array_push($comments, ...$newComments);
 
             $filesAnalyzed++;
         }
@@ -69,9 +67,24 @@ final class Analyzer
             $comments = $this->baselineStorage->filterComments($comments);
         }
 
-        $commentStatistics = $this->countCommentOccurrences($comments);
+        $commentStatistics = $this->calculateCommentStatistics($comments);
 
-        return $this->createOutputDTO($comments, $commentStatistics, $totalLinesOfCode, $filesAnalyzed);
+        return $this->createOutputDTO($comments, $commentStatistics, $filesAnalyzed);
+    }
+
+    /**
+     * @param CommentDTO[] $comments
+     * @return CommentStatisticsDTO[]
+     */
+    private function calculateCommentStatistics(array $comments): array
+    {
+        $occurrences = $this->countCommentOccurrences($comments);
+        $preparedStatistics = [];
+        foreach ($occurrences as $type => $stat) {
+            $preparedStatistics[] = $this->prepareCommentStatistic($type, $stat);
+        }
+
+        return $preparedStatistics;
     }
 
     private function shouldSkipFile(SplFileInfo $file): bool
@@ -83,6 +96,10 @@ final class Analyzer
             !$file->isReadable();
     }
 
+    /**
+     * @param string $filename
+     * @return CommentDTO[]
+     */
     private function analyzeFile(string $filename): array
     {
         $this->output->writeln("<info>Analyzing $filename</info>");
@@ -96,12 +113,9 @@ final class Analyzer
             $comments = array_merge($missingDocBlocks, $comments);
         }
 
-        $linesOfCode = $this->countTotalLines($filename);
+        $this->totalLinesOfCode = $this->countTotalLines($filename);
 
-        return [
-            'comments' => $comments,
-            'linesOfCode' => $linesOfCode,
-        ];
+        return $comments;
     }
 
     private function shouldAnalyzeMissingDocBlocks(): bool
@@ -111,6 +125,7 @@ final class Analyzer
             || in_array($this->missingDocBlock->getName(), $this->configDTO->only, true);
     }
 
+    /** @return CommentDTO[] */
     private function getCommentsFromFile(array $tokens, string $filename): array
     {
         $comments = [];
@@ -181,16 +196,20 @@ final class Analyzer
         return false;
     }
 
+    /**
+     * @param CommentDTO[] $comments
+     * @param CommentStatisticsDTO[] $preparedStatistics
+     * @param int $filesAnalyzed
+     * @return OutputDTO
+     */
     private function createOutputDTO(
         array $comments,
-        array $commentStatistics,
-        int $totalLinesOfCode,
+        array $preparedStatistics,
         int $filesAnalyzed
     ): OutputDTO {
-        $preparedStatistics = $this->prepareCommentStatistics($commentStatistics);
-        $comToLoc = $this->metrics->prepareComToLoc($preparedStatistics, $totalLinesOfCode);
+        $comToLoc = $this->metrics->prepareComToLoc($preparedStatistics, $this->totalLinesOfCode);
         $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($preparedStatistics));
-        $this->exceedThreshold = $this->checkThresholdsExceeded();
+        $exceedThreshold = $this->checkThresholdsExceeded();
         $this->metrics->stopPerformanceMonitoring();
         $performanceMetrics = $this->metrics->getPerformanceMetrics();
 
@@ -201,17 +220,8 @@ final class Analyzer
             $performanceMetrics,
             $comToLoc,
             $cds,
-            $this->exceedThreshold
+            $exceedThreshold
         );
-    }
-
-    private function prepareCommentStatistics(array $commentStatistics): array
-    {
-        $preparedStatistics = [];
-        foreach ($commentStatistics as $type => $stat) {
-            $preparedStatistics[] = $this->prepareCommentStatistic($type, $stat);
-        }
-        return $preparedStatistics;
     }
 
     private function prepareCommentStatistic(string $type, array $stat): CommentStatisticsDTO
