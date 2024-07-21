@@ -17,7 +17,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
     public bool $hasUncaughtThrows = false;
     private array $tryCatchStack = [];
 
-    public function enterNode(Node $node): void
+    public function enterNode(Node $node): null
     {
         if ($node instanceof TryCatch) {
             $this->tryCatchStack[] = $node;
@@ -32,13 +32,16 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
                 $this->hasUncaughtThrows = true;
             }
         }
+        return null;
     }
 
-    public function leaveNode(Node $node): void
+    public function leaveNode(Node $node): null
     {
         if ($node instanceof TryCatch) {
             array_pop($this->tryCatchStack);
         }
+
+        return null;
     }
 
     private function isInCatchBlock(Throw_ $node): bool

@@ -29,14 +29,18 @@ class MissingGenericVisitor extends NodeVisitorAbstract
     public bool $hasConsistentTypes = false;
     public array $elementTypes = [];
 
-    public function enterNode(Node $node): void
+    public function enterNode(Node $node): null
     {
         if ($node instanceof Return_) {
             $this->analyzeExpression($node->expr);
+            return null;
         }
         if ($node instanceof Yield_ || $node instanceof YieldFrom) {
             $this->analyzeExpression($node->value);
+            return null;
         }
+
+        return null;
     }
 
     private function analyzeExpression($expr): void
@@ -68,10 +72,12 @@ class MissingGenericVisitor extends NodeVisitorAbstract
         }
     }
 
-    public function leaveNode(Node $node): void
+    public function leaveNode(Node $node): null
     {
         if (!empty($this->elementTypes)) {
             $this->hasConsistentTypes = count(array_unique($this->elementTypes)) === 1;
         }
+
+        return null;
     }
 }

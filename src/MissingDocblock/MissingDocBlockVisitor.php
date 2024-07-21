@@ -36,14 +36,14 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
     ) {
     }
 
-    public function enterNode(Node $node): void
+    public function enterNode(Node $node): null
     {
         if (! $this->docBlockChecker->requiresDocBlock($node)) {
-            return;
+            return null;
         }
         $docComment = $node->getDocComment();
         if ($docComment !== null) {
-            return;
+            return null;
         }
 
         $this->missingDocBlocks[] = [
@@ -52,5 +52,7 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
             'file' => $this->filename,
             'line' => $node->getLine(),
         ];
+
+        return null;
     }
 }
