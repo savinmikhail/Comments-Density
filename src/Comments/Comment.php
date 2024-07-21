@@ -43,6 +43,7 @@ abstract class Comment implements Stringable, CommentTypeInterface, CommentConst
         return 'red';
     }
 
+    /** @param array<string, float> $thresholds */
     protected function isWithinThreshold(int $count, array $thresholds): bool
     {
         $comparisonValue = $thresholds[static::NAME];
