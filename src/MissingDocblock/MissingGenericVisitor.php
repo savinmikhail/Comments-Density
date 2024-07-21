@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Cast;
 use PhpParser\Node\Expr\ConstFetch;
@@ -27,6 +28,8 @@ use function array_unique;
 class MissingGenericVisitor extends NodeVisitorAbstract
 {
     public bool $hasConsistentTypes = false;
+
+    /** @var string[] */
     public array $elementTypes = [];
 
     public function enterNode(Node $node): null
@@ -43,7 +46,7 @@ class MissingGenericVisitor extends NodeVisitorAbstract
         return null;
     }
 
-    private function analyzeExpression($expr): void
+    private function analyzeExpression(Expr $expr): void
     {
         if ($expr instanceof Array_) {
             foreach ($expr->items as $item) {
