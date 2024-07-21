@@ -7,8 +7,8 @@ namespace SavinMikhail\CommentsDensity\Metrics;
 use InvalidArgumentException;
 use Mikhail\PrimitiveWrappers\Int\Integer;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
 use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 
 use function in_array;
 use function round;
@@ -25,6 +25,10 @@ final class CDS
     ) {
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @return float
+     */
     public function calculateCDS(array $commentStatistics): float
     {
         $rawScore = $this->calculateRawScore($commentStatistics);
@@ -39,47 +43,61 @@ final class CDS
         }
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @return float
+     */
     private function calculateRawScore(array $commentStatistics): float
     {
         $rawScore = 0;
 
-        foreach ($commentStatistics as $type => $stat) {
-            $comment = $this->commentFactory->getCommentType($type);
+        foreach ($commentStatistics as $stat) {
+            $comment = $this->commentFactory->getCommentType($stat->type);
             if ($comment) {
-                $rawScore += $stat['count'] * $comment->getWeight();
+                $rawScore += $stat->count * $comment->getWeight();
                 continue;
             }
-            $rawScore += $stat['count'] * self::MISSING_DOCBLOCK_WEIGHT;
+            $rawScore += $stat->count * self::MISSING_DOCBLOCK_WEIGHT;
         }
 
         return $rawScore;
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @return float
+     */
     private function getMinPossibleScore(array $commentStatistics): float
     {
         $minScore = 0;
-        foreach ($commentStatistics as $type => $stat) {
-            $comment = $this->commentFactory->getCommentType($type);
+        foreach ($commentStatistics as $stat) {
+            $comment = $this->commentFactory->getCommentType($stat->type);
             if (!$comment) {
-                $minScore += self::MISSING_DOCBLOCK_WEIGHT * $stat['count'];
+                $minScore += self::MISSING_DOCBLOCK_WEIGHT * $stat->count;
                 continue;
             }
             if ($comment->getWeight() < 0) {
-                $minScore += $comment->getWeight() * $stat['count'];
+                $minScore += $comment->getWeight() * $stat->count;
                 continue;
             }
-            $minScore -= $comment->getWeight() * $stat['count'];
+            $minScore -= $comment->getWeight() * $stat->count;
         }
         return $minScore;
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @return float
+     */
     private function getMaxPossibleScore(array $commentStatistics): float
     {
-        return (
-                ($commentStatistics['missingDocblock']['count'] ?? 0)
-                + ($commentStatistics['docblock']['count'] ?? 0)
-            )
-            * ((new DocBlockComment())->getWeight());
+        $maxAmountOfDocBlock = 0;
+        foreach($commentStatistics as $statisticsDTO) {
+            if (in_array($statisticsDTO->type, ['missingDocblock', 'docblock'])) {
+                $maxAmountOfDocBlock += $statisticsDTO->count;
+            }
+        }
+        return $maxAmountOfDocBlock * $this->commentFactory->getCommentType('docBlock')->getWeight();
     }
 
     public function prepareCDS(float $cds): CdsDTO
