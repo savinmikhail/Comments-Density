@@ -23,11 +23,13 @@ use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 
+use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use function class_exists;
 use function in_array;
 
 final class MissingDocBlockVisitor extends NodeVisitorAbstract
 {
+    /** @var CommentDTO[]  */
     public array $missingDocBlocks = [];
 
     public function __construct(
@@ -46,12 +48,14 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        $this->missingDocBlocks[] = [
-            'type' => 'missingDocblock',
-            'content' => $this->docBlockChecker->determineMissingContent(),
-            'file' => $this->filename,
-            'line' => $node->getLine(),
-        ];
+        $this->missingDocBlocks[] =
+            new CommentDTO(
+                'missingDocblock', //todo: use methods from MissingDocBlockAnalyzer
+                'red',
+                $this->filename,
+                $node->getLine(),
+                $this->docBlockChecker->determineMissingContent(),
+            );
 
         return null;
     }
