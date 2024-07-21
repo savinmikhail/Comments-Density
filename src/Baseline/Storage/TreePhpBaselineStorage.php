@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Baseline\Storage;
 
+use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+
 final class TreePhpBaselineStorage implements BaselineStorageInterface
 {
     private string $path;
@@ -27,7 +29,7 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
         file_put_contents($this->path, "<?php return " . var_export($this->baselineData, true) . ";");
     }
 
-    private function addCommentToTree(array &$tree, array $pathParts, $comment): void
+    private function addCommentToTree(array &$tree, array $pathParts, CommentDTO $comment): void
     {
         $currentPart = array_shift($pathParts);
         if (!isset($tree[$currentPart])) {
@@ -45,9 +47,9 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
 
     public function filterComments(array $comments): array
     {
-        $filteredComments = array_filter($comments, function ($comment): bool {
-            $pathParts = explode(DIRECTORY_SEPARATOR, ltrim($comment['file'], DIRECTORY_SEPARATOR));
-            return !$this->commentExistsInTree($this->baselineData, $pathParts, $comment['line']);
+        $filteredComments = array_filter($comments, function (CommentDTO $comment): bool {
+            $pathParts = explode(DIRECTORY_SEPARATOR, ltrim($comment->file, DIRECTORY_SEPARATOR));
+            return !$this->commentExistsInTree($this->baselineData, $pathParts, $comment->line);
         });
 
         return array_values($filteredComments);
