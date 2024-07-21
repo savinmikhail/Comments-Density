@@ -38,6 +38,10 @@ final readonly class MetricsFacade
         return $this->cds->hasExceededThreshold() || $this->comToLoc->hasExceededThreshold();
     }
 
+    /**
+     * @param CommentStatisticsDTO[] $commentStatistics
+     * @return float
+     */
     public function calculateCDS(array $commentStatistics): float
     {
         return $this->cds->calculateCDS($commentStatistics);
