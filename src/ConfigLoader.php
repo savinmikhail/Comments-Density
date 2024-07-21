@@ -7,6 +7,7 @@ namespace SavinMikhail\CommentsDensity;
 use Exception;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\DTO\Input\OutputDTO;
 use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
 
 use function array_map;
@@ -32,11 +33,12 @@ final readonly class ConfigLoader
         return require_once $configFile;
     }
 
-    protected function getOutput(array $config): array
+    protected function getOutput(array $config): OutputDTO
     {
-        $outputConfig = $config['output'];
-        $outputConfig['file'] = $this->getProjectRoot() . DIRECTORY_SEPARATOR . $outputConfig['file'];
-        return $outputConfig;
+        $type = $config['output']['type'] ?? 'console';
+        $file = $config['output']['file'] ?? 'output.html';
+        $file = $this->getProjectRoot() . DIRECTORY_SEPARATOR . $file;
+        return new OutputDTO($type, $file);
     }
 
     protected function getOnly(array $config): array
@@ -49,9 +51,6 @@ final readonly class ConfigLoader
         return $config['thresholds'] ?? [];
     }
 
-    /**
-     * @throws CommentsDensityException
-     */
     public function getConfigDto(): ConfigDTO
     {
         $config = $this->getConfig();
@@ -81,12 +80,9 @@ final readonly class ConfigLoader
         );
     }
 
-    /**
-     * @throws CommentsDensityException
-     */
     protected function getDirectories(array $config): array
     {
-        $directories =  array_map(
+        $directories = array_map(
             fn($dir) => $this->getProjectRoot() . '/' . $dir,
             $config['directories']
         );
