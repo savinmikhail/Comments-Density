@@ -188,7 +188,7 @@ final class Analyzer
         int $filesAnalyzed
     ): OutputDTO {
         $preparedStatistics = $this->prepareCommentStatistics($commentStatistics);
-        $comToLoc = $this->metrics->prepareComToLoc($commentStatistics, $totalLinesOfCode);
+        $comToLoc = $this->metrics->prepareComToLoc($preparedStatistics, $totalLinesOfCode);
         $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($commentStatistics));
         $this->exceedThreshold = $this->checkThresholdsExceeded();
         $this->metrics->stopPerformanceMonitoring();
