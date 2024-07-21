@@ -8,4 +8,5 @@ interface CommentConstantsInterface
     public const COLOR = '';
     public const WEIGHT = 0.0;
     public const COMPARISON_TYPE = '';
-    public const NAME = '';}
+    public const NAME = '';
+}

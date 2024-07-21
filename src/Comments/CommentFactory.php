@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Comments;
 
 use Generator;
+
 use function in_array;
 
 final class CommentFactory
