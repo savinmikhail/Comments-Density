@@ -19,6 +19,10 @@ abstract class Command extends SymfonyCommand
         return $configLoader->getConfigDto();
     }
 
+    /**
+     * @param string[] $directories
+     * @return Generator
+     */
     protected function getFilesFromDirectories(array $directories): Generator
     {
         foreach ($directories as $directory) {
