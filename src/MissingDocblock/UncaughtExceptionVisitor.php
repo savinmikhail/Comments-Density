@@ -8,6 +8,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\Throw_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
@@ -15,6 +16,9 @@ use ReflectionClass;
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
     public bool $hasUncaughtThrows = false;
+    /**
+     * @var TryCatch[]
+     */
     private array $tryCatchStack = [];
 
     public function enterNode(Node $node): null
@@ -115,6 +119,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         return false;
     }
 
+    /** @return Catch_[] */
     private function getCurrentCatchStack(): array
     {
         $catchStack = [];
