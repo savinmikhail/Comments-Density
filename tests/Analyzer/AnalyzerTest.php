@@ -14,6 +14,7 @@ use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\DTO\Input\OutputDTO as OutputConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
@@ -47,7 +48,7 @@ final class AnalyzerTest extends TestCase
         $configDTO = new ConfigDTO(
             thresholds: [],
             exclude: ['/excluded/dir'],
-            output: [],
+            output: new OutputConfigDTO('console', 'output.html'),
             directories: [],
             only: [],
             docblockConfigDTO: $this->createMock(MissingDocblockConfigDTO::class),
