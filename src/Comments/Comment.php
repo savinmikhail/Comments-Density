@@ -6,7 +6,7 @@ namespace SavinMikhail\CommentsDensity\Comments;
 
 use Stringable;
 
-abstract class Comment implements Stringable, CommentTypeInterface
+abstract class Comment implements Stringable, CommentTypeInterface, CommentConstantsInterface
 {
     protected bool $exceedThreshold = false;
 
