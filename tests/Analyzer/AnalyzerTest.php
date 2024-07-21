@@ -163,11 +163,9 @@ final class AnalyzerTest extends TestCase
         $method = $reflection->getMethod('analyzeFile');
         $method->setAccessible(true);
 
-        $commentsAndLines = $method->invokeArgs($this->analyzer, [$filename]);
+        $comments = $method->invokeArgs($this->analyzer, [$filename]);
 
-        $this->assertIsArray($commentsAndLines);
-        $this->assertArrayHasKey('comments', $commentsAndLines);
-        $this->assertArrayHasKey('linesOfCode', $commentsAndLines);
+        $this->assertIsArray($comments);
     }
 
     public function testGetCommentsFromFile(): void
