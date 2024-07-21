@@ -41,3 +41,8 @@ class UserCollection implements Iterator
         $this->position = 0;
     }
 }
+
+class User
+{
+
+}
