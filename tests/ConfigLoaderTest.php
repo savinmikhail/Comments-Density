@@ -53,14 +53,13 @@ class ConfigLoaderTest extends TestCase
     {
         $config = [
             'output' => [
-                'file' => 'output.txt'
+                'file' => 'tuptuo.html'
             ]
         ];
 
         $outputConfig = $this->invokeMethod($this->configLoader, 'getOutput', [$config]);
 
-        $this->assertArrayHasKey('file', $outputConfig);
-        $this->assertStringContainsString(DIRECTORY_SEPARATOR . 'output.txt', $outputConfig['file']);
+        $this->assertStringContainsString(DIRECTORY_SEPARATOR . 'tuptuo.html', $outputConfig->file);
     }
 
     public function testGetOnly()
