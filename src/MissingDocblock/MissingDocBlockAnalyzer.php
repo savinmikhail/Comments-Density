@@ -53,6 +53,11 @@ final class MissingDocBlockAnalyzer
         return 'red';
     }
 
+    /**
+     * @param float $count
+     * @param array<string, float> $thresholds
+     * @return string
+     */
     public function getStatColor(float $count, array $thresholds): string
     {
         if (!isset($thresholds['missingDocBlock'])) {
