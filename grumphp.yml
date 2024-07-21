@@ -12,13 +12,12 @@ grumphp:
             report_width: ~
             whitelist_patterns:
                 - /^src\/.*\.php$/
-                - /^tests\/.*\.php$/
+#                - /^tests\/.*\.php$/
             encoding: ~
             ignore_patterns: []
             sniffs: []
             triggered_by: [php]
             exclude: []
-            show_sniffs_error_path: true
 
         phpmd:
             whitelist_patterns:
@@ -44,9 +43,13 @@ grumphp:
             always_execute: false
             order: null
 
-#        phan:
-#         config_file: .phan/config.php
-#         output_mode: text
-#         output: null
-#         triggered_by: [php]
+        phpstan:
+            autoload_file: ~
+            configuration: ~
+            level: null
+            force_patterns: []
+            ignore_patterns: []
+            triggered_by: ['php']
+            memory_limit: "-1"
+            use_grumphp_paths: true
 
