@@ -70,7 +70,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
     {
         $throwExpr = $throwNode->expr;
 
-        if (!$throwExpr instanceof Variable || !isset($throwExpr->name)) {
+        if (!$throwExpr instanceof Variable) {
             return false;
         }
 
@@ -124,7 +124,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         return $catchStack;
     }
 
-    private function getVariableType(string $varName): ?string
+    private function getVariableType(string $varName): string
     {
         return $varName;
     }

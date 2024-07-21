@@ -1,6 +1,6 @@
 parameters:
 	paths:
 		- src
-	level: 2
+	level: 4
 	parallel:
 		maximumNumberOfProcesses: 1
