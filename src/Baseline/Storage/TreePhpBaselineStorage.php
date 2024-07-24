@@ -6,11 +6,24 @@ namespace SavinMikhail\CommentsDensity\Baseline\Storage;
 
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 
+/**
+ *
+ */
 final class TreePhpBaselineStorage implements BaselineStorageInterface
 {
+    /**
+     * @var string
+     */
     private string $path;
+    /**
+     * @var array<mixed>
+     */
     private array $baselineData = [];
 
+    /**
+     * @param string $path
+     * @return void
+     */
     public function init(string $path): void
     {
         $this->path = $path;
@@ -34,7 +47,7 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
     }
 
     /**
-     * @param array $tree
+     * @param array<mixed> $tree
      * @param string[] $pathParts
      * @param CommentDTO $comment
      * @return void
@@ -70,7 +83,7 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
     }
 
     /**
-     * @param array $tree
+     * @param array<mixed> $tree
      * @param string[] $pathParts
      * @param int $line
      * @return bool
