@@ -17,13 +17,25 @@ use function is_dir;
 
 use const DIRECTORY_SEPARATOR;
 
+/**
+ *
+ */
 final readonly class ConfigLoader
 {
+    /**
+     *
+     */
     protected const CONFIG_FILE = 'comments_density.php';
+    /**
+     *
+     */
     protected const DIR_LEVEL = 4;
 
     /**
-     * @throws Exception
+     * @param string $configFile
+     * @return array<mixed><mixed>
+     *
+     * @throws CommentsDensityException
      */
     protected function parseConfigFile(string $configFile): array
     {
@@ -33,6 +45,10 @@ final readonly class ConfigLoader
         return require_once $configFile;
     }
 
+    /**
+     * @param array<mixed> $config
+     * @return OutputDTO
+     */
     protected function getOutput(array $config): OutputDTO
     {
         $type = $config['output']['type'] ?? 'console';
@@ -41,16 +57,28 @@ final readonly class ConfigLoader
         return new OutputDTO($type, $file);
     }
 
+    /**
+     * @param array<mixed> $config
+     * @return array<mixed>
+     */
     protected function getOnly(array $config): array
     {
         return $config['only'] ?? [];
     }
 
+    /**
+     * @param array<mixed> $config
+     * @return array<mixed>
+     */
     protected function getThresholds(array $config): array
     {
         return $config['thresholds'] ?? [];
     }
 
+    /**
+     * @return ConfigDTO
+     * @throws CommentsDensityException
+     */
     public function getConfigDto(): ConfigDTO
     {
         $config = $this->getConfig();
@@ -66,12 +94,20 @@ final readonly class ConfigLoader
         );
     }
 
+    /**
+     * @return mixed[]
+     * @throws CommentsDensityException
+     */
     protected function getConfig(): array
     {
         $configFile = $this->getProjectRoot() . DIRECTORY_SEPARATOR . self::CONFIG_FILE;
         return $this->parseConfigFile($configFile);
     }
 
+    /**
+     * @param array<mixed> $config
+     * @return array<mixed>
+     */
     protected function getExcludes(array $config): array
     {
         return array_map(
@@ -80,6 +116,11 @@ final readonly class ConfigLoader
         );
     }
 
+    /**
+     * @param array<mixed> $config
+     * @return array<mixed>
+     * @throws CommentsDensityException
+     */
     protected function getDirectories(array $config): array
     {
         $directories = array_map(
@@ -94,11 +135,18 @@ final readonly class ConfigLoader
         return $directories;
     }
 
+    /**
+     * @return string
+     */
     protected function getProjectRoot(): string
     {
         return dirname(__DIR__, self::DIR_LEVEL);
     }
 
+    /**
+     * @param array<mixed> $config
+     * @return MissingDocblockConfigDTO
+     */
     protected function getMissingDocblockConfig(array $config): MissingDocblockConfigDTO
     {
         return new MissingDocblockConfigDTO(
