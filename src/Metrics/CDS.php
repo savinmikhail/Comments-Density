@@ -95,7 +95,7 @@ final class CDS
     private function getMaxPossibleScore(array $commentStatistics): float
     {
         $maxAmountOfDocBlock = 0;
-        foreach($commentStatistics as $statisticsDTO) {
+        foreach ($commentStatistics as $statisticsDTO) {
             if (in_array($statisticsDTO->type, ['missingDocblock', 'docblock'])) {
                 $maxAmountOfDocBlock += $statisticsDTO->count;
             }
