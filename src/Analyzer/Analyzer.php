@@ -125,7 +125,10 @@ final class Analyzer
             || in_array($this->missingDocBlock->getName(), $this->configDTO->only, true);
     }
 
-    /** @return CommentDTO[] */
+    /**
+     * @param array<mixed> $tokens
+     * @return CommentDTO[]
+     */
     private function getCommentsFromFile(array $tokens, string $filename): array
     {
         $comments = [];
@@ -161,7 +164,7 @@ final class Analyzer
 
     /**
      * @param CommentDTO[] $comments
-     * @return array
+     * @return array<string, array{'lines': int, 'count': int}>
      */
     private function countCommentOccurrences(array $comments): array
     {
@@ -224,6 +227,11 @@ final class Analyzer
         );
     }
 
+    /**
+     * @param string $type
+     * @param array{'lines': int, 'count': int} $stat
+     * @return CommentStatisticsDTO
+     */
     private function prepareCommentStatistic(string $type, array $stat): CommentStatisticsDTO
     {
         if ($type === $this->missingDocBlock->getName()) {
