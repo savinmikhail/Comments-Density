@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
-use ArrayAccess;
-use Iterator;
 use PhpParser\Node;
 use PhpParser\Node\ComplexType;
 use PhpParser\Node\Identifier;
@@ -13,7 +11,6 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
-use ReflectionClass;
 
 use function class_exists;
 use function in_array;
@@ -24,32 +21,43 @@ final readonly class MethodAnalyzer
     {
         $returnType = $node->getReturnType();
 
-        if ($returnType === null) {
-            return false;
+        if ($this->isTypeIterable($returnType)) {
+            return true;
         }
 
-        if (
-            $returnType instanceof Identifier
-            && in_array($returnType->toString(), ['array', 'iterable'], true)
-        ) {
-            return $this->arrayElementsHaveConsistentTypes($node);
-        }
-
-        if (
-            $returnType instanceof Name
-            && in_array($returnType->toString(), ['Generator', 'Traversable', 'Iterator', 'ArrayAccess'], true)
-        ) {
-            return $this->arrayElementsHaveConsistentTypes($node);
-        }
-
-        if ($this->isReturnClassTraversable($returnType)) {
-            return $this->arrayElementsHaveConsistentTypes($node);
+        foreach ($node->getParams() as $param) {
+            if ($this->isTypeIterable($param->type)) {
+                return true;
+            }
         }
 
         return false;
     }
 
-    private function isReturnClassTraversable(ComplexType|Identifier|Name $returnType): bool
+    private function isTypeIterable(ComplexType|Identifier|Name|null $type): bool
+    {
+        if ($type === null) {
+            return false;
+        }
+
+        if (
+            $type instanceof Identifier
+            && in_array($type->toString(), ['array', 'iterable'], true)
+        ) {
+            return true;
+        }
+
+        if (
+            $type instanceof Name
+            && in_array($type->toString(), ['Generator', 'Traversable', 'Iterator', 'ArrayAccess'], true)
+        ) {
+            return true;
+        }
+
+        return $this->isClassTraversable($type);
+    }
+
+    private function isClassTraversable(ComplexType|Identifier|Name $returnType): bool
     {
         if (!($returnType instanceof Name)) {
             return false;
@@ -59,25 +67,10 @@ final readonly class MethodAnalyzer
         if (!class_exists($returnTypeName)) {
             return false;
         }
-        $reflectionClass = new ReflectionClass($returnTypeName);
-        if (
-            ! $reflectionClass->implementsInterface(Iterator::class)
-            && !$reflectionClass->implementsInterface(ArrayAccess::class)
-        ) {
-            return false;
-        }
-        return true;
-    }
 
-    private function arrayElementsHaveConsistentTypes(Node $node): bool
-    {
-        $traverser = new NodeTraverser();
-        $visitor = new MissingGenericVisitor();
-
-        $traverser->addVisitor($visitor);
-        $traverser->traverse([$node]);
-
-        return $visitor->hasConsistentTypes;
+        $reflectionClass = new \ReflectionClass($returnTypeName);
+        return $reflectionClass->implementsInterface(\Iterator::class)
+            || $reflectionClass->implementsInterface(\ArrayAccess::class);
     }
 
     public function methodThrowsUncaughtExceptions(Node $node): bool
