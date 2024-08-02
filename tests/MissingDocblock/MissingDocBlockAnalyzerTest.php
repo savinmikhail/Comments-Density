@@ -435,7 +435,7 @@ CODE;
 
     public static function genericDocblockDataProvider(): Generator
     {
-        yield 'simple method' => [
+        yield 'non iterable class' => [
             <<<'CODE'
 <?php
 
@@ -451,7 +451,7 @@ CODE
             , 0
         ];
 
-        yield 'method with generic' => [
+        yield 'array with single object' => [
             <<<'CODE'
 <?php
 
@@ -467,7 +467,7 @@ CODE
             , 1
         ];
 
-        yield 'method with non-generic' => [
+        yield 'method with inconsistent array' => [
             <<<'CODE'
 <?php
 
@@ -484,7 +484,7 @@ class Foo
 }
 
 CODE
-            , 0
+            , 1
         ];
 
         yield 'method with mixed array' => [
@@ -503,7 +503,7 @@ class Foo
 }
 
 CODE
-            , 0
+            , 1
         ];
 
         yield 'method with empty array' => [
@@ -519,7 +519,7 @@ class Foo
 }
 
 CODE
-            , 0
+            , 1
         ];
 
         yield 'method with nested generic' => [
@@ -589,7 +589,7 @@ class Foo
 }
 
 CODE
-            , 0
+            , 1
         ];
 
         yield 'method with generator' => [
@@ -683,6 +683,122 @@ class Foo
 
 CODE
             , 1
+        ];
+
+        yield 'method with iterable argument' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function process(iterable $items): void
+    {
+        foreach ($items as $item) {
+            // process item
+        }
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with array argument' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function process(array $items): void
+    {
+        foreach ($items as $item) {
+            // process item
+        }
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with Generator argument' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function process(\Generator $items): void
+    {
+        foreach ($items as $item) {
+            // process item
+        }
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with Iterator argument' => [
+            <<<'CODE'
+<?php
+
+use Iterator;
+
+class Foo
+{
+    public function process(Iterator $items): void
+    {
+        foreach ($items as $item) {
+            // process item
+        }
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with ArrayAccess argument' => [
+            <<<'CODE'
+<?php
+
+use ArrayAccess;
+
+class Foo
+{
+    public function process(ArrayAccess $items): void
+    {
+        foreach ($items as $item) {
+            // process item
+        }
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with template' => [
+            <<<'CODE'
+<?php
+
+use SavinMikhail\Tests\CommentsDensity\TestFiles\TemplatedInterface;
+
+class User 
+{
+    public string $name;
+}
+
+function foo(TemplatedInterface $array) 
+{
+    $user = $array->get();
+
+    $name = $user->name;
+}
+
+CODE,
+            1
         ];
     }
 
