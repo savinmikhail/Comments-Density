@@ -6,7 +6,7 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
 use ArrayAccess;
 
-final class UserArray implements ArrayAccess
+class UserArray implements ArrayAccess
 {
     private array $container = [];
 
