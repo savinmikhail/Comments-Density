@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Throw_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Expr\New_;
@@ -18,6 +19,11 @@ use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
 use phpDocumentor\Reflection\DocBlockFactory;
 
+use function array_pop;
+use function class_exists;
+use function explode;
+use function implode;
+
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
     public bool $hasUncaughtThrows = false;
@@ -28,29 +34,8 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 
     private array $variableTypes = [];
 
-    private ?string $currentNamespace;
-
     public function __construct(private readonly ?Class_ $class)
     {
-        $this->setNamespaceFromClass($class);
-    }
-
-    private function setNamespaceFromClass(Class_ $class): void
-    {
-        $fullyQualifiedName = $class->namespacedName?->toString();
-        if ($fullyQualifiedName) {
-            $namespaceParts = explode('\\', $fullyQualifiedName);
-            array_pop($namespaceParts); // Remove the class name part
-            $this->currentNamespace = implode('\\', $namespaceParts);
-        }
-    }
-
-    private function resolveFQN(string $class): string
-    {
-        if ($this->currentNamespace && strpos($class, '\\') === false) {
-            return $this->currentNamespace . '\\' . $class;
-        }
-        return $class;
     }
 
     public function enterNode(Node $node): ?Node
@@ -61,13 +46,14 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
                 $className = $this->class->namespacedName->toString();
                 $this->variableTypes['this'] = $className;
             }
-            foreach ($node->getStmts() as $stmt) {
-                if ($stmt instanceof Expression && $stmt->expr instanceof Assign) {
-                    $var = $stmt->expr->var;
-                    $expr = $stmt->expr->expr;
-                    if ($var instanceof Variable && $expr instanceof New_) {
-                        $class = (string) $expr->class;
-                        $this->variableTypes[$var->name] = $this->resolveFQN($class);
+            if ($node->getStmts()) {
+                foreach ($node->getStmts() as $stmt) {
+                    if ($stmt instanceof Expression && $stmt->expr instanceof Assign) {
+                        $var = $stmt->expr->var;
+                        $expr = $stmt->expr->expr;
+                        if ($var instanceof Variable && $expr instanceof New_) {
+                            $this->variableTypes[$var->name] = $expr->class->name;
+                        }
                     }
                 }
             }
@@ -87,24 +73,27 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
             }
         }
 
-        if ($node instanceof Node\Expr\MethodCall) {
+        if ($node instanceof MethodCall) {
             $methodName = $node->name->name;
-            $objectName = $node->var->name;
+            if (isset($node->var->name)) {
+                $objectName = (string) $node->var->name;
+            }
 
-            // Handle both $this and other variables
-            $class = $this->variableTypes[$objectName] ?? null;
+            if (isset($objectName)) {
+                $class = $this->variableTypes[$objectName] ?? null;
 
-            if ($class) {
-                $exceptions = $this->getMethodThrownExceptions($class, $methodName);
-                foreach ($exceptions as $exception) {
-                    $throwNode = new Throw_(new Variable($exception), $node->getAttributes());
+                if ($class) {
+                    $exceptions = $this->getMethodThrownExceptions($class, $methodName);
+                    foreach ($exceptions as $exception) {
+                        $throwNode = new Throw_(new Variable($exception), $node->getAttributes());
 
-                    if (!$this->isInTryBlock($throwNode)) {
-                        $this->hasUncaughtThrows = true;
-                    } elseif (!$this->isExceptionCaught($throwNode)) {
-                        $this->hasUncaughtThrows = true;
-                    } elseif ($this->isInCatchBlock($throwNode) && !$this->isRethrowingCaughtException($throwNode)) {
-                        $this->hasUncaughtThrows = true;
+                        if (!$this->isInTryBlock($throwNode)) {
+                            $this->hasUncaughtThrows = true;
+                        } elseif (!$this->isExceptionCaught($throwNode)) {
+                            $this->hasUncaughtThrows = true;
+                        } elseif ($this->isInCatchBlock($throwNode) && !$this->isRethrowingCaughtException($throwNode)) {
+                            $this->hasUncaughtThrows = true;
+                        }
                     }
                 }
             }
@@ -113,10 +102,30 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         return null;
     }
 
+    private function getNamespaceFromClass(): string
+    {
+        $fullyQualifiedName = $this->class->namespacedName?->toString();
+        $namespaceParts = explode('\\', $fullyQualifiedName);
+        array_pop($namespaceParts); // Remove the class name part
+        return implode('\\', $namespaceParts);
+    }
+
+    private function resolveFQN(string $class): string
+    {
+        if ($this->getNamespaceFromClass() && !str_contains($class, '\\')) {
+            return $this->getNamespaceFromClass() . '\\' . $class;
+        }
+        return $class;
+    }
+
     private function getMethodThrownExceptions(string $className, string $methodName): array
     {
         if (!class_exists($className)) {
-            return [];
+            $fqn = $this->resolveFQN($className);
+            if (!class_exists($fqn)) {
+                return [];
+            }
+            $className = $fqn;
         }
 
         $reflectionClass = new ReflectionClass($className);
@@ -210,9 +219,16 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 
         foreach ($this->getCurrentCatchStack() as $catch) {
             foreach ($catch->types as $catchType) {
+                $catchTypeName = $catchType->name;
+                if ($catchTypeName[0] !== '\\') {
+                    $catchTypeName = '\\' . $catchTypeName;
+                }
+                if ($thrownExceptionType[0] !== '\\') {
+                    $thrownExceptionType = '\\' . $thrownExceptionType;
+                }
                 if (
-                    $this->isSubclassOf($thrownExceptionType, (string)$catchType)
-                    || (string)$catchType === 'Throwable'
+                    $this->isSubclassOf($thrownExceptionType, $catchTypeName)
+                    || $catchType->name === 'Throwable'
                 ) {
                     return true;
                 }
