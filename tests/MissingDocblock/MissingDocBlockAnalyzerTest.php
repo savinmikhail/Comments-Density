@@ -1014,14 +1014,17 @@ CODE
             <<<'CODE'
 <?php
 class MyException extends Exception {}
+use Mockery\Exception;
 class Foo
 {
     public function baz(): void
     {
         try {
-            throw new Exception();
+            throw new \Exception();
         } catch (MyException $e) {
             //do something
+        } catch (Exception $exception) {
+        
         }
     }
 }
