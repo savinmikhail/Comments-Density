@@ -9,6 +9,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
+use function file_get_contents;
+use const DIRECTORY_SEPARATOR;
 
 final class MissingDocBlockAnalyzerTest extends TestCase
 {
@@ -1067,6 +1069,31 @@ class Foo
 }
 
 CODE
+            , 0
+        ];
+
+        yield 'method without catching method that throws and has throws tag in the same class' => [
+            file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . '../TestFiles/ClassWithMethodThatThrowsAndHasTag.php') //made for class_exists() function work
+            , 1
+        ];
+
+        yield 'method without catching method that throws and has throws tag in the different class' => [
+            file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . '../TestFiles/ClassWithCallForThrowingMethodInDifferentClass.php') //made for class_exists() function work
+            , 1
+        ];
+
+        yield 'method that catching method that throws and has throws tag in the different class' => [
+            file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . '../TestFiles/ClassWithCallForThrowingMethodInDifferentClassInTryCatch.php') //made for class_exists() function work
+            , 0
+        ];
+
+        yield 'method that not catching method that throws and has throws tag in the different class' => [
+            file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . '../TestFiles/ClassThatNotCatchingExceptionFromCallMethodOfAnotherClass.php') //made for class_exists() function work
+            , 1
+        ];
+
+        yield 'method that catching method that throws and does not have throws tag in the different class' => [
+            file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . '../TestFiles/ClassThatCatchingMethodCallOfAnotherClassWhichDoesNotHaveDocblock.php') //made for class_exists() function work
             , 0
         ];
     }
