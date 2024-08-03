@@ -80,9 +80,11 @@ final class MethodAnalyzer
 
     private function isTraversableRecursively(ReflectionClass $reflection): bool
     {
-        if ($reflection->implementsInterface(Iterator::class)
+        if (
+            $reflection->implementsInterface(Iterator::class)
             || $reflection->implementsInterface(ArrayAccess::class)
-            || $reflection->implementsInterface(Traversable::class)) {
+            || $reflection->implementsInterface(Traversable::class)
+        ) {
             return true;
         }
 
