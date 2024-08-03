@@ -685,6 +685,23 @@ CODE
             , 1
         ];
 
+        yield 'function returning ArrayAccess' => [
+            <<<'CODE'
+<?php
+
+use SavinMikhail\Tests\CommentsDensity\TestFiles\UserArray;
+
+function userArrayReturn(): ArrayAccess
+{
+    $array = new UserArray();
+    $array[] = new User();
+    return $array;
+}
+
+CODE
+            , 1
+        ];
+
         yield 'method with iterable argument' => [
             <<<'CODE'
 <?php
@@ -779,16 +796,92 @@ CODE
             , 1
         ];
 
-        yield 'method with template' => [
+        yield 'function with ArrayAccess argument' => [
             <<<'CODE'
 <?php
 
-use SavinMikhail\Tests\CommentsDensity\TestFiles\TemplatedInterface;
+use ArrayAccess;
+
+function process(ArrayAccess $items): void
+{
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with non iterable scalar argument' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    public function process(string $item): void
+    {
+  
+    }
+}
+
+CODE
+            , 0
+        ];
+
+        yield 'method with non iterable class argument' => [
+            <<<'CODE'
+<?php
 
 class User 
 {
     public string $name;
 }
+
+class Foo
+{
+    public function process(User $user): void
+    {
+  
+    }
+}
+
+CODE
+            , 0
+        ];
+
+        yield 'function with non iterable scalar argument' => [
+            <<<'CODE'
+<?php
+
+function process(string $item): void
+{
+
+}
+
+CODE
+            , 0
+        ];
+
+        yield 'function with non iterable class argument' => [
+            <<<'CODE'
+<?php
+
+class User 
+{
+    public string $name;
+}
+
+function process(User $user): void
+{
+
+}
+CODE
+            , 0
+        ];
+
+        yield 'function with interface that extends iterable' => [
+            <<<'CODE'
+<?php
+
+use SavinMikhail\Tests\CommentsDensity\TestFiles\TemplatedInterface;
 
 function foo(TemplatedInterface $array) 
 {
@@ -799,6 +892,40 @@ function foo(TemplatedInterface $array)
 
 CODE,
             1
+        ];
+
+        yield 'function with interface with template' => [
+            <<<'CODE'
+<?php
+
+use SavinMikhail\Tests\CommentsDensity\TestFiles\TemplatedInterface;
+
+function foo(TemplatedInterface $array) 
+{
+    $user = $array->get();
+
+    $name = $user->name;
+}
+
+CODE,
+            1
+        ];
+
+        yield 'function with class extended from class that implementing ArrayAccess' => [
+            <<<'CODE'
+<?php
+
+use SavinMikhail\Tests\CommentsDensity\TestFiles\SubUserArray;
+
+function subArrayReturn(): SubUserArray
+{
+    $array = new SubUserArray();
+    $array[] = new User();
+    return $array;
+}
+
+CODE
+            , 1
         ];
     }
 
