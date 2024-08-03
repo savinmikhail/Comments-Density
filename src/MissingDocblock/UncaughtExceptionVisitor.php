@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\Throw_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Stmt\Catch_;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
+use phpDocumentor\Reflection\DocBlockFactory;
 
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
@@ -21,8 +26,53 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
      */
     private array $tryCatchStack = [];
 
-    public function enterNode(Node $node): null
+    private array $variableTypes = [];
+
+    private ?string $currentNamespace;
+
+    public function __construct(private readonly ?Class_ $class)
     {
+        $this->setNamespaceFromClass($class);
+    }
+
+    private function setNamespaceFromClass(Class_ $class): void
+    {
+        $fullyQualifiedName = $class->namespacedName?->toString();
+        if ($fullyQualifiedName) {
+            $namespaceParts = explode('\\', $fullyQualifiedName);
+            array_pop($namespaceParts); // Remove the class name part
+            $this->currentNamespace = implode('\\', $namespaceParts);
+        }
+    }
+
+    private function resolveFQN(string $class): string
+    {
+        if ($this->currentNamespace && strpos($class, '\\') === false) {
+            return $this->currentNamespace . '\\' . $class;
+        }
+        return $class;
+    }
+
+    public function enterNode(Node $node): ?Node
+    {
+        if ($node instanceof ClassMethod) {
+            if ($this->class) {
+                // Register the type of $this
+                $className = $this->class->namespacedName->toString();
+                $this->variableTypes['this'] = $className;
+            }
+            foreach ($node->getStmts() as $stmt) {
+                if ($stmt instanceof Expression && $stmt->expr instanceof Assign) {
+                    $var = $stmt->expr->var;
+                    $expr = $stmt->expr->expr;
+                    if ($var instanceof Variable && $expr instanceof New_) {
+                        $class = (string) $expr->class;
+                        $this->variableTypes[$var->name] = $this->resolveFQN($class);
+                    }
+                }
+            }
+        }
+
         if ($node instanceof TryCatch) {
             $this->tryCatchStack[] = $node;
         }
@@ -36,10 +86,63 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
                 $this->hasUncaughtThrows = true;
             }
         }
+
+        if ($node instanceof Node\Expr\MethodCall) {
+            $methodName = $node->name->name;
+            $objectName = $node->var->name;
+
+            // Handle both $this and other variables
+            $class = $this->variableTypes[$objectName] ?? null;
+
+            if ($class) {
+                $exceptions = $this->getMethodThrownExceptions($class, $methodName);
+                foreach ($exceptions as $exception) {
+                    $throwNode = new Throw_(new Variable($exception), $node->getAttributes());
+
+                    if (!$this->isInTryBlock($throwNode)) {
+                        $this->hasUncaughtThrows = true;
+                    } elseif (!$this->isExceptionCaught($throwNode)) {
+                        $this->hasUncaughtThrows = true;
+                    } elseif ($this->isInCatchBlock($throwNode) && !$this->isRethrowingCaughtException($throwNode)) {
+                        $this->hasUncaughtThrows = true;
+                    }
+                }
+            }
+        }
+
         return null;
     }
 
-    public function leaveNode(Node $node): null
+    private function getMethodThrownExceptions(string $className, string $methodName): array
+    {
+        if (!class_exists($className)) {
+            return [];
+        }
+
+        $reflectionClass = new ReflectionClass($className);
+        if (!$reflectionClass->hasMethod($methodName)) {
+            return [];
+        }
+
+        $reflectionMethod = $reflectionClass->getMethod($methodName);
+        $docComment = $reflectionMethod->getDocComment();
+
+        if (!$docComment) {
+            return [];
+        }
+
+        $docBlockFactory = DocBlockFactory::createInstance();
+        $docBlock = $docBlockFactory->create($docComment);
+
+        $exceptions = [];
+        foreach ($docBlock->getTagsByName('throws') as $tag) {
+            $exceptions[] = (string)$tag->getType();
+        }
+
+        return $exceptions;
+    }
+
+    public function leaveNode(Node $node): ?Node
     {
         if ($node instanceof TryCatch) {
             array_pop($this->tryCatchStack);
