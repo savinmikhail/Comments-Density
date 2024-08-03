@@ -24,6 +24,8 @@ final class DocBlockChecker
     private bool $needsGeneric = false;
     private bool $throwsUncaught = false;
 
+    private ?Class_ $class = null;
+
     public function __construct(
         private readonly MissingDocblockConfigDTO $config,
         private readonly MethodAnalyzer $methodAnalyzer,
@@ -32,8 +34,11 @@ final class DocBlockChecker
 
     public function requiresDocBlock(Node $node): bool
     {
-        if ($node instanceof Class_ && $this->config->class) {
-            return !$node->isAnonymous();
+        if ($node instanceof Class_) {
+            $this->class = $node;
+            if ($this->config->class) {
+                return !$node->isAnonymous();
+            }
         }
 
         if ($node instanceof Trait_ && $this->config->trait) {
@@ -75,7 +80,7 @@ final class DocBlockChecker
      */
     private function methodRequiresAdditionalDocBlock(ClassMethod|Function_ $node): bool
     {
-        $this->throwsUncaught = $this->methodAnalyzer->methodThrowsUncaughtExceptions($node);
+        $this->throwsUncaught = $this->methodAnalyzer->methodThrowsUncaughtExceptions($node, $this->class);
         $this->needsGeneric = $this->methodAnalyzer->methodNeedsGeneric($node);
 
         return $this->throwsUncaught || $this->needsGeneric;
