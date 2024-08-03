@@ -100,7 +100,7 @@ final class MethodAnalyzer
         return false;
     }
 
-    public function methodThrowsUncaughtExceptions(Node $node, ?Class_ $class_): bool
+    public function methodThrowsUncaughtExceptions(ClassMethod|Function_ $node, ?Class_ $class_): bool
     {
         $traverser = new NodeTraverser();
         $visitor = new UncaughtExceptionVisitor($class_);
