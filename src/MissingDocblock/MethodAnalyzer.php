@@ -10,6 +10,7 @@ use PhpParser\Node;
 use PhpParser\Node\ComplexType;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
@@ -99,10 +100,10 @@ final class MethodAnalyzer
         return false;
     }
 
-    public function methodThrowsUncaughtExceptions(Node $node): bool
+    public function methodThrowsUncaughtExceptions(Node $node, ?Class_ $class_): bool
     {
         $traverser = new NodeTraverser();
-        $visitor = new UncaughtExceptionVisitor();
+        $visitor = new UncaughtExceptionVisitor($class_);
 
         $traverser->addVisitor($visitor);
         $traverser->traverse([$node]);
