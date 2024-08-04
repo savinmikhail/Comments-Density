@@ -40,7 +40,7 @@
     "require": {
         "composer-plugin-api": "*",
         "composer/xdebug-handler": "^3.0",
-        "nikic/php-parser": "^5.1",
+        "nikic/php-parser": "^4.18",
         "phpdocumentor/reflection-docblock": "^5.4",
         "savinmikhail/primitive_wrappers": "^1.2",
         "symfony/console": "^5.4"
