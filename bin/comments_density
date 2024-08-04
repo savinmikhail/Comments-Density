@@ -13,6 +13,16 @@ use Composer\XdebugHandler\XdebugHandler;
 error_reporting(E_ALL);
 ini_set('display_errors', 'stderr');
 
+// Check for opcache.save_comments directive
+if (function_exists('opcache_get_configuration')) {
+    $opcacheConfig = opcache_get_configuration();
+    if (isset($opcacheConfig['directives']['opcache.save_comments']) && !$opcacheConfig['directives']['opcache.save_comments']) {
+        fwrite(STDERR, 'Warning: The "opcache.save_comments" directive is disabled. Doc comments will not be available.' . PHP_EOL);
+    }
+} else {
+    fwrite(STDERR, 'Warning: Opcache is not enabled or "opcache_get_configuration" function is not available.' . PHP_EOL);
+}
+
 // Ensure timezone is set
 if (!ini_get('date.timezone')) {
     date_default_timezone_set('UTC');
