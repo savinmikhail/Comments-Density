@@ -27,7 +27,14 @@ use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
 use SavinMikhail\CommentsDensity\Commands\AnalyzeFilesCommand;
 use SavinMikhail\CommentsDensity\Commands\BaselineCommand;
 use Symfony\Component\Console\Application;
+use Composer\XdebugHandler\XdebugHandler;
 
+//performance boosting
+$xdebug = new XdebugHandler('comments_density');
+$xdebug->check();
+unset($xdebug);
+
+//run app
 $app = new Application();
 $app->add(new AnalyzeCommentCommand());
 $app->add(new AnalyzeFilesCommand());
