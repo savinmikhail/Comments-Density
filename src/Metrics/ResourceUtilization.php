@@ -10,7 +10,7 @@ use function memory_get_peak_usage;
 use function microtime;
 use function round;
 
-final class PerformanceMonitor
+final class ResourceUtilization
 {
     private float $startTime;
     private float $endTime;
