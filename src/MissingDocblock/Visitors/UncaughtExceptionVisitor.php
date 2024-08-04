@@ -36,25 +36,65 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
     {
     }
 
+    private function registerClassMethod(ClassMethod $node): void
+    {
+        if ($this->class) {
+            $className = $this->class->namespacedName->toString();
+            $this->variableTypes['this'] = $className;
+        }
+        $stmts = $node->getStmts();
+        if (!$stmts) {
+            return;
+        }
+        foreach ($stmts as $stmt) {
+            if (!($stmt instanceof Expression && $stmt->expr instanceof Assign)) {
+                continue;
+            }
+            $var = $stmt->expr->var;
+            $expr = $stmt->expr->expr;
+            if ($var instanceof Variable && $expr instanceof New_) {
+                $this->variableTypes[$var->name] = $expr->class->name;
+            }
+        }
+    }
+
+    private function checkIfExceptionIsCaught(Throw_ $node): void
+    {
+        if (!$this->isInTryBlock($node)) {
+            $this->hasUncaughtThrows = true;
+        } elseif (!$this->isExceptionCaught($node)) {
+            $this->hasUncaughtThrows = true;
+        } elseif ($this->isInCatchBlock($node) && !$this->isRethrowingCaughtException($node)) {
+            $this->hasUncaughtThrows = true;
+        }
+    }
+
+    private function checkMethodCallForThrowingUncaughtException(MethodCall $node): void
+    {
+        $methodName = $node->name->name;
+        if (!isset($node->var->name)) {
+            return;
+        }
+
+        $objectName = (string) $node->var->name;
+
+        $class = $this->variableTypes[$objectName] ?? null;
+
+        if (!$class) {
+            return;
+        }
+
+        $exceptions = $this->getMethodThrownExceptions($class, $methodName);
+        foreach ($exceptions as $exception) {
+            $throwNode = new Throw_(new Variable($exception), $node->getAttributes());
+            $this->checkIfExceptionIsCaught($throwNode);
+        }
+    }
+
     public function enterNode(Node $node): ?Node
     {
         if ($node instanceof ClassMethod) {
-            if ($this->class) {
-                // Register the type of $this
-                $className = $this->class->namespacedName->toString();
-                $this->variableTypes['this'] = $className;
-            }
-            if ($node->getStmts()) {
-                foreach ($node->getStmts() as $stmt) {
-                    if ($stmt instanceof Expression && $stmt->expr instanceof Assign) {
-                        $var = $stmt->expr->var;
-                        $expr = $stmt->expr->expr;
-                        if ($var instanceof Variable && $expr instanceof New_) {
-                            $this->variableTypes[$var->name] = $expr->class->name;
-                        }
-                    }
-                }
-            }
+            $this->registerClassMethod($node);
         }
 
         if ($node instanceof TryCatch) {
@@ -62,42 +102,11 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof Throw_) {
-            if (!$this->isInTryBlock($node)) {
-                $this->hasUncaughtThrows = true;
-            } elseif (!$this->isExceptionCaught($node)) {
-                $this->hasUncaughtThrows = true;
-            } elseif ($this->isInCatchBlock($node) && !$this->isRethrowingCaughtException($node)) {
-                $this->hasUncaughtThrows = true;
-            }
+            $this->checkIfExceptionIsCaught($node);
         }
 
         if ($node instanceof MethodCall) {
-            $methodName = $node->name->name;
-            if (isset($node->var->name)) {
-                $objectName = (string) $node->var->name;
-            }
-
-            if (isset($objectName)) {
-                $class = $this->variableTypes[$objectName] ?? null;
-
-                if ($class) {
-                    $exceptions = $this->getMethodThrownExceptions($class, $methodName);
-                    foreach ($exceptions as $exception) {
-                        $throwNode = new Throw_(new Variable($exception), $node->getAttributes());
-
-                        if (!$this->isInTryBlock($throwNode)) {
-                            $this->hasUncaughtThrows = true;
-                        } elseif (!$this->isExceptionCaught($throwNode)) {
-                            $this->hasUncaughtThrows = true;
-                        } elseif (
-                            $this->isInCatchBlock($throwNode)
-                            && !$this->isRethrowingCaughtException($throwNode)
-                        ) {
-                            $this->hasUncaughtThrows = true;
-                        }
-                    }
-                }
-            }
+            $this->checkMethodCallForThrowingUncaughtException($node);
         }
 
         return null;
