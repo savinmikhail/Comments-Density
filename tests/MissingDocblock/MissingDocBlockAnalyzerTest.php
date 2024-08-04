@@ -7,11 +7,8 @@ namespace SavinMikhail\Tests\CommentsDensity\MissingDocblock;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
-use function file_get_contents;
-use const DIRECTORY_SEPARATOR;
 
 final class MissingDocBlockAnalyzerTest extends TestCase
 {

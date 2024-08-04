@@ -9,10 +9,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
+
 use function file_get_contents;
+
 use const DIRECTORY_SEPARATOR;
 
-final class MDBAdvancedCheckForMethod  extends TestCase
+final class MDBAdvancedCheckForMethod extends TestCase
 {
     public static function templateGenericDataProvider(): Generator
     {
