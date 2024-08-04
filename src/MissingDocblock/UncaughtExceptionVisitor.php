@@ -102,30 +102,10 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         return null;
     }
 
-    private function getNamespaceFromClass(): string
-    {
-        $fullyQualifiedName = $this->class->namespacedName?->toString();
-        $namespaceParts = explode('\\', $fullyQualifiedName);
-        array_pop($namespaceParts); // Remove the class name part
-        return implode('\\', $namespaceParts);
-    }
-
-    private function resolveFQN(string $class): string
-    {
-        if ($this->getNamespaceFromClass() && !str_contains($class, '\\')) {
-            return $this->getNamespaceFromClass() . '\\' . $class;
-        }
-        return $class;
-    }
-
     private function getMethodThrownExceptions(string $className, string $methodName): array
     {
         if (!class_exists($className)) {
-            $fqn = $this->resolveFQN($className);
-            if (!class_exists($fqn)) {
-                return [];
-            }
-            $className = $fqn;
+            return [];
         }
 
         $reflectionClass = new ReflectionClass($className);
@@ -210,9 +190,9 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         $throwExpr = $throwNode->expr;
 
         if ($throwExpr instanceof Variable) {
-            $thrownExceptionType = $this->getVariableType($throwExpr->name);
+            $thrownExceptionType = $throwExpr->name;
         } elseif ($throwExpr instanceof New_) {
-            $thrownExceptionType = (string)$throwExpr->class;
+            $thrownExceptionType = $throwExpr->class->name;
         } else {
             return false;
         }
@@ -220,7 +200,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
         foreach ($this->getCurrentCatchStack() as $catch) {
             foreach ($catch->types as $catchType) {
                 $catchTypeName = $catchType->name;
-                if ($catchTypeName[0] !== '\\') {
+                if (!$catchType->isQualified()) {
                     $catchTypeName = '\\' . $catchTypeName;
                 }
                 if ($thrownExceptionType[0] !== '\\') {
@@ -246,11 +226,6 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
             $catchStack = array_merge($catchStack, $tryCatch->catches);
         }
         return $catchStack;
-    }
-
-    private function getVariableType(string $varName): string
-    {
-        return $varName;
     }
 
     private function isSubclassOf(?string $className, string $parentClassName): bool
