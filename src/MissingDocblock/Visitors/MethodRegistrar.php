@@ -6,7 +6,6 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock\Visitors;
 
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Class_;
-
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
