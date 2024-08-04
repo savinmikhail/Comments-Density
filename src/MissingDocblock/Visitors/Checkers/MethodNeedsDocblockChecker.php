@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\MissingDocblock;
+namespace SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers;
 
 use ArrayAccess;
 use Iterator;
@@ -20,7 +20,7 @@ use function class_exists;
 use function in_array;
 use function interface_exists;
 
-final class MethodAnalyzer
+final readonly class MethodNeedsDocblockChecker
 {
     public function methodNeedsGeneric(ClassMethod|Function_ $node): bool
     {
@@ -37,6 +37,17 @@ final class MethodAnalyzer
         }
 
         return false;
+    }
+
+    public function methodNeedsThrowsTag(ClassMethod|Function_ $node, ?Class_ $class_): bool
+    {
+        $traverser = new NodeTraverser();
+        $visitor = new UncaughtExceptionVisitor($class_);
+
+        $traverser->addVisitor($visitor);
+        $traverser->traverse([$node]);
+
+        return $visitor->hasUncaughtThrows;
     }
 
     private function isTypeIterable(ComplexType|Identifier|Name|null $type): bool
@@ -99,16 +110,5 @@ final class MethodAnalyzer
         }
 
         return false;
-    }
-
-    public function methodThrowsUncaughtExceptions(ClassMethod|Function_ $node, ?Class_ $class_): bool
-    {
-        $traverser = new NodeTraverser();
-        $visitor = new UncaughtExceptionVisitor($class_);
-
-        $traverser->addVisitor($visitor);
-        $traverser->traverse([$node]);
-
-        return $visitor->hasUncaughtThrows;
     }
 }
