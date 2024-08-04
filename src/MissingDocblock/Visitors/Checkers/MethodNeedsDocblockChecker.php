@@ -40,10 +40,10 @@ final readonly class MethodNeedsDocblockChecker
         return false;
     }
 
-    public function methodNeedsThrowsTag(ClassMethod|Function_ $node, ?Class_ $class_): bool
+    public function methodNeedsThrowsTag(ClassMethod|Function_ $node, ?Class_ $class): bool
     {
         $traverser = new NodeTraverser();
-        $visitor = new UncaughtExceptionVisitor($class_);
+        $visitor = new UncaughtExceptionVisitor($class);
 
         $traverser->addVisitor($visitor);
         $traverser->traverse([$node]);
