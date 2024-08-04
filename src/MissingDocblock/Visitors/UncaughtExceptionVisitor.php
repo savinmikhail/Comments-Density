@@ -89,7 +89,10 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
                             $this->hasUncaughtThrows = true;
                         } elseif (!$this->isExceptionCaught($throwNode)) {
                             $this->hasUncaughtThrows = true;
-                        } elseif ($this->isInCatchBlock($throwNode) && !$this->isRethrowingCaughtException($throwNode)) {
+                        } elseif (
+                            $this->isInCatchBlock($throwNode)
+                            && !$this->isRethrowingCaughtException($throwNode)
+                        ) {
                             $this->hasUncaughtThrows = true;
                         }
                     }
