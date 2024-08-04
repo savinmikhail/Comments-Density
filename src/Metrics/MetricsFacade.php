@@ -14,7 +14,7 @@ final readonly class MetricsFacade
     public function __construct(
         private CDS $cds,
         private ComToLoc $comToLoc,
-        private PerformanceMonitor $performanceMonitor
+        private ResourceUtilization $performanceMonitor
     ) {
     }
 
