@@ -17,13 +17,13 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
 
     public function __construct(
         private readonly string $filename,
-        private readonly NodeNeedsDocblockChecker $nodeNeedsDocblockChecker,
+        private readonly NodeNeedsDocblockChecker $nodeChecker,
     ) {
     }
 
     public function enterNode(Node $node): null
     {
-        if (! $this->nodeNeedsDocblockChecker->requiresDocBlock($node)) {
+        if (! $this->nodeChecker->requiresDocBlock($node)) {
             return null;
         }
         $docComment = $node->getDocComment();
@@ -37,7 +37,7 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
                 MissingDocBlockAnalyzer::COLOR,
                 $this->filename,
                 $node->getLine(),
-                $this->nodeNeedsDocblockChecker->determineMissingContent(),
+                $this->nodeChecker->determineMissingContent(),
             );
 
         return null;
