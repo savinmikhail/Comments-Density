@@ -6,13 +6,13 @@ namespace SavinMikhail\Tests\CommentsDensity\Metrics;
 
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
-use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
+use SavinMikhail\CommentsDensity\Metrics\ResourceUtilization;
 
 final class PerformanceMonitorTest extends TestCase
 {
     public function testStart(): void
     {
-        $performanceMonitor = new PerformanceMonitor();
+        $performanceMonitor = new ResourceUtilization();
         $reflection = new \ReflectionClass($performanceMonitor);
         $startTimeProperty = $reflection->getProperty('startTime');
         $startTimeProperty->setAccessible(true);
@@ -24,7 +24,7 @@ final class PerformanceMonitorTest extends TestCase
 
     public function testStop(): void
     {
-        $performanceMonitor = new PerformanceMonitor();
+        $performanceMonitor = new ResourceUtilization();
         $reflection = new \ReflectionClass($performanceMonitor);
         $endTimeProperty = $reflection->getProperty('endTime');
         $endTimeProperty->setAccessible(true);
@@ -41,7 +41,7 @@ final class PerformanceMonitorTest extends TestCase
 
     public function testGetPerformanceMetrics(): void
     {
-        $performanceMonitor = new PerformanceMonitor();
+        $performanceMonitor = new ResourceUtilization();
         $performanceMonitor->start();
         usleep(50000);
         $performanceMonitor->stop();
