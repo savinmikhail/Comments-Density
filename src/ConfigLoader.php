@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
-use Exception;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Input\OutputDTO;
@@ -29,7 +28,7 @@ final readonly class ConfigLoader
     /**
      *
      */
-    protected const DIR_LEVEL = 4;
+    protected const DIR_LEVEL = COMMENTS_DENSITY_ENVIRONMENT === 'dev' ? 1 : 4;
 
     /**
      * @param string $configFile
