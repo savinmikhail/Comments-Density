@@ -19,11 +19,13 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
     private MethodRegistrar $methodRegistrar;
     private ExceptionChecker $exceptionChecker;
+    private DocBlockFactory $docBlockFactory;
 
     public function __construct(?Class_ $class)
     {
         $this->methodRegistrar = new MethodRegistrar($class);
         $this->exceptionChecker = new ExceptionChecker();
+        $this->docBlockFactory = DocBlockFactory::createInstance();
     }
 
     public function hasUncaughtException(): bool
@@ -100,8 +102,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
             return [];
         }
 
-        $docBlockFactory = DocBlockFactory::createInstance();
-        $docBlock = $docBlockFactory->create($docComment);
+        $docBlock = $this->docBlockFactory->create($docComment);
 
         $exceptions = [];
         foreach ($docBlock->getTagsByName('throws') as $tag) {
