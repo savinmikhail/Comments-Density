@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use PhpParser\NodeTraverser;
-use PhpParser\ParserFactory;
 use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\ParserFactory;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\MissingDocBlockVisitor;
 
 final class MissingDocBlockAnalyzer
 {

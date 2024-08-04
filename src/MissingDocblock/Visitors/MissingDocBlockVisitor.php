@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\MissingDocblock;
+namespace SavinMikhail\CommentsDensity\MissingDocblock\Visitors;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\MissingDocblock\DocBlockChecker;
 
 final class MissingDocBlockVisitor extends NodeVisitorAbstract
 {

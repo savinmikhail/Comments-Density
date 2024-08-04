@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\MissingDocblock;
+namespace SavinMikhail\CommentsDensity\MissingDocblock\Visitors;
 
+use phpDocumentor\Reflection\DocBlockFactory;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Throw_;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -17,12 +18,8 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
-use phpDocumentor\Reflection\DocBlockFactory;
-
 use function array_pop;
 use function class_exists;
-use function explode;
-use function implode;
 
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {

@@ -6,7 +6,6 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock;
 
 use ArrayAccess;
 use Iterator;
-use PhpParser\Node;
 use PhpParser\Node\ComplexType;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
@@ -15,8 +14,8 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
 use ReflectionClass;
+use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\UncaughtExceptionVisitor;
 use Traversable;
-
 use function class_exists;
 use function in_array;
 use function interface_exists;
