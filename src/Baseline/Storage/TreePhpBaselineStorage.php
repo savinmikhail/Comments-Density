@@ -63,9 +63,9 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
                 'comment' => $comment->content,
                 'type' => $comment->commentType,
             ];
-        } else {
-            $this->addCommentToTree($tree[$currentPart], $pathParts, $comment);
+            return;
         }
+        $this->addCommentToTree($tree[$currentPart], $pathParts, $comment);
     }
 
     /**
