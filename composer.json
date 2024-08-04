@@ -22,6 +22,7 @@
     "require": {
         "php": ">=8.2",
         "composer-plugin-api": "^2.0",
+        "composer/xdebug-handler": "*",
         "nikic/php-parser": "^5.1",
         "phpdocumentor/reflection-docblock": "^5.4",
         "savinmikhail/primitive_wrappers": "^1.1",
