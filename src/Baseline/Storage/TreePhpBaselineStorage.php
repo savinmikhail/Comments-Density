@@ -91,13 +91,15 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
     private function commentExistsInTree(array $tree, array $pathParts, int $line): bool
     {
         $currentPart = array_shift($pathParts);
+
         if (!isset($tree[$currentPart])) {
             return false;
         }
+
         if (empty($pathParts)) {
             return isset($tree[$currentPart][$line]);
-        } else {
-            return $this->commentExistsInTree($tree[$currentPart], $pathParts, $line);
         }
+
+        return $this->commentExistsInTree($tree[$currentPart], $pathParts, $line);
     }
 }
