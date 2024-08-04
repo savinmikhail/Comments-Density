@@ -9,15 +9,16 @@ ini_set('display_errors', 'stderr');
 
 // Determine the correct path to the autoload file
 $autoloadFiles = [
-    __DIR__ . '/../vendor/autoload.php', // Development context
-    __DIR__ . '/../../../autoload.php',  // Installed as dependency
+    'dev' => __DIR__ . '/../vendor/autoload.php', // Development context
+    'prod' => __DIR__ . '/../../../../vendor/autoload.php',  // Installed as dependency
 ];
 
 $autoloadFound = false;
-foreach ($autoloadFiles as $autoloadFile) {
-    if (file_exists($autoloadFile)) {
+foreach ($autoloadFiles as $environment => $autoloadFile) {
+    if (\file_exists($autoloadFile)) {
         require $autoloadFile;
-        $autoloadFound = true;
+        $autoloadFound = \true;
+        \define('COMMENTS_DENSITY_ENVIRONMENT', $environment);
         break;
     }
 }
