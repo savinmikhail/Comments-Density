@@ -6,3 +6,4 @@ grumphp.yml export-ignore
 comments_density.php export-ignore
 bootstrap.php export-ignore
 phpstan.neon export-ignore
+benchmark export-ignore
