@@ -22,7 +22,7 @@ class AnalyzeCommentCommand extends Command
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
