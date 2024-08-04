@@ -53,11 +53,36 @@ final class NodeNeedsDocblockChecker
 
     private function isConfiguredNode(Node $node): bool
     {
-        return ($node instanceof Trait_ && $this->config->trait)
-            || ($node instanceof Interface_ && $this->config->interface)
-            || ($node instanceof Enum_ && $this->config->enum)
-            || ($node instanceof Property && $this->config->property)
-            || ($node instanceof ClassConst && $this->config->constant);
+        return $this->isConfiguredTrait($node)
+            || $this->isConfiguredInterface($node)
+            || $this->isConfiguredEnum($node)
+            || $this->isConfiguredProperty($node)
+            || $this->isConfiguredConstant($node);
+    }
+
+    private function isConfiguredTrait(Node $node): bool
+    {
+        return $node instanceof Trait_ && $this->config->trait;
+    }
+
+    private function isConfiguredInterface(Node $node): bool
+    {
+        return $node instanceof Interface_ && $this->config->interface;
+    }
+
+    private function isConfiguredEnum(Node $node): bool
+    {
+        return $node instanceof Enum_ && $this->config->enum;
+    }
+
+    private function isConfiguredProperty(Node $node): bool
+    {
+        return $node instanceof Property && $this->config->property;
+    }
+
+    private function isConfiguredConstant(Node $node): bool
+    {
+        return $node instanceof ClassConst && $this->config->constant;
     }
 
     private function isMethodOrFunction(Node $node): bool
