@@ -9,10 +9,15 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\MethodNeedsDocblockChecker;
+use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\NodeNeedsDocblockChecker;
 use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\MissingDocBlockVisitor;
 
 final class MissingDocBlockAnalyzer
 {
+    public const NAME = 'missingDocblock';
+    public const COLOR = 'red';
+
     private bool $exceedThreshold = false;
 
     public function __construct(
@@ -40,7 +45,7 @@ final class MissingDocBlockAnalyzer
 
         $visitor = new MissingDocBlockVisitor(
             $filename,
-            new DocBlockChecker($this->docblockConfigDTO, new MethodAnalyzer())
+            new NodeNeedsDocblockChecker($this->docblockConfigDTO, new MethodNeedsDocblockChecker())
         );
         $traverser->removeVisitor($nameResolver);
         $traverser->addVisitor($visitor);
@@ -62,7 +67,7 @@ final class MissingDocBlockAnalyzer
 
     public function getColor(): string
     {
-        return 'red';
+        return self::COLOR;
     }
 
     /**
@@ -89,6 +94,6 @@ final class MissingDocBlockAnalyzer
 
     public function getName(): string
     {
-        return 'missingDocblock';
+        return self::NAME;
     }
 }
