@@ -7,6 +7,7 @@ namespace SavinMikhail\Tests\CommentsDensity\MissingDocblock;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use function file_get_contents;
@@ -883,9 +884,9 @@ CODE
             <<<'CODE'
 <?php
 
-use SavinMikhail\Tests\CommentsDensity\TestFiles\TemplatedInterface;
+use SavinMikhail\Tests\CommentsDensity\TestFiles\InterfaceExtendsIterable;
 
-function foo(TemplatedInterface $array) 
+function foo(InterfaceExtendsIterable $array) 
 {
     $user = $array->get();
 
@@ -900,9 +901,9 @@ CODE,
             <<<'CODE'
 <?php
 
-use SavinMikhail\Tests\CommentsDensity\TestFiles\TemplatedInterface;
+use SavinMikhail\Tests\CommentsDensity\TestFiles\InterfaceExtendsIterable;
 
-function foo(TemplatedInterface $array) 
+function foo(InterfaceExtendsIterable $array) 
 {
     $user = $array->get();
 
@@ -1161,5 +1162,60 @@ CODE
     public function testGetName(): void
     {
         $this->assertEquals('missingDocblock', $this->analyzer->getName());
+    }
+
+    public static function templateGenericDataProvider(): Generator
+    {
+        yield 'method with templated class from sources' => [
+            <<<'CODE'
+<?php
+
+class Foo
+{
+    private function isTraversableRecursively(\ReflectionClass $reflection): bool
+    {
+    }
+}
+
+CODE
+            , 1
+        ];
+
+        yield 'method with templated class from test files' => [
+            <<<'CODE'
+<?php
+
+use SavinMikhail\Tests\CommentsDensity\TestFiles\TemplatedClass;
+
+class Foo
+{
+    private function isTraversableRecursively(TemplatedClass $reflection): bool
+    {
+    }
+}
+
+CODE
+            , 1
+        ];
+    }
+
+    #[DataProvider('templateGenericDataProvider')]
+    public function testTemplateGeneric(string $code, int $expectedCount): void
+    {
+        $analyzer = new MissingDocBlockAnalyzer(
+            new MissingDocblockConfigDTO(
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false
+            )
+        );
+
+        $missingDocBlocks = $analyzer->getMissingDocblocks($code, 'test.php');
+        $this->assertCount($expectedCount, $missingDocBlocks);
     }
 }
