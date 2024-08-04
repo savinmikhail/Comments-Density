@@ -17,6 +17,7 @@ class ConfigLoaderTest extends TestCase
 
     protected function setUp(): void
     {
+        define('COMMENTS_DENSITY_ENVIRONMENT', 'test');
         $this->configLoader = new ConfigLoader();
     }
 
