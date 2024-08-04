@@ -15,6 +15,15 @@ use function round;
 
 final class CDS
 {
+    /**
+     * @var array<string, float>
+     * @readonly
+     */
+    private array $thresholds;
+    /**
+     * @readonly
+     */
+    private CommentFactory $commentFactory;
     private const MISSING_DOCBLOCK_WEIGHT = -1;
 
     private bool $exceedThreshold = false;
@@ -22,10 +31,10 @@ final class CDS
     /**
      * @param array<string, float> $thresholds
      */
-    public function __construct(
-        private readonly array $thresholds,
-        private readonly CommentFactory $commentFactory,
-    ) {
+    public function __construct(array $thresholds, CommentFactory $commentFactory)
+    {
+        $this->thresholds = $thresholds;
+        $this->commentFactory = $commentFactory;
     }
 
     /**
@@ -41,7 +50,7 @@ final class CDS
         try {
             return (new Integer(0))
                 ->scaleToRange($rawScore, $minPossibleScore, $maxPossibleScore);
-        } catch (InvalidArgumentException) {
+        } catch (InvalidArgumentException $exception) {
             return 0;
         }
     }

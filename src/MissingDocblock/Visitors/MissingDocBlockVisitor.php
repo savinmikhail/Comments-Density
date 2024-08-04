@@ -12,16 +12,27 @@ use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\NodeNeedsDocb
 
 final class MissingDocBlockVisitor extends NodeVisitorAbstract
 {
+    /**
+     * @readonly
+     */
+    private string $filename;
+    /**
+     * @readonly
+     */
+    private NodeNeedsDocblockChecker $nodeChecker;
     /** @var CommentDTO[]  */
     public array $missingDocBlocks = [];
 
-    public function __construct(
-        private readonly string $filename,
-        private readonly NodeNeedsDocblockChecker $nodeChecker,
-    ) {
+    public function __construct(string $filename, NodeNeedsDocblockChecker $nodeChecker)
+    {
+        $this->filename = $filename;
+        $this->nodeChecker = $nodeChecker;
     }
 
-    public function enterNode(Node $node): null
+    /**
+     * @return null
+     */
+    public function enterNode(Node $node)
     {
         if (! $this->nodeChecker->requiresDocBlock($node)) {
             return null;

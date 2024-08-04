@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
-final readonly class ClassWithCallForThrowingMethodInDifferentClass
+final class ClassWithCallForThrowingMethodInDifferentClass
 {
     public function baz(): void
     {

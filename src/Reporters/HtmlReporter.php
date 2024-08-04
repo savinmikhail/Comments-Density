@@ -11,10 +11,15 @@ use function nl2br;
 use const ENT_QUOTES;
 use const ENT_SUBSTITUTE;
 
-final readonly class HtmlReporter implements ReporterInterface
+final class HtmlReporter implements ReporterInterface
 {
-    public function __construct(private string $reportPath)
+    /**
+     * @readonly
+     */
+    private string $reportPath;
+    public function __construct(string $reportPath)
     {
+        $this->reportPath = $reportPath;
     }
 
     public function report(OutputDTO $dto): void

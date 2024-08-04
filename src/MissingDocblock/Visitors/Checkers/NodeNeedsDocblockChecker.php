@@ -17,6 +17,14 @@ use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 
 final class NodeNeedsDocblockChecker
 {
+    /**
+     * @readonly
+     */
+    private MissingDocblockConfigDTO $config;
+    /**
+     * @readonly
+     */
+    private MethodNeedsDocblockChecker $methodAnalyzer;
     private const MISSING_DOC = 'missing doc';
     private const MISSING_THROWS_TAG = 'missing @throws tag';
     private const MISSING_GENERIC = 'missing generic';
@@ -26,10 +34,10 @@ final class NodeNeedsDocblockChecker
 
     private ?Class_ $class = null;
 
-    public function __construct(
-        private readonly MissingDocblockConfigDTO $config,
-        private readonly MethodNeedsDocblockChecker $methodAnalyzer,
-    ) {
+    public function __construct(MissingDocblockConfigDTO $config, MethodNeedsDocblockChecker $methodAnalyzer)
+    {
+        $this->config = $config;
+        $this->methodAnalyzer = $methodAnalyzer;
     }
 
     public function requiresDocBlock(Node $node): bool
@@ -90,7 +98,10 @@ final class NodeNeedsDocblockChecker
         return ($node instanceof ClassMethod || $node instanceof Function_) && $this->config->function;
     }
 
-    private function requiresMethodOrFunctionDocBlock(ClassMethod|Function_ $node): bool
+    /**
+     * @param \PhpParser\Node\Stmt\ClassMethod|\PhpParser\Node\Stmt\Function_ $node
+     */
+    private function requiresMethodOrFunctionDocBlock($node): bool
     {
         if ($this->config->requireForAllMethods) {
             return true;
@@ -101,8 +112,9 @@ final class NodeNeedsDocblockChecker
     /**
      * here we want to find methods that have uncaught throw statements or their return type will be better
      * described as generic
+     * @param \PhpParser\Node\Stmt\ClassMethod|\PhpParser\Node\Stmt\Function_ $node
      */
-    private function methodRequiresAdditionalDocBlock(ClassMethod|Function_ $node): bool
+    private function methodRequiresAdditionalDocBlock($node): bool
     {
         $this->throwsUncaught = $this->methodAnalyzer->methodNeedsThrowsTag($node, $this->class);
         $this->needsGeneric = $this->methodAnalyzer->methodNeedsGeneric($node);

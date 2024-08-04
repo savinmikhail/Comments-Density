@@ -46,7 +46,12 @@ CODE;
         $this->assertCount(1, $missingDocBlocks);
     }
 
-    #[DataProvider('methodDeclarationDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider methodDeclarationDataProvider
+     */
     public function testMethodDeclaration(string $code, int $expectedCount): void
     {
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
@@ -151,14 +156,23 @@ CODE;
         ];
     }
 
-    #[DataProvider('closureDataProvider')]
+    /**
+     * @param string $code
+     * @return void
+     * @dataProvider closureDataProvider
+     */
     public function testClosuresAndArrowFunctions(string $code): void
     {
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
         $this->assertCount(0, $missingDocBlocks);
     }
 
-    #[DataProvider('classDeclarationDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider classDeclarationDataProvider
+     */
     public function testClassDeclaration(string $code, int $expectedCount): void
     {
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
@@ -200,7 +214,12 @@ CODE
         ];
     }
 
-    #[DataProvider('traitDeclarationDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider traitDeclarationDataProvider
+     */
     public function testTraitDeclaration(string $code, int $expectedCount): void
     {
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
@@ -218,7 +237,12 @@ CODE
         ];
     }
 
-    #[DataProvider('interfaceDeclarationDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider interfaceDeclarationDataProvider
+     */
     public function testInterfaceDeclaration(string $code, int $expectedCount): void
     {
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
@@ -236,7 +260,12 @@ CODE
         ];
     }
 
-    #[DataProvider('anonymousClassDeclarationDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider anonymousClassDeclarationDataProvider
+     */
     public function testAnonymousClassDeclaration(string $code, int $expectedCount): void
     {
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
@@ -263,7 +292,12 @@ CODE
         ];
     }
 
-    #[DataProvider('enumDeclarationDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider anonymousClassDeclarationDataProvider
+     */
     public function testEnumDeclaration(string $code, int $expectedCount): void
     {
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
@@ -293,7 +327,12 @@ CODE
         ];
     }
 
-    #[DataProvider('propertyDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider enumDeclarationDataProvider
+     */
     public function testProperties(string $code, int $expectedCount): void
     {
         $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');

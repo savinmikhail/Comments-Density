@@ -15,14 +15,18 @@ use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\MissingDocBlockVisitor
 
 final class MissingDocBlockAnalyzer
 {
+    /**
+     * @readonly
+     */
+    private MissingDocblockConfigDTO $docblockConfigDTO;
     public const NAME = 'missingDocblock';
     public const COLOR = 'red';
 
     private bool $exceedThreshold = false;
 
-    public function __construct(
-        private readonly MissingDocblockConfigDTO $docblockConfigDTO,
-    ) {
+    public function __construct(MissingDocblockConfigDTO $docblockConfigDTO)
+    {
+        $this->docblockConfigDTO = $docblockConfigDTO;
     }
 
     /**

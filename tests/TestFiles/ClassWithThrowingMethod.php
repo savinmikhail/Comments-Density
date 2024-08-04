@@ -6,7 +6,7 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
 use Exception;
 
-final readonly class ClassWithThrowingMethod
+final class ClassWithThrowingMethod
 {
     /**
      * @return void

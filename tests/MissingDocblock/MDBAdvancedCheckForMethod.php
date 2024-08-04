@@ -49,7 +49,12 @@ CODE
         ];
     }
 
-    #[DataProvider('templateGenericDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider templateGenericDataProvider
+     */
     public function testTemplateGeneric(string $code, int $expectedCount): void
     {
         $analyzer = new MissingDocBlockAnalyzer(
@@ -64,7 +69,6 @@ CODE
                 false
             )
         );
-
         $missingDocBlocks = $analyzer->getMissingDocblocks($code, 'test.php');
         $this->assertCount($expectedCount, $missingDocBlocks);
     }
@@ -565,7 +569,12 @@ CODE
         ];
     }
 
-    #[DataProvider('genericDocblockDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider genericDocblockDataProvider
+     */
     public function testGenericDocblockDetection(string $code, int $expectedCount): void
     {
         $analyzer = new MissingDocBlockAnalyzer(
@@ -580,7 +589,6 @@ CODE
                 false
             )
         );
-
         $missingDocBlocks = $analyzer->getMissingDocblocks($code, 'test.php');
         $this->assertCount($expectedCount, $missingDocBlocks);
     }
@@ -735,7 +743,12 @@ CODE
         ];
     }
 
-    #[DataProvider('uncaughtExceptionDocblockDataProvider')]
+    /**
+     * @param string $code
+     * @param int $expectedCount
+     * @return void
+     * @dataProvider uncaughtExceptionDocblockDataProvider
+     */
     public function testExceptionDocblockDetection(string $code, int $expectedCount): void
     {
         $analyzer = new MissingDocBlockAnalyzer(
@@ -750,7 +763,6 @@ CODE
                 false
             )
         );
-
         $missingDocBlocks = $analyzer->getMissingDocblocks($code, 'test.php');
         $this->assertCount($expectedCount, $missingDocBlocks);
     }

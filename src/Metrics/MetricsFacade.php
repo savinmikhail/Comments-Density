@@ -9,13 +9,25 @@ use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 
-final readonly class MetricsFacade
+final class MetricsFacade
 {
-    public function __construct(
-        private CDS $cds,
-        private ComToLoc $comToLoc,
-        private ResourceUtilization $performanceMonitor
-    ) {
+    /**
+     * @readonly
+     */
+    private CDS $cds;
+    /**
+     * @readonly
+     */
+    private ComToLoc $comToLoc;
+    /**
+     * @readonly
+     */
+    private ResourceUtilization $performanceMonitor;
+    public function __construct(CDS $cds, ComToLoc $comToLoc, ResourceUtilization $performanceMonitor)
+    {
+        $this->cds = $cds;
+        $this->comToLoc = $comToLoc;
+        $this->performanceMonitor = $performanceMonitor;
     }
 
     public function startPerformanceMonitoring(): void

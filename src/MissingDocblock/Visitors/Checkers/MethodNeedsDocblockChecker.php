@@ -25,8 +25,11 @@ use function dd;
 use function in_array;
 use function interface_exists;
 
-final readonly class MethodNeedsDocblockChecker
+final class MethodNeedsDocblockChecker
 {
+    /**
+     * @readonly
+     */
     private DocBlockFactory $docBlockFactory;
 
     public function __construct()
@@ -34,7 +37,10 @@ final readonly class MethodNeedsDocblockChecker
         $this->docBlockFactory = DocBlockFactory::createInstance();
     }
 
-    public function methodNeedsGeneric(ClassMethod|Function_ $node): bool
+    /**
+     * @param \PhpParser\Node\Stmt\ClassMethod|\PhpParser\Node\Stmt\Function_ $node
+     */
+    public function methodNeedsGeneric($node): bool
     {
         $returnType = $node->getReturnType();
 
@@ -51,7 +57,10 @@ final readonly class MethodNeedsDocblockChecker
         return false;
     }
 
-    public function methodNeedsThrowsTag(ClassMethod|Function_ $node, ?Class_ $class): bool
+    /**
+     * @param \PhpParser\Node\Stmt\ClassMethod|\PhpParser\Node\Stmt\Function_ $node
+     */
+    public function methodNeedsThrowsTag($node, ?Class_ $class): bool
     {
         $traverser = new NodeTraverser();
         $visitor = new UncaughtExceptionVisitor($class);
@@ -62,7 +71,10 @@ final readonly class MethodNeedsDocblockChecker
         return $visitor->hasUncaughtException();
     }
 
-    private function isTypeIterable(ComplexType|Identifier|Name|null $type): bool
+    /**
+     * @param \PhpParser\Node\ComplexType|\PhpParser\Node\Identifier|\PhpParser\Node\Name|null $type
+     */
+    private function isTypeIterable($type): bool
     {
         if ($type === null) {
             return false;
@@ -85,7 +97,10 @@ final readonly class MethodNeedsDocblockChecker
         return $this->isClassOrInterfaceTraversable($type);
     }
 
-    private function isClassOrInterfaceTraversable(ComplexType|Identifier|Name $type): bool
+    /**
+     * @param \PhpParser\Node\ComplexType|\PhpParser\Node\Identifier|\PhpParser\Node\Name $type
+     */
+    private function isClassOrInterfaceTraversable($type): bool
     {
         if (!($type instanceof Name)) {
             return false;
@@ -128,7 +143,10 @@ final readonly class MethodNeedsDocblockChecker
         return false;
     }
 
-    private function isTemplatedClass(ComplexType|Identifier|Name|null $type): bool
+    /**
+     * @param \PhpParser\Node\ComplexType|\PhpParser\Node\Identifier|\PhpParser\Node\Name|null $type
+     */
+    private function isTemplatedClass($type): bool
     {
         if ($type === null) {
             return false;

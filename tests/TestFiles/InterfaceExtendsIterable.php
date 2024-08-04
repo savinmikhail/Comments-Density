@@ -7,5 +7,8 @@ use Iterator;
 
 interface InterfaceExtendsIterable extends Iterator
 {
-    public function get(): mixed;
+    /**
+     * @return mixed
+     */
+    public function get();
 }

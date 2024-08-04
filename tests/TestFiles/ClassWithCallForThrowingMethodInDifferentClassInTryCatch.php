@@ -6,7 +6,7 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
 use Exception;
 
-final readonly class ClassWithCallForThrowingMethodInDifferentClassInTryCatch
+final class ClassWithCallForThrowingMethodInDifferentClassInTryCatch
 {
     public function baz(): void
     {

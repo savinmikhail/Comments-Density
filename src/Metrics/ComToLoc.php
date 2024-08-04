@@ -11,13 +11,19 @@ use function round;
 
 final class ComToLoc
 {
+    /**
+     * @var array<string, float>
+     * @readonly
+     */
+    private array $thresholds;
     private bool $exceedThreshold = false;
 
     /**
      * @param array<string, float> $thresholds
      */
-    public function __construct(private readonly array $thresholds)
+    public function __construct(array $thresholds)
     {
+        $this->thresholds = $thresholds;
     }
 
     /**

@@ -46,13 +46,13 @@ final class AnalyzerTest extends TestCase
 
         // Initialize ConfigDTO with necessary properties
         $configDTO = new ConfigDTO(
-            thresholds: [],
-            exclude: ['/excluded/dir'],
-            output: new OutputConfigDTO('console', 'output.html'),
-            directories: [],
-            only: [],
-            docblockConfigDTO: $this->createMock(MissingDocblockConfigDTO::class),
-            useBaseline: false
+            [],
+            ['/excluded/dir'],
+            new OutputConfigDTO('console', 'output.html'),
+            [],
+            [],
+            $this->createMock(MissingDocblockConfigDTO::class),
+            false
         );
 
         $this->analyzer = $this

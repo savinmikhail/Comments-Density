@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\DTO\Input;
 
-final readonly class OutputDTO
+final class OutputDTO
 {
-    public function __construct(
-        public string $type,
-        public string $file,
-    ) {
+    /**
+     * @readonly
+     */
+    public string $type;
+    /**
+     * @readonly
+     */
+    public string $file;
+    public function __construct(string $type, string $file)
+    {
+        $this->type = $type;
+        $this->file = $file;
     }
 }

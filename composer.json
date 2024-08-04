@@ -19,28 +19,7 @@
             "email": "mikhail.d.savin@gmail.com"
         }
     ],
-    "require": {
-        "php": ">=8.2",
-        "composer-plugin-api": "^2.0",
-        "composer/xdebug-handler": "^3.0",
-        "nikic/php-parser": "^5.1",
-        "phpdocumentor/reflection-docblock": "^5.4",
-        "savinmikhail/primitive_wrappers": "^1.1",
-        "symfony/console": "^6.1"
-    },
-    "require-dev": {
-        "composer/composer": "^2.2.6",
-        "dg/bypass-finals": "^1.8",
-        "mikey179/vfsstream": "^1.6",
-        "mockery/mockery": "^1.6",
-        "phpmd/phpmd": "^2.15",
-        "phpro/grumphp": "^2.5",
-        "phpstan/phpstan": "^1.11",
-        "phpunit/phpunit": "^11.1",
-        "rector/rector": "^1.2",
-        "squizlabs/php_codesniffer": "^3.9",
-        "symfony/var-dumper": "^7.0"
-    },
+
     "keywords": ["static analysis", "comment", "density"],
     "bin": [
         "bin/comments_density"
@@ -50,12 +29,33 @@
     },
     "config": {
         "platform": {
-            "php": "8.2"
+            "php": "7.4"
         },
         "allow-plugins": {
             "phpro/grumphp": true
         },
         "sort-packages": true,
         "optimize-autoloader": true
+    },
+    "require": {
+        "composer-plugin-api": "*",
+        "composer/xdebug-handler": "^3.0",
+        "nikic/php-parser": "^5.1",
+        "phpdocumentor/reflection-docblock": "^5.4",
+        "savinmikhail/primitive_wrappers": "^1.2",
+        "symfony/console": "^5.4"
+    },
+    "require-dev": {
+        "composer/composer": "^2.7",
+        "dg/bypass-finals": "^1.8",
+        "mikey179/vfsstream": "^1.6",
+        "mockery/mockery": "^1.6",
+        "phpmd/phpmd": "^2.15",
+        "phpro/grumphp": "^1.13",
+        "phpstan/phpstan": "^1.11",
+        "phpunit/phpunit": "^9.6",
+        "rector/rector": "^1.2",
+        "squizlabs/php_codesniffer": "^3.10",
+        "symfony/var-dumper": "^5.4"
     }
 }

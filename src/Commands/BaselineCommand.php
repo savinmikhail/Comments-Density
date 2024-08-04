@@ -23,26 +23,18 @@ final class BaselineCommand extends Command
     /**
      * @inheritDoc
      */
-    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $path = __DIR__ . '/../../baseline.php';
-
         $storage = new TreePhpBaselineStorage();
         $storage->init($path);
-
         $configDto = $this->getConfigDto();
-
         $files = $this->getFilesFromDirectories($configDto->directories);
         $analyzerFactory = new AnalyzerFactory();
-
         $analyzer = $analyzerFactory->getAnalyzer($configDto, $output, $storage);
         $outputDTO = $analyzer->analyze($files);
-
         $storage->setComments($outputDTO->comments);
-
         $output->writeln('<info>Baseline generated successfully!</info>');
-
         return SymfonyCommand::SUCCESS;
     }
 }

@@ -7,7 +7,7 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 /**
  * @template T of object
  */
-final readonly class TemplatedClass
+final class TemplatedClass
 {
     public function __construct()
     {

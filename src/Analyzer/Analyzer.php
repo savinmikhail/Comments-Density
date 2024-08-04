@@ -33,17 +33,45 @@ use const T_DOC_COMMENT;
 
 final class Analyzer
 {
+    /**
+     * @readonly
+     */
+    private ConfigDTO $configDTO;
+    /**
+     * @readonly
+     */
+    private CommentFactory $commentFactory;
+    /**
+     * @readonly
+     */
+    private MissingDocBlockAnalyzer $missingDocBlock;
+    /**
+     * @readonly
+     */
+    private MetricsFacade $metrics;
+    /**
+     * @readonly
+     */
+    private OutputInterface $output;
+    /**
+     * @readonly
+     */
+    private MissingDocBlockAnalyzer $docBlockAnalyzer;
+    /**
+     * @readonly
+     */
+    private BaselineStorageInterface $baselineStorage;
     private int $totalLinesOfCode = 0;
 
-    public function __construct(
-        private readonly ConfigDTO $configDTO,
-        private readonly CommentFactory $commentFactory,
-        private readonly MissingDocBlockAnalyzer $missingDocBlock,
-        private readonly MetricsFacade $metrics,
-        private readonly OutputInterface $output,
-        private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private readonly BaselineStorageInterface $baselineStorage,
-    ) {
+    public function __construct(ConfigDTO $configDTO, CommentFactory $commentFactory, MissingDocBlockAnalyzer $missingDocBlock, MetricsFacade $metrics, OutputInterface $output, MissingDocBlockAnalyzer $docBlockAnalyzer, BaselineStorageInterface $baselineStorage)
+    {
+        $this->configDTO = $configDTO;
+        $this->commentFactory = $commentFactory;
+        $this->missingDocBlock = $missingDocBlock;
+        $this->metrics = $metrics;
+        $this->output = $output;
+        $this->docBlockAnalyzer = $docBlockAnalyzer;
+        $this->baselineStorage = $baselineStorage;
     }
 
     public function analyze(Generator $files): OutputDTO
@@ -261,7 +289,7 @@ final class Analyzer
     private function isInWhitelist(string $filePath): bool
     {
         foreach ($this->configDTO->exclude as $whitelistedDir) {
-            if (str_contains($filePath, $whitelistedDir)) {
+            if (strpos($filePath, $whitelistedDir) !== false) {
                 return true;
             }
         }

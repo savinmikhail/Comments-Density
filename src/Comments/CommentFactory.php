@@ -10,14 +10,20 @@ use function in_array;
 
 final class CommentFactory
 {
+    /**
+     * @var string[]
+     * @readonly
+     */
+    private array $allowedTypes = [];
     /** @var array<array-key, CommentTypeInterface> */
     private array $commentTypes;
 
     /**
      * @param string[] $allowedTypes
      */
-    public function __construct(private readonly array $allowedTypes = [])
+    public function __construct(array $allowedTypes = [])
     {
+        $this->allowedTypes = $allowedTypes;
         $this->commentTypes =  [
             new TodoComment(),
             new FixMeComment(),

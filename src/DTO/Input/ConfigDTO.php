@@ -4,8 +4,43 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\DTO\Input;
 
-final readonly class ConfigDTO
+final class ConfigDTO
 {
+    /**
+     * @var array<string, float>
+     * @readonly
+     */
+    public array $thresholds;
+    /**
+     * @var string[]
+     * @readonly
+     */
+    public array $exclude;
+    /**
+     * @var OutputDTO
+     * @readonly
+     */
+    public OutputDTO $output;
+    /**
+     * @var string[]
+     * @readonly
+     */
+    public array $directories;
+    /**
+     * @var string[]
+     * @readonly
+     */
+    public array $only;
+    /**
+     * @var MissingDocblockConfigDTO
+     * @readonly
+     */
+    public MissingDocblockConfigDTO $docblockConfigDTO;
+    /**
+     * @var bool
+     * @readonly
+     */
+    public bool $useBaseline;
     /**
      * @param array<string, float> $thresholds
      * @param string[] $exclude
@@ -15,14 +50,14 @@ final readonly class ConfigDTO
      * @param MissingDocblockConfigDTO $docblockConfigDTO
      * @param bool $useBaseline
      */
-    public function __construct(
-        public array $thresholds,
-        public array $exclude,
-        public OutputDTO $output,
-        public array $directories,
-        public array $only,
-        public MissingDocblockConfigDTO $docblockConfigDTO,
-        public bool $useBaseline,
-    ) {
+    public function __construct(array $thresholds, array $exclude, OutputDTO $output, array $directories, array $only, MissingDocblockConfigDTO $docblockConfigDTO, bool $useBaseline)
+    {
+        $this->thresholds = $thresholds;
+        $this->exclude = $exclude;
+        $this->output = $output;
+        $this->directories = $directories;
+        $this->only = $only;
+        $this->docblockConfigDTO = $docblockConfigDTO;
+        $this->useBaseline = $useBaseline;
     }
 }

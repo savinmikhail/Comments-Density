@@ -13,10 +13,15 @@ use PhpParser\Node\Stmt\Expression;
 
 final class MethodRegistrar
 {
+    /**
+     * @readonly
+     */
+    private ?Class_ $class;
     private array $variableTypes = [];
 
-    public function __construct(private readonly ?Class_ $class)
+    public function __construct(?Class_ $class)
     {
+        $this->class = $class;
     }
 
     public function registerClassMethod(ClassMethod $node): void

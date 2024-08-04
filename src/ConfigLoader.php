@@ -21,7 +21,7 @@ use const DIRECTORY_SEPARATOR;
 /**
  *
  */
-final readonly class ConfigLoader
+final class ConfigLoader
 {
     protected const CONFIG_FILE = 'comments_density.php';
 
@@ -153,14 +153,14 @@ final readonly class ConfigLoader
     protected function getMissingDocblockConfig(array $config): MissingDocblockConfigDTO
     {
         return new MissingDocblockConfigDTO(
-            class: $config['missingDocblock']['class'],
-            interface: $config['missingDocblock']['interface'],
-            trait: $config['missingDocblock']['trait'],
-            enum: $config['missingDocblock']['enum'],
-            function: $config['missingDocblock']['function'],
-            property: $config['missingDocblock']['property'],
-            constant: $config['missingDocblock']['constant'],
-            requireForAllMethods: $config['missingDocblock']['requireForAllMethods']
+            $config['missingDocblock']['class'],
+            $config['missingDocblock']['interface'],
+            $config['missingDocblock']['trait'],
+            $config['missingDocblock']['enum'],
+            $config['missingDocblock']['function'],
+            $config['missingDocblock']['property'],
+            $config['missingDocblock']['constant'],
+            $config['missingDocblock']['requireForAllMethods']
         );
     }
 }

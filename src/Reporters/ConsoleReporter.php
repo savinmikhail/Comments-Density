@@ -13,13 +13,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_map;
 
-final readonly class ConsoleReporter implements ReporterInterface
+final class ConsoleReporter implements ReporterInterface
 {
-    public function __construct(
-        private OutputInterface $output,
-    ) {
+    /**
+     * @readonly
+     */
+    private OutputInterface $output;
+    public function __construct(OutputInterface $output)
+    {
+        $this->output = $output;
     }
-
     public function report(OutputDTO $dto): void
     {
         $this->printDetailedComments($dto->comments);

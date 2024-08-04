@@ -6,7 +6,7 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
 use Mockery\Exception;
 
-final readonly class ClassThatNotCatchingExceptionFromCallMethodOfAnotherClass
+final class ClassThatNotCatchingExceptionFromCallMethodOfAnotherClass
 {
     public function baz(): void
     {

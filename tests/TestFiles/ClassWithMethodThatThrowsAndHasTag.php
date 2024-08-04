@@ -6,7 +6,7 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
 use Exception;
 
-final readonly class ClassWithMethodThatThrowsAndHasTag
+final class ClassWithMethodThatThrowsAndHasTag
 {
     public function baz(): void
     {
