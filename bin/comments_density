@@ -3,6 +3,10 @@
 
 declare(strict_types=1);
 
+// Display all errors and warnings
+error_reporting(E_ALL);
+ini_set('display_errors', 'stderr');
+
 // Determine the correct path to the autoload file
 $autoloadFiles = [
     __DIR__ . '/../vendor/autoload.php', // Development context
