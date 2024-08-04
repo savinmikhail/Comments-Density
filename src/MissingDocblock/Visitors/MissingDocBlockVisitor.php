@@ -7,7 +7,8 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock\Visitors;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\MissingDocblock\DocBlockChecker;
+use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
+use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\NodeNeedsDocblockChecker;
 
 final class MissingDocBlockVisitor extends NodeVisitorAbstract
 {
@@ -16,13 +17,13 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
 
     public function __construct(
         private readonly string $filename,
-        private readonly DocBlockChecker $docBlockChecker,
+        private readonly NodeNeedsDocblockChecker $nodeNeedsDocblockChecker,
     ) {
     }
 
     public function enterNode(Node $node): null
     {
-        if (! $this->docBlockChecker->requiresDocBlock($node)) {
+        if (! $this->nodeNeedsDocblockChecker->requiresDocBlock($node)) {
             return null;
         }
         $docComment = $node->getDocComment();
@@ -32,11 +33,11 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
 
         $this->missingDocBlocks[] =
             new CommentDTO(
-                'missingDocblock', //todo: use methods from MissingDocBlockAnalyzer
-                'red',
+                MissingDocBlockAnalyzer::NAME, //todo: use methods from MissingDocBlockAnalyzer
+                MissingDocBlockAnalyzer::COLOR,
                 $this->filename,
                 $node->getLine(),
-                $this->docBlockChecker->determineMissingContent(),
+                $this->nodeNeedsDocblockChecker->determineMissingContent(),
             );
 
         return null;
