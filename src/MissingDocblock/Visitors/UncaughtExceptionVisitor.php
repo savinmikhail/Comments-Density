@@ -186,7 +186,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
             $node->getEndFilePos() <= $container->getEndFilePos();
     }
 
-    private function isExceptionCaught(Throw_ $throwNode): bool
+    private function getExceptionFQN(Throw_ $throwNode): string
     {
         $throwExpr = $throwNode->expr;
 
@@ -194,9 +194,18 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
             $thrownExceptionType = $throwExpr->name;
         } elseif ($throwExpr instanceof New_) {
             $thrownExceptionType = $throwExpr->class->name;
-        } else {
-            return false;
         }
+
+        if ($thrownExceptionType[0] !== '\\') {
+            $thrownExceptionType = '\\' . $thrownExceptionType;
+        }
+
+        return $thrownExceptionType;
+    }
+
+    private function isExceptionCaught(Throw_ $throwNode): bool
+    {
+        $thrownExceptionType = $this->getExceptionFQN($throwNode);
 
         foreach ($this->getCurrentCatchStack() as $catch) {
             foreach ($catch->types as $catchType) {
@@ -204,9 +213,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
                 if (!$catchType->isQualified()) {
                     $catchTypeName = '\\' . $catchTypeName;
                 }
-                if ($thrownExceptionType[0] !== '\\') {
-                    $thrownExceptionType = '\\' . $thrownExceptionType;
-                }
+
                 if (
                     $this->isSubclassOf($thrownExceptionType, $catchTypeName)
                     || $catchType->name === 'Throwable'
