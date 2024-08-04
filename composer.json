@@ -25,6 +25,7 @@
         "composer/xdebug-handler": "^3.0",
         "nikic/php-parser": "^5.1",
         "phpdocumentor/reflection-docblock": "^5.4",
+        "roave/better-reflection": "^6.41",
         "savinmikhail/primitive_wrappers": "^1.1",
         "symfony/console": "^6.1"
     },
