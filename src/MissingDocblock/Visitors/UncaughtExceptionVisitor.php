@@ -18,6 +18,7 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
+
 use function array_pop;
 use function class_exists;
 

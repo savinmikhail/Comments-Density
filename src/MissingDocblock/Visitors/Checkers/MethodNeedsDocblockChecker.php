@@ -16,6 +16,7 @@ use PhpParser\NodeTraverser;
 use ReflectionClass;
 use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\UncaughtExceptionVisitor;
 use Traversable;
+
 use function class_exists;
 use function in_array;
 use function interface_exists;
