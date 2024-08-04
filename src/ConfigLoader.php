@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity;
 
+use Exception;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Input\OutputDTO;
 use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
 
 use function array_map;
+use function defined;
 use function dirname;
 use function file_exists;
 use function is_dir;
@@ -21,14 +23,16 @@ use const DIRECTORY_SEPARATOR;
  */
 final readonly class ConfigLoader
 {
-    /**
-     *
-     */
     protected const CONFIG_FILE = 'comments_density.php';
-    /**
-     *
-     */
+
     protected const DIR_LEVEL = COMMENTS_DENSITY_ENVIRONMENT === 'dev' ? 1 : 4;
+
+    public function __construct()
+    {
+        if (!defined('COMMENTS_DENSITY_ENVIRONMENT')) {
+            throw new Exception('Environment is not set');
+        }
+    }
 
     /**
      * @param string $configFile
