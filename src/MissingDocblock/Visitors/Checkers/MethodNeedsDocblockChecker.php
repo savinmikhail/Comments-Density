@@ -48,7 +48,7 @@ final readonly class MethodNeedsDocblockChecker
         $traverser->addVisitor($visitor);
         $traverser->traverse([$node]);
 
-        return $visitor->hasUncaughtThrows;
+        return $visitor->hasUncaughtException();
     }
 
     private function isTypeIterable(ComplexType|Identifier|Name|null $type): bool
