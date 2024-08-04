@@ -10,7 +10,7 @@ use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
 use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
-use SavinMikhail\CommentsDensity\Metrics\PerformanceMonitor;
+use SavinMikhail\CommentsDensity\Metrics\ResourceUtilization;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -28,7 +28,7 @@ final readonly class AnalyzerFactory
         $metrics = new MetricsFacade(
             $cds,
             new ComToLoc($configDto->thresholds),
-            new PerformanceMonitor()
+            new ResourceUtilization()
         );
 
         return new Analyzer(
