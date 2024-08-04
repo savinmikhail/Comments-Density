@@ -36,42 +36,41 @@ final class NodeNeedsDocblockChecker
     {
         if ($node instanceof Class_) {
             $this->class = $node;
-            if ($this->config->class) {
-                return !$node->isAnonymous();
-            }
+            return $this->config->class && !$node->isAnonymous();
         }
 
-        if ($node instanceof Trait_ && $this->config->trait) {
+        if ($this->isConfiguredNode($node)) {
             return true;
         }
 
-        if ($node instanceof Interface_ && $this->config->interface) {
-            return true;
-        }
-
-        if ($node instanceof Enum_ && $this->config->enum) {
-            return true;
-        }
-
-        if (
-            ($node instanceof ClassMethod || $node instanceof Function_)
-            && $this->config->function
-        ) {
-            if ($this->config->requireForAllMethods) {
-                return true;
-            }
-            return $this->methodRequiresAdditionalDocBlock($node);
-        }
-
-        if ($node instanceof Property && $this->config->property) {
-            return true;
-        }
-
-        if ($node instanceof ClassConst && $this->config->constant) {
-            return true;
+        if ($this->isMethodOrFunction($node)) {
+            /** @var ClassMethod|Function_ $node */
+            return $this->requiresMethodOrFunctionDocBlock($node);
         }
 
         return false;
+    }
+
+    private function isConfiguredNode(Node $node): bool
+    {
+        return ($node instanceof Trait_ && $this->config->trait)
+            || ($node instanceof Interface_ && $this->config->interface)
+            || ($node instanceof Enum_ && $this->config->enum)
+            || ($node instanceof Property && $this->config->property)
+            || ($node instanceof ClassConst && $this->config->constant);
+    }
+
+    private function isMethodOrFunction(Node $node): bool
+    {
+        return ($node instanceof ClassMethod || $node instanceof Function_) && $this->config->function;
+    }
+
+    private function requiresMethodOrFunctionDocBlock(ClassMethod|Function_ $node): bool
+    {
+        if ($this->config->requireForAllMethods) {
+            return true;
+        }
+        return $this->methodRequiresAdditionalDocBlock($node);
     }
 
     /**
