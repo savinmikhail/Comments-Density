@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\MissingDocblock;
+namespace SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers;
 
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
@@ -15,7 +15,7 @@ use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
 use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
 
-final class DocBlockChecker
+final class NodeNeedsDocblockChecker
 {
     private const MISSING_DOC = 'missing doc';
     private const MISSING_THROWS_TAG = 'missing @throws tag';
@@ -28,7 +28,7 @@ final class DocBlockChecker
 
     public function __construct(
         private readonly MissingDocblockConfigDTO $config,
-        private readonly MethodAnalyzer $methodAnalyzer,
+        private readonly MethodNeedsDocblockChecker $methodAnalyzer,
     ) {
     }
 
@@ -80,7 +80,7 @@ final class DocBlockChecker
      */
     private function methodRequiresAdditionalDocBlock(ClassMethod|Function_ $node): bool
     {
-        $this->throwsUncaught = $this->methodAnalyzer->methodThrowsUncaughtExceptions($node, $this->class);
+        $this->throwsUncaught = $this->methodAnalyzer->methodNeedsThrowsTag($node, $this->class);
         $this->needsGeneric = $this->methodAnalyzer->methodNeedsGeneric($node);
 
         return $this->throwsUncaught || $this->needsGeneric;
