@@ -3,9 +3,31 @@
 
 declare(strict_types=1);
 
+use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
+use SavinMikhail\CommentsDensity\Commands\AnalyzeFilesCommand;
+use SavinMikhail\CommentsDensity\Commands\BaselineCommand;
+use Symfony\Component\Console\Application;
+use Composer\XdebugHandler\XdebugHandler;
+
 // Display all errors and warnings
 error_reporting(E_ALL);
 ini_set('display_errors', 'stderr');
+
+// Ensure timezone is set
+if (!ini_get('date.timezone')) {
+    date_default_timezone_set('UTC');
+}
+
+// @ intentionally: continue anyway
+@ini_set('memory_limit', '-1');
+
+// Check php setup for cli arguments
+if (!isset($_SERVER['argv']) && !isset($argv)) {
+    fwrite(STDERR, 'Please enable the "register_argc_argv" directive in your php.ini' . PHP_EOL);
+    exit(1);
+} elseif (!isset($argv)) {
+    $argv = $_SERVER['argv'];
+}
 
 // Determine the correct path to the autoload file
 $autoloadFiles = [
@@ -15,33 +37,34 @@ $autoloadFiles = [
 
 $autoloadFound = false;
 foreach ($autoloadFiles as $environment => $autoloadFile) {
-    if (\file_exists($autoloadFile)) {
+    if (file_exists($autoloadFile)) {
         require $autoloadFile;
-        $autoloadFound = \true;
-        \define('COMMENTS_DENSITY_ENVIRONMENT', $environment);
+        $autoloadFound = true;
+        define('COMMENTS_DENSITY_ENVIRONMENT', $environment);
         break;
     }
 }
 
 if (!$autoloadFound) {
-    fwrite(STDERR, "Error: Could not find the autoload file.\n");
+    fwrite(STDERR, 'Error: Could not find the autoload file' . PHP_EOL);
     exit(1);
 }
 
-use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
-use SavinMikhail\CommentsDensity\Commands\AnalyzeFilesCommand;
-use SavinMikhail\CommentsDensity\Commands\BaselineCommand;
-use Symfony\Component\Console\Application;
-use Composer\XdebugHandler\XdebugHandler;
-
-//performance boosting
+// Performance boosting
 $xdebug = new XdebugHandler('comments_density');
 $xdebug->check();
 unset($xdebug);
 
-//run app
+// Setup commands
 $app = new Application();
 $app->add(new AnalyzeCommentCommand());
 $app->add(new AnalyzeFilesCommand());
 $app->add(new BaselineCommand());
-$app->run();
+
+// Run the application
+try {
+    $app->run();
+} catch (Exception $e) {
+    fwrite(STDERR, 'Error: ' . $e->getMessage() . PHP_EOL);
+    exit(1);
+}
