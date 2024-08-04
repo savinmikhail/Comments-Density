@@ -15,13 +15,11 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
 use ReflectionClass;
-use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\ExceptionChecker;
-use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\MethodRegistrar;
+use Roave\BetterReflection\BetterReflection;
 use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\UncaughtExceptionVisitor;
 use Traversable;
 
 use function class_exists;
-use function dd;
 use function in_array;
 use function interface_exists;
 
@@ -101,7 +99,6 @@ final readonly class MethodNeedsDocblockChecker
     }
 
     /**
-     * @param ReflectionClass<object> $reflection
      * @return bool
      */
     private function isTraversableRecursively(ReflectionClass $reflection): bool
@@ -145,6 +142,14 @@ final readonly class MethodNeedsDocblockChecker
 
         $class = new ReflectionClass($typeName);
         $docComment = $class->getDocComment();
+
+        if (!$docComment) {
+            $classInfo = (new BetterReflection())
+                ->reflector()
+                ->reflectClass(ReflectionClass::class);
+
+            $docComment = $classInfo->getDocComment();
+        }
 
         if (!$docComment) {
             return false;
