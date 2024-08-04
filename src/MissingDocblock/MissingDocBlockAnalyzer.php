@@ -31,16 +31,19 @@ final class MissingDocBlockAnalyzer
     {
         $parser = (new ParserFactory())->createForHostVersion();
         $ast = $parser->parse($code);
-
         $traverser = new NodeTraverser();
+
+        $nameResolver = new NameResolver();
+        $traverser->addVisitor($nameResolver);
+        $fqnNodes = $traverser->traverse($ast);
+
         $visitor = new MissingDocBlockVisitor(
             $filename,
             new DocBlockChecker($this->docblockConfigDTO, new MethodAnalyzer())
         );
-
-        $traverser->addVisitor(new NameResolver());
+        $traverser->removeVisitor($nameResolver);
         $traverser->addVisitor($visitor);
-        $traverser->traverse($ast);
+        $traverser->traverse($fqnNodes);
 
         return $visitor->missingDocBlocks;
     }
