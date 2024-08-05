@@ -6,6 +6,7 @@ namespace SavinMikhail\Tests\CommentsDensity\Comments;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use SavinMikhail\CommentsDensity\Comments\Comment;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
 use SavinMikhail\CommentsDensity\Comments\FixMeComment;
@@ -36,5 +37,68 @@ class CommentTest extends TestCase
         $factory = new CommentFactory();
         $commentType = $factory->classifyComment($comment);
         $this->assertTrue($commentType instanceof $class);
+    }
+
+    public static function isWithinThresholdDataProvider(): array
+    {
+        return [
+            [RegularComment::class, 5, ['regular' => 10], true],
+            [RegularComment::class, 15, ['regular' => 10], false],
+            [TodoComment::class, 5, ['todo' => 5], true],
+            [TodoComment::class, 4, ['todo' => 5], true],
+            [FixMeComment::class, 5, ['fixme' => 4], false],
+            [FixMeComment::class, 3, ['fixme' => 4], true],
+            [DocBlockComment::class, 5, ['docBlock' => 4], true],
+            [DocBlockComment::class, 3, ['docBlock' => 4], false],
+            [LicenseComment::class, 3, ['license' => 4], false],
+            [LicenseComment::class, 5, ['license' => 4], true],
+        ];
+    }
+
+    #[DataProvider('isWithinThresholdDataProvider')]
+    public function testIsWithinThreshold(string $class, int $count, array $thresholds, bool $expected): void
+    {
+        /** @var Comment $comment */
+        $comment = new $class();
+        $result = $this->invokeMethod($comment, 'isWithinThreshold', [$count, $thresholds]);
+        $this->assertEquals($expected, $result);
+    }
+
+    public static function getStatColorDataProvider(): array
+    {
+        return [
+            [RegularComment::class, 5, ['regular' => 10], 'green'],
+            [RegularComment::class, 15, ['regular' => 10], 'red'],
+            [RegularComment::class, 5, [], 'white'],
+        ];
+    }
+
+    #[DataProvider('getStatColorDataProvider')]
+    public function testGetStatColor(string $class, int $count, array $thresholds, string $expectedColor): void
+    {
+        $comment = new $class();
+        $color = $comment->getStatColor($count, $thresholds);
+        $this->assertEquals($expectedColor, $color);
+    }
+
+    public function testToString(): void
+    {
+        $comment = new RegularComment();
+        $this->assertEquals('regular', (string) $comment);
+
+        $comment = new DocBlockComment();
+        $this->assertEquals('docBlock', (string) $comment);
+    }
+
+    /**
+     * Helper method to invoke protected/private methods
+     */
+    private function invokeMethod(object $object, string $methodName, array $parameters = [])
+    {
+        $reflection = new \ReflectionClass($object);
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $parameters);
     }
 }
