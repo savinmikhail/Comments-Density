@@ -4,44 +4,36 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers;
 
-use ArrayAccess;
-use Iterator;
-use phpDocumentor\Reflection\DocBlockFactory;
-use PhpParser\Node\ComplexType;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
-use ReflectionClass;
-use Roave\BetterReflection\BetterReflection;
 use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\UncaughtExceptionVisitor;
-use Traversable;
-
-use function class_exists;
-use function in_array;
-use function interface_exists;
 
 final readonly class MethodNeedsDocblockChecker
 {
-    private DocBlockFactory $docBlockFactory;
+    private TemplateChecker $templateChecker;
+    private TraversableChecker $traversableChecker;
 
     public function __construct()
     {
-        $this->docBlockFactory = DocBlockFactory::createInstance();
+        $this->templateChecker = new TemplateChecker();
+        $this->traversableChecker = new TraversableChecker();
     }
 
     public function methodNeedsGeneric(ClassMethod|Function_ $node): bool
     {
         $returnType = $node->getReturnType();
 
-        if ($this->isTypeIterable($returnType)) {
+        if ($this->traversableChecker->isTypeIterable($returnType)) {
             return true;
         }
 
         foreach ($node->getParams() as $param) {
-            if ($this->isTypeIterable($param->type) || $this->isTemplatedClass($param->type)) {
+            if (
+                $this->traversableChecker->isTypeIterable($param->type)
+                || $this->templateChecker->isTemplatedClass($param->type)
+            ) {
                 return true;
             }
         }
@@ -58,105 +50,5 @@ final readonly class MethodNeedsDocblockChecker
         $traverser->traverse([$node]);
 
         return $visitor->hasUncaughtException();
-    }
-
-    private function isTypeIterable(ComplexType|Identifier|Name|null $type): bool
-    {
-        if ($type === null) {
-            return false;
-        }
-
-        if (
-            $type instanceof Identifier
-            && in_array($type->toString(), ['array', 'iterable'], true)
-        ) {
-            return true;
-        }
-
-        if (
-            $type instanceof Name
-            && in_array($type->toString(), ['Generator', 'Traversable', 'Iterator', 'ArrayAccess'], true)
-        ) {
-            return true;
-        }
-
-        return $this->isClassOrInterfaceTraversable($type);
-    }
-
-    private function isClassOrInterfaceTraversable(ComplexType|Identifier|Name $type): bool
-    {
-        if (!($type instanceof Name)) {
-            return false;
-        }
-
-        $typeName = $type->toString();
-
-        if (!class_exists($typeName) && !interface_exists($typeName)) {
-            return false;
-        }
-
-        return $this->isTraversableRecursively(new ReflectionClass($typeName));
-    }
-
-    /**
-     * @return bool
-     */
-    private function isTraversableRecursively(ReflectionClass $reflection): bool
-    {
-        if (
-            $reflection->implementsInterface(Iterator::class)
-            || $reflection->implementsInterface(ArrayAccess::class)
-            || $reflection->implementsInterface(Traversable::class)
-        ) {
-            return true;
-        }
-
-        foreach ($reflection->getInterfaces() as $interface) {
-            if ($this->isTraversableRecursively($interface)) {
-                return true;
-            }
-        }
-
-        $parentClass = $reflection->getParentClass();
-        if ($parentClass !== false) {
-            return $this->isTraversableRecursively($parentClass);
-        }
-
-        return false;
-    }
-
-    private function isTemplatedClass(ComplexType|Identifier|Name|null $type): bool
-    {
-        if ($type === null) {
-            return false;
-        }
-        if (!($type instanceof Name)) {
-            return false;
-        }
-
-        $typeName = $type->toString();
-
-        if (!class_exists($typeName) && !interface_exists($typeName)) {
-            return false;
-        }
-
-        $class = new ReflectionClass($typeName);
-        $docComment = $class->getDocComment();
-
-        if (!$docComment) {
-            $classInfo = (new BetterReflection())
-                ->reflector()
-                ->reflectClass(ReflectionClass::class);
-
-            $docComment = $classInfo->getDocComment();
-        }
-
-        if (!$docComment) {
-            return false;
-        }
-
-        $docBlock = $this->docBlockFactory->create($docComment);
-
-        return !empty($docBlock->getTagsByName('template'));
     }
 }
