@@ -21,7 +21,6 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
-use SplFileInfo;
 
 use function ini_set;
 use function is_dir;
