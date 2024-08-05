@@ -12,4 +12,15 @@ final readonly class CommentDTO
         public string $content,
     ) {
     }
+
+    public static function __set_state(array $array): self
+    {
+        return new self(
+            $array['commentType'],
+            $array['commentTypeColor'],
+            $array['file'],
+            $array['line'],
+            $array['content']
+        );
+    }
 }
