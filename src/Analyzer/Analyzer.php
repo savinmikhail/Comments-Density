@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\Analyzer;
 
 use Generator;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
+use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
@@ -43,6 +44,7 @@ final class Analyzer
         private readonly OutputInterface $output,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
         private readonly BaselineStorageInterface $baselineStorage,
+        private readonly Cache $cache,
     ) {
     }
 
@@ -52,15 +54,24 @@ final class Analyzer
         $comments = [];
         $filesAnalyzed = 0;
 
+        /** @var SplFileInfo $file */
         foreach ($files as $file) {
             if ($this->shouldSkipFile($file)) {
                 continue;
             }
+            $setCache = false;
+            $fileComments = $this->cache->getCache($file->getRealPath());
+            if (!$fileComments) {
+                $setCache = true;
+                $fileComments = $this->analyzeFile($file->getRealPath());
+            }
 
-            $newComments = $this->analyzeFile($file->getRealPath());
-            array_push($comments, ...$newComments);
-
+            array_push($comments, ...$fileComments);
             $filesAnalyzed++;
+
+            if($setCache) {
+                $this->cache->setCache($file->getRealPath(), $fileComments);
+            }
         }
 
         if ($this->configDTO->useBaseline) {
