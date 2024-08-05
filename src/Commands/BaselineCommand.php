@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Commands;
 
-use Override;
 use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
@@ -23,7 +22,6 @@ final class BaselineCommand extends Command
     /**
      * @inheritDoc
      */
-    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $path = __DIR__ . '/../../baseline.php';
