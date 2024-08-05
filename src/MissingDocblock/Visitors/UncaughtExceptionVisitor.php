@@ -14,6 +14,8 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
+use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\ExceptionChecker;
+use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\MethodRegistrar;
 
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
