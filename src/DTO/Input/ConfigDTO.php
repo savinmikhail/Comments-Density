@@ -23,6 +23,7 @@ final readonly class ConfigDTO
         public array $only,
         public MissingDocblockConfigDTO $docblockConfigDTO,
         public bool $useBaseline,
+        public string $cacheDir,
     ) {
     }
 }
