@@ -14,7 +14,7 @@ use function file_get_contents;
 
 use const DIRECTORY_SEPARATOR;
 
-final class MDBAdvancedCheckForMethod extends TestCase
+final class MDBAdvancedCheckForMethodTest extends TestCase
 {
     public static function templateGenericDataProvider(): Generator
     {
