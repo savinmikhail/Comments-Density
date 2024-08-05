@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
+use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
@@ -39,6 +40,7 @@ final readonly class AnalyzerFactory
             $output,
             $missingDocBlock,
             $baselineStorage,
+            new Cache($configDto->cacheDir),
         );
     }
 }
