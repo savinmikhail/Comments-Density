@@ -10,6 +10,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
+use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\CommentTypeInterface;
 use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
@@ -34,6 +35,7 @@ final class AnalyzerTest extends TestCase
     private MockObject $output;
     private MockObject $docBlockAnalyzer;
     private MockObject $baselineStorage;
+    private MockObject $cache;
 
     protected function setUp(): void
     {
@@ -43,6 +45,7 @@ final class AnalyzerTest extends TestCase
         $this->output = $this->createMock(OutputInterface::class);
         $this->docBlockAnalyzer = $this->createMock(MissingDocBlockAnalyzer::class);
         $this->baselineStorage = $this->createMock(BaselineStorageInterface::class);
+        $this->cache = $this->createMock(Cache::class);
 
         // Initialize ConfigDTO with necessary properties
         $configDTO = new ConfigDTO(
@@ -52,7 +55,8 @@ final class AnalyzerTest extends TestCase
             directories: [],
             only: [],
             docblockConfigDTO: $this->createMock(MissingDocblockConfigDTO::class),
-            useBaseline: false
+            useBaseline: false,
+            cacheDir: 'tmp',
         );
 
         $this->analyzer = $this
@@ -64,7 +68,8 @@ final class AnalyzerTest extends TestCase
                 $this->metrics,
                 $this->output,
                 $this->docBlockAnalyzer,
-                $this->baselineStorage
+                $this->baselineStorage,
+                $this->cache
             ])
             ->onlyMethods(['isInWhitelist'])
             ->getMock();
