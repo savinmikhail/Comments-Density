@@ -10,6 +10,7 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use ReflectionClass;
 use Roave\BetterReflection\BetterReflection;
+
 use function class_exists;
 use function interface_exists;
 

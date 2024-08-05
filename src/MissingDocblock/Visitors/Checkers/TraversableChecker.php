@@ -11,6 +11,7 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use ReflectionClass;
 use Traversable;
+
 use function class_exists;
 use function in_array;
 use function interface_exists;
