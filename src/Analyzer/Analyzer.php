@@ -69,7 +69,7 @@ final class Analyzer
             array_push($comments, ...$fileComments);
             $filesAnalyzed++;
 
-            if($setCache) {
+            if ($setCache) {
                 $this->cache->setCache($file->getRealPath(), $fileComments);
             }
         }
