@@ -23,7 +23,7 @@ final class ExceptionChecker
             $this->hasUncaughtThrows = true;
         } elseif (!$this->isExceptionCaught($node)) {
             $this->hasUncaughtThrows = true;
-        } elseif ($this->isInCatchBlock($node) && !$this->isRethrowingCaughtException($node)) {
+        } elseif ($this->isInCatchBlock($node)) {
             $this->hasUncaughtThrows = true;
         }
     }
@@ -57,23 +57,6 @@ final class ExceptionChecker
                 }
             }
         }
-        return false;
-    }
-
-    private function isRethrowingCaughtException(Throw_ $throwNode): bool
-    {
-        $throwExpr = $throwNode->expr;
-
-        if (!$throwExpr instanceof Variable) {
-            return false;
-        }
-
-        foreach ($this->getCurrentCatchStack() as $catch) {
-            if ($catch->var instanceof Variable && $catch->var->name === $throwExpr->name) {
-                return true;
-            }
-        }
-
         return false;
     }
 
