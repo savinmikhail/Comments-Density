@@ -59,19 +59,16 @@ final class Analyzer
             if ($this->shouldSkipFile($file)) {
                 continue;
             }
-            $setCache = false;
+
             $fileComments = $this->cache->getCache($file->getRealPath());
+
             if (!$fileComments) {
-                $setCache = true;
                 $fileComments = $this->analyzeFile($file->getRealPath());
+                $this->cache->setCache($file->getRealPath(), $fileComments);
             }
 
             array_push($comments, ...$fileComments);
             $filesAnalyzed++;
-
-            if ($setCache) {
-                $this->cache->setCache($file->getRealPath(), $fileComments);
-            }
         }
 
         if ($this->configDTO->useBaseline) {
