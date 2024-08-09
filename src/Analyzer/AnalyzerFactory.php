@@ -41,6 +41,7 @@ final readonly class AnalyzerFactory
             $missingDocBlock,
             $baselineStorage,
             new Cache($configDto->cacheDir),
+            new CommentStatisticsAggregator($configDto, $commentFactory, $missingDocBlock),
         );
     }
 }
