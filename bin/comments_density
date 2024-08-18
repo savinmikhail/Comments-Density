@@ -3,11 +3,11 @@
 
 declare(strict_types=1);
 
+use Composer\XdebugHandler\XdebugHandler;
 use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
 use SavinMikhail\CommentsDensity\Commands\AnalyzeFilesCommand;
 use SavinMikhail\CommentsDensity\Commands\BaselineCommand;
 use Symfony\Component\Console\Application;
-use Composer\XdebugHandler\XdebugHandler;
 
 // Display all errors and warnings
 error_reporting(E_ALL);
@@ -61,9 +61,11 @@ if (!$autoloadFound) {
 }
 
 // Performance boosting
-$xdebug = new XdebugHandler('comments_density');
-$xdebug->check();
-unset($xdebug);
+if (COMMENTS_DENSITY_ENVIRONMENT === 'prod') {
+    $xdebug = new XdebugHandler('comments_density');
+    $xdebug->check();
+    unset($xdebug);
+}
 
 // Setup commands
 $app = new Application();
