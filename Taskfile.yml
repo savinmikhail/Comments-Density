@@ -1,0 +1,25 @@
+version: '3'
+tasks:
+  test:
+    cmd: 'vendor/bin/phpunit {{.CLI_ARGS}}'
+
+  fixcs:
+    cmd: 'vendor/bin/php-cs-fixer fix --diff --verbose {{.CLI_ARGS}}'
+
+  lint:
+    cmds:
+      - task: fixcs
+        vars:
+          CLI_ARGS: "--dry-run {{.CLI_ARGS}}"
+
+  rector-fix:
+    cmd: 'vendor/bin/rector process {{.CLI_ARGS}}'
+
+  rector:
+    cmds:
+      - task: rector-fix
+        vars:
+          CLI_ARGS: "--dry-run {{.CLI_ARGS}}"
+
+  psalm:
+    cmd: 'vendor/bin/psalm --no-diff {{.CLI_ARGS}}'
