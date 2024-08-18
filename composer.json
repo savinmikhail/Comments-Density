@@ -35,7 +35,6 @@
         "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.6",
         "phpmd/phpmd": "^2.15",
-        "phpro/grumphp": "^2.5",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^11.1",
         "rector/rector": "^1.2",
