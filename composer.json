@@ -53,9 +53,6 @@
         "platform": {
             "php": "8.2"
         },
-        "allow-plugins": {
-            "phpro/grumphp": true
-        },
         "sort-packages": true,
         "optimize-autoloader": true
     }
