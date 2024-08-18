@@ -19,14 +19,13 @@ use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 
 final class CommentStatisticsAggregatorTest extends TestCase
 {
-    private ConfigDTO $configDTO;
     private MockObject $commentFactory;
     private MockObject $missingDocBlock;
     private CommentStatisticsAggregator $aggregator;
 
     protected function setUp(): void
     {
-        $this->configDTO = new ConfigDTO(
+        $configDTO = new ConfigDTO(
             thresholds: [],
             exclude: ['/excluded/dir'],
             output: new OutputConfigDTO('console', 'output.html'),
@@ -40,7 +39,7 @@ final class CommentStatisticsAggregatorTest extends TestCase
         $this->commentFactory = $this->createMock(CommentFactory::class);
         $this->missingDocBlock = $this->createMock(MissingDocBlockAnalyzer::class);
         $this->aggregator = new CommentStatisticsAggregator(
-            $this->configDTO,
+            $configDTO,
             $this->commentFactory,
             $this->missingDocBlock
         );
@@ -120,7 +119,7 @@ final class CommentStatisticsAggregatorTest extends TestCase
         $this->assertEquals($expectedStatistics, $result);
     }
 
-    public function testCalculateCommentStatisticsThrowsExceptionForUnknownType()
+    public function testCalculateCommentStatisticsThrowsExceptionForUnknownType(): void
     {
         $comments = [
             new CommentDTO(

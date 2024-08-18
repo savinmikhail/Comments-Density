@@ -13,7 +13,7 @@ final readonly class ClassThatNotCatchingExceptionFromCallMethodOfAnotherClass
         $bar = new ClassWithThrowingMethod();
         try {
             $bar->bar();
-        } catch (Exception $exception) {
+        } catch (Exception) {
 
         }
     }

@@ -19,9 +19,9 @@ use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\MethodRegistr
 
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
-    private MethodRegistrar $methodRegistrar;
-    private ExceptionChecker $exceptionChecker;
-    private DocBlockFactory $docBlockFactory;
+    private readonly MethodRegistrar $methodRegistrar;
+    private readonly ExceptionChecker $exceptionChecker;
+    private readonly DocBlockFactory $docBlockFactory;
 
     public function __construct(?Class_ $class)
     {

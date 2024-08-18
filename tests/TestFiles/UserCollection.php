@@ -8,12 +8,10 @@ use Iterator;
 
 class UserCollection implements Iterator
 {
-    private array $users;
     private int $position = 0;
 
-    public function __construct(array $users)
+    public function __construct(private array $users)
     {
-        $this->users = $users;
     }
 
     public function current(): User

@@ -10,7 +10,6 @@ use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function array_map;
 
 final readonly class ConsoleReporter implements ReporterInterface
@@ -76,13 +75,11 @@ final readonly class ConsoleReporter implements ReporterInterface
         $table
             ->setHeaders(['Comment Type', 'Lines', 'Times'])
             ->setRows(
-                array_map(static function (CommentStatisticsDTO $dto): array {
-                    return [
-                        "<fg=" . $dto->typeColor . ">$dto->type</>",
-                        "<fg=white>$dto->lines</>",
-                        "<fg=$dto->color>$dto->count</>",
-                    ];
-                }, $commentStatistics)
+                array_map(static fn(CommentStatisticsDTO $dto): array => [
+                    "<fg=" . $dto->typeColor . ">$dto->type</>",
+                    "<fg=white>$dto->lines</>",
+                    "<fg=$dto->color>$dto->count</>",
+                ], $commentStatistics)
             );
 
         $table->render();

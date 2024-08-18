@@ -17,7 +17,7 @@ final readonly class ClassWithMethodThatThrowsAndHasTag
      * @return void
      * @throws Exception
      */
-    public function bar(): void
+    public function bar(): never
     {
         throw new Exception();
     }

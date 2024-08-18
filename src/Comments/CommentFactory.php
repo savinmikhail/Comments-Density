@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Comments;
 
 use Generator;
-
 use function in_array;
 
-final class CommentFactory
+final readonly class CommentFactory
 {
     /** @var array<array-key, CommentTypeInterface> */
     private array $commentTypes;
@@ -16,7 +15,7 @@ final class CommentFactory
     /**
      * @param string[] $allowedTypes
      */
-    public function __construct(private readonly array $allowedTypes = [])
+    public function __construct(private array $allowedTypes = [])
     {
         $this->commentTypes =  [
             new TodoComment(),
