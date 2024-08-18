@@ -8,7 +8,7 @@ use Exception;
 
 final readonly class ClassWithMethodThatThrowsAndHasTag
 {
-    public function baz(): void
+    public function baz(): never
     {
         $this->bar();
     }
