@@ -38,6 +38,7 @@
         "phpmd/phpmd": "^2.15",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^11.1",
+        "phpyh/coding-standard": "^2.6",
         "rector/rector": "^1.2",
         "symfony/var-dumper": "^7.0"
     },
