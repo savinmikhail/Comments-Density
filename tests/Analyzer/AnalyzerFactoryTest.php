@@ -46,4 +46,3 @@ final class AnalyzerFactoryTest extends TestCase
         $this->assertInstanceOf(Cache::class, $cacheProperty->getValue($analyzer));
     }
 }
-
