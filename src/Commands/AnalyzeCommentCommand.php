@@ -9,10 +9,9 @@ use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AnalyzeCommentCommand extends Command
+final class AnalyzeCommentCommand extends Command
 {
     protected function configure(): void
     {
@@ -21,9 +20,6 @@ class AnalyzeCommentCommand extends Command
             ->setHelp('This command allows you to analyze the comments in PHP files within a specified directory.');
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $path = __DIR__ . '/../../baseline.php';
@@ -45,9 +41,11 @@ class AnalyzeCommentCommand extends Command
 
         if ($outputDTO->exceedThreshold) {
             $output->writeln('<error>Comment thresholds were exceeded!</error>');
+
             return SymfonyCommand::FAILURE;
         }
         $output->writeln('<info>Comment thresholds are passed!</info>');
+
         return SymfonyCommand::SUCCESS;
     }
 }

@@ -15,13 +15,11 @@ abstract class Command extends SymfonyCommand
 {
     protected function getConfigDto(): ConfigDTO
     {
-        $configLoader = new ConfigLoader();
-        return $configLoader->getConfigDto();
+        return (new ConfigLoader())->getConfigDto();
     }
 
     /**
      * @param string[] $directories
-     * @return Generator
      */
     protected function getFilesFromDirectories(array $directories): Generator
     {
