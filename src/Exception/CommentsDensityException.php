@@ -6,6 +6,4 @@ namespace SavinMikhail\CommentsDensity\Exception;
 
 use Exception;
 
-final class CommentsDensityException extends Exception
-{
-}
+final class CommentsDensityException extends Exception {}
