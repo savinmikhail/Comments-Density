@@ -5,37 +5,28 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Baseline\Storage;
 
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+use const DIRECTORY_SEPARATOR;
 
-/**
- *
- */
 final class TreePhpBaselineStorage implements BaselineStorageInterface
 {
-    /**
-     * @var string
-     */
     private string $path;
+
     /**
      * @var array<mixed>
      */
     private array $baselineData = [];
 
-    /**
-     * @param string $path
-     * @return void
-     */
     public function init(string $path): void
     {
         $this->path = $path;
         if (!file_exists($path)) {
-            file_put_contents($path, "<?php return [];");
+            file_put_contents($path, '<?php return [];');
         }
         $this->baselineData = include $path;
     }
 
     /**
      * @param CommentDTO[] $comments
-     * @return void
      */
     public function setComments(array $comments): void
     {
@@ -43,14 +34,27 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
             $pathParts = explode(DIRECTORY_SEPARATOR, ltrim($comment->file, DIRECTORY_SEPARATOR));
             $this->addCommentToTree($this->baselineData, $pathParts, $comment);
         }
-        file_put_contents($this->path, "<?php return " . var_export($this->baselineData, true) . ";");
+        file_put_contents($this->path, '<?php return ' . var_export($this->baselineData, true) . ';');
+    }
+
+    /**
+     * @param CommentDTO[] $comments
+     * @return CommentDTO[]
+     */
+    public function filterComments(array $comments): array
+    {
+        $filteredComments = array_filter($comments, function (CommentDTO $comment): bool {
+            $pathParts = explode(DIRECTORY_SEPARATOR, ltrim($comment->file, DIRECTORY_SEPARATOR));
+
+            return !$this->commentExistsInTree($this->baselineData, $pathParts, $comment->line);
+        });
+
+        return array_values($filteredComments);
     }
 
     /**
      * @param array<mixed> $tree
      * @param string[] $pathParts
-     * @param CommentDTO $comment
-     * @return void
      */
     private function addCommentToTree(array &$tree, array $pathParts, CommentDTO $comment): void
     {
@@ -63,30 +67,15 @@ final class TreePhpBaselineStorage implements BaselineStorageInterface
                 'comment' => $comment->content,
                 'type' => $comment->commentType,
             ];
+
             return;
         }
         $this->addCommentToTree($tree[$currentPart], $pathParts, $comment);
     }
 
     /**
-     * @param CommentDTO[] $comments
-     * @return CommentDTO[]
-     */
-    public function filterComments(array $comments): array
-    {
-        $filteredComments = array_filter($comments, function (CommentDTO $comment): bool {
-            $pathParts = explode(DIRECTORY_SEPARATOR, ltrim($comment->file, DIRECTORY_SEPARATOR));
-            return !$this->commentExistsInTree($this->baselineData, $pathParts, $comment->line);
-        });
-
-        return array_values($filteredComments);
-    }
-
-    /**
      * @param array<mixed> $tree
      * @param string[] $pathParts
-     * @param int $line
-     * @return bool
      */
     private function commentExistsInTree(array $tree, array $pathParts, int $line): bool
     {

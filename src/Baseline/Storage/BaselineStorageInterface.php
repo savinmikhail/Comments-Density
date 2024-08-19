@@ -10,7 +10,6 @@ interface BaselineStorageInterface
 {
     /**
      * @param CommentDTO[] $comments
-     * @return void
      */
     public function setComments(array $comments): void;
 
