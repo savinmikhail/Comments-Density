@@ -15,6 +15,7 @@ use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function array_push;
 
 final class Analyzer
