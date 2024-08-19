@@ -1,14 +1,14 @@
 version: '3'
 tasks:
   test:
-    cmd: 'vendor/bin/phpunit {{.CLI_ARGS}}'
+    cmd: 'vendor/bin/phpunit --coverage-html coverage {{.CLI_ARGS}}'
 
-  fixcs:
+  cs-fix:
     cmd: 'vendor/bin/php-cs-fixer fix --diff --verbose {{.CLI_ARGS}}'
 
-  lint:
+  cs:
     cmds:
-      - task: fixcs
+      - task: cs-fix
         vars:
           CLI_ARGS: "--dry-run {{.CLI_ARGS}}"
 
@@ -21,5 +21,5 @@ tasks:
         vars:
           CLI_ARGS: "--dry-run {{.CLI_ARGS}}"
 
-  psalm:
-    cmd: 'vendor/bin/psalm --no-diff {{.CLI_ARGS}}'
+  stan:
+    cmd: 'vendor/bin/phpstan {{.CLI_ARGS}}'
