@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SavinMikhail\CommentsDensity\Reporters;
 
 use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
@@ -16,8 +18,7 @@ final readonly class ConsoleReporter implements ReporterInterface
 {
     public function __construct(
         private OutputInterface $output,
-    ) {
-    }
+    ) {}
 
     public function report(OutputDTO $dto): void
     {
@@ -31,43 +32,41 @@ final readonly class ConsoleReporter implements ReporterInterface
 
     private function printFilesAnalyzed(int $filesAnalyzed): void
     {
-        $this->output->writeln("<fg=white>Files analyzed: $filesAnalyzed</>");
+        $this->output->writeln("<fg=white>Files analyzed: {$filesAnalyzed}</>");
     }
 
     /**
      * @param CommentDTO[] $comments
-     * @return void
      */
     private function printDetailedComments(array $comments): void
     {
         foreach ($comments as $commentDTO) {
             $this->output->writeln(
-                "<fg=$commentDTO->commentTypeColor>$commentDTO->commentType comment</> in "
-                . "<fg=blue>$commentDTO->file</>:"
-                . "<fg=blue>$commentDTO->line</>    "
-                . "<fg=yellow>$commentDTO->content</>"
+                "<fg={$commentDTO->commentTypeColor}>{$commentDTO->commentType} comment</> in "
+                . "<fg=blue>{$commentDTO->file}</>:"
+                . "<fg=blue>{$commentDTO->line}</>    "
+                . "<fg=yellow>{$commentDTO->content}</>",
             );
         }
     }
 
     private function printPerformanceMetrics(PerformanceMetricsDTO $dto): void
     {
-        $this->output->writeln("<fg=white>Time: $dto->executionTime ms, Memory: $dto->peakMemoryUsage MB</>");
+        $this->output->writeln("<fg=white>Time: {$dto->executionTime} ms, Memory: {$dto->peakMemoryUsage} MB</>");
     }
 
     private function printComToLoc(ComToLocDTO $dto): void
     {
-        $this->output->writeln(["<fg=$dto->color>Com/LoC: $dto->comToLoc</>"]);
+        $this->output->writeln(["<fg={$dto->color}>Com/LoC: {$dto->comToLoc}</>"]);
     }
 
     private function printCDS(CdsDTO $dto): void
     {
-        $this->output->writeln(["<fg=$dto->color>CDS: $dto->cds</>"]);
+        $this->output->writeln(["<fg={$dto->color}>CDS: {$dto->cds}</>"]);
     }
 
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @return void
      */
     private function printTable(array $commentStatistics): void
     {
@@ -76,10 +75,10 @@ final readonly class ConsoleReporter implements ReporterInterface
             ->setHeaders(['Comment Type', 'Lines', 'Times'])
             ->setRows(
                 array_map(static fn(CommentStatisticsDTO $dto): array => [
-                    "<fg=" . $dto->typeColor . ">$dto->type</>",
-                    "<fg=white>$dto->lines</>",
-                    "<fg=$dto->color>$dto->count</>",
-                ], $commentStatistics)
+                    '<fg=' . $dto->typeColor . ">{$dto->type}</>",
+                    "<fg=white>{$dto->lines}</>",
+                    "<fg={$dto->color}>{$dto->count}</>",
+                ], $commentStatistics),
             );
 
         $table->render();
