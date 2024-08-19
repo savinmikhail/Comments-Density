@@ -15,7 +15,6 @@ use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function array_push;
 
 final class Analyzer
@@ -32,8 +31,7 @@ final class Analyzer
         private readonly BaselineStorageInterface $baselineStorage,
         private readonly Cache $cache,
         private readonly CommentStatisticsAggregator $statisticsAggregator,
-    ) {
-    }
+    ) {}
 
     public function analyze(Generator $files): OutputDTO
     {
@@ -42,14 +40,14 @@ final class Analyzer
         $filesAnalyzed = 0;
 
         foreach ($files as $file) {
-                $task = new AnalyzeFileTask(
-                    $this->cache,
-                    $this->docBlockAnalyzer,
-                    $this->missingDocBlock,
-                    $this->commentFactory,
-                    $this->configDTO,
-                    $this->output
-                );
+            $task = new AnalyzeFileTask(
+                $this->cache,
+                $this->docBlockAnalyzer,
+                $this->missingDocBlock,
+                $this->commentFactory,
+                $this->configDTO,
+                $this->output,
+            );
 
             $response = $task->run($file);
 
@@ -58,7 +56,7 @@ final class Analyzer
 
             array_push($comments, ...$fileComments);
             $this->totalLinesOfCode += $lines;
-            $filesAnalyzed++;
+            ++$filesAnalyzed;
         }
 
         if ($this->configDTO->useBaseline) {
@@ -83,19 +81,18 @@ final class Analyzer
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * @param CommentDTO[] $comments
      * @param CommentStatisticsDTO[] $preparedStatistics
-     * @param int $filesAnalyzed
-     * @return OutputDTO
      */
     private function createOutputDTO(
         array $comments,
         array $preparedStatistics,
-        int $filesAnalyzed
+        int $filesAnalyzed,
     ): OutputDTO {
         $comToLoc = $this->metrics->prepareComToLoc($preparedStatistics, $this->totalLinesOfCode);
         $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($preparedStatistics));
@@ -110,7 +107,7 @@ final class Analyzer
             $performanceMetrics,
             $comToLoc,
             $cds,
-            $exceedThreshold
+            $exceedThreshold,
         );
     }
 }

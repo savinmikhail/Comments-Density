@@ -29,7 +29,7 @@ final readonly class AnalyzerFactory
         $metrics = new MetricsFacade(
             $cds,
             new ComToLoc($configDto->thresholds),
-            new ResourceUtilization()
+            new ResourceUtilization(),
         );
 
         return new Analyzer(

@@ -19,8 +19,7 @@ final readonly class CommentStatisticsAggregator
         private ConfigDTO $configDTO,
         private CommentFactory $commentFactory,
         private MissingDocBlockAnalyzer $missingDocBlock,
-    ) {
-    }
+    ) {}
 
     /**
      * @param CommentDTO[] $comments
@@ -54,15 +53,14 @@ final readonly class CommentStatisticsAggregator
                 ];
             }
             $lineCounts[$typeName]['lines'] += substr_count($comment->content, PHP_EOL) + 1;
-            $lineCounts[$typeName]['count']++;
+            ++$lineCounts[$typeName]['count'];
         }
+
         return $lineCounts;
     }
 
     /**
-     * @param string $type
      * @param array{'lines': int, 'count': int} $stat
-     * @return CommentStatisticsDTO
      */
     private function prepareCommentStatistic(string $type, array $stat): CommentStatisticsDTO
     {
@@ -72,7 +70,7 @@ final readonly class CommentStatisticsAggregator
                 $this->missingDocBlock->getName(),
                 $stat['lines'],
                 $this->missingDocBlock->getStatColor($stat['count'], $this->configDTO->thresholds),
-                $stat['count']
+                $stat['count'],
             );
         }
 
@@ -83,7 +81,7 @@ final readonly class CommentStatisticsAggregator
                 $commentType->getName(),
                 $stat['lines'],
                 $commentType->getStatColor($stat['count'], $this->configDTO->thresholds),
-                $stat['count']
+                $stat['count'],
             );
         }
 

@@ -10,32 +10,29 @@ use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
 use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SplFileInfo;
-
 use Symfony\Component\Console\Output\OutputInterface;
 use function array_merge;
+use function count;
 use function file;
 use function file_get_contents;
 use function in_array;
 use function is_array;
 use function token_get_all;
-
 use const T_COMMENT;
 use const T_DOC_COMMENT;
 
-readonly class AnalyzeFileTask
+final readonly class AnalyzeFileTask
 {
     public function __construct(
-        private Cache                   $cache,
+        private Cache $cache,
         private MissingDocBlockAnalyzer $docBlockAnalyzer,
         private MissingDocBlockAnalyzer $missingDocBlock,
-        private CommentFactory          $commentFactory,
-        private ConfigDTO               $configDTO,
-        private OutputInterface         $output,
-    ) {
-    }
+        private CommentFactory $commentFactory,
+        private ConfigDTO $configDTO,
+        private OutputInterface $output,
+    ) {}
 
     /**
-     * @param SplFileInfo $file
      * @return array{'lines': int, 'comments': array<array-key, array<string, int>>}
      */
     public function run(SplFileInfo $file): array
@@ -59,19 +56,18 @@ readonly class AnalyzeFileTask
     private function shouldSkipFile(SplFileInfo $file): bool
     {
         return
-            $this->isInWhitelist($file->getRealPath()) ||
-            $file->getSize() === 0 ||
-            !$this->isPhpFile($file) ||
-            !$file->isReadable();
+            $this->isInWhitelist($file->getRealPath())
+            || $file->getSize() === 0
+            || !$this->isPhpFile($file)
+            || !$file->isReadable();
     }
 
     /**
-     * @param string $filename
      * @return CommentDTO[]
      */
     private function analyzeFile(string $filename): array
     {
-        $this->output->writeln("<info>Analyzing $filename</info>");
+        $this->output->writeln("<info>Analyzing {$filename}</info>");
 
         $code = file_get_contents($filename);
         $tokens = token_get_all($code);
@@ -100,7 +96,7 @@ readonly class AnalyzeFileTask
     {
         $comments = [];
         foreach ($tokens as $token) {
-            if (!is_array($token) || !in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
+            if (!is_array($token) || !in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
                 continue;
             }
             $commentType = $this->commentFactory->classifyComment($token[1]);
@@ -115,12 +111,14 @@ readonly class AnalyzeFileTask
                     );
             }
         }
+
         return $comments;
     }
 
     private function countTotalLines(string $filename): int
     {
         $fileContent = file($filename);
+
         return count($fileContent);
     }
 
@@ -136,6 +134,7 @@ readonly class AnalyzeFileTask
                 return true;
             }
         }
+
         return false;
     }
 }
