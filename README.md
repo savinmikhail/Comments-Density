@@ -8,6 +8,9 @@
     <a href="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/?branch=main">
         <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/build.png?b=main" alt="Build status">
     </a>
+    <a href="https://dashboard.stryker-mutator.io/reports/github.com/savinmikhail/Comments-Density/main">
+        <img src="https://dashboard.stryker-mutator.io/reports/github.com/savinmikhail/Comments-Density/main" alt="Mutation testing badge">
+    </a>
 </p>
 
 <h1 align="center">Comments Density Analyzer</h1>
