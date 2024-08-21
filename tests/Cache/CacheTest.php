@@ -14,8 +14,11 @@ final class CacheTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cacheDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'cache_tests' . DIRECTORY_SEPARATOR;
+        $this->cacheDir = __DIR__ . '/../../var/cache_tests/';
         $this->clearCacheDir();
+        if (!is_dir($this->cacheDir)) {
+            mkdir($this->cacheDir, 0777, true);
+        }
     }
 
     protected function tearDown(): void
