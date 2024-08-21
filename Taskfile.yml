@@ -43,3 +43,7 @@ tasks:
       - task: composer-normalize-fix
         vars:
           CLI_ARGS: '--dry-run {{.CLI_ARGS}}'
+
+  composer-validate: '{{.PHP}} composer validate --strict --no-check-publish {{.CLI_ARGS}}'
+
+  composer-audit: '{{.PHP}} composer audit {{.CLI_ARGS}}'
