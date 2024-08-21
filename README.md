@@ -9,7 +9,7 @@
         <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/build.png?b=main" alt="Build status">
     </a>
     <a href="https://dashboard.stryker-mutator.io/reports/github.com/savinmikhail/Comments-Density/main">
-        <img src="https://dashboard.stryker-mutator.io/reports/github.com/savinmikhail/Comments-Density/main" alt="Mutation testing badge">
+        <img src="https://img.shields.io/endpoint?style=flat&amp;url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fsavinmikhail%2FComments-Density%2Fmain" alt="Mutation testing badge">
     </a>
 </p>
 
