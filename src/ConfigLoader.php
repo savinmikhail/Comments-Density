@@ -45,7 +45,7 @@ final readonly class ConfigLoader
             $this->getOnly($config),
             $this->getMissingDocblockConfig($config),
             $config['use_baseline'],
-            $this->getProjectRoot() . DIRECTORY_SEPARATOR . 'comments_density_cache',
+            $this->getProjectRoot() . '/var/comments_density_cache',
         );
     }
 
