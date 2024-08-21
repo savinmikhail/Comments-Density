@@ -23,7 +23,7 @@ jobs:
       - uses: ramsey/composer-install@v3
         with:
           composer-options: --optimize-autoloader
-      - run: task composer-validate composer-check-require
+      - run: task composer-validate composer-normalize composer-audit
 
   lint:
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
       - uses: ramsey/composer-install@v3
         with:
           composer-options: --optimize-autoloader
-      - run: task lint -- --format=checkstyle
+      - run: task cs -- --format=checkstyle
 
   infection:
     runs-on: ubuntu-latest
