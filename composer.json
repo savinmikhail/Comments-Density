@@ -33,6 +33,7 @@
         "composer/composer": "^2.7.7",
         "dg/bypass-finals": "^1.8",
         "friendsofphp/php-cs-fixer": "^3.62",
+        "infection/infection": "^0.29.6",
         "mikey179/vfsstream": "^1.6.11",
         "mockery/mockery": "^1.6.12",
         "phpmd/phpmd": "^2.15",
@@ -54,6 +55,9 @@
             "php": "8.2"
         },
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
     }
 }
