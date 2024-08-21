@@ -1,10 +1,8 @@
 /vendor
-/debug
 /var
 /coverage
 /composer.lock
 /output.html
 /baseline.sqlite
 /baseline.php
-/comments_density_cache
 /.task
