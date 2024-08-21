@@ -48,3 +48,4 @@ tasks:
 
   composer-audit: 'composer audit {{.CLI_ARGS}}'
 
+  infection: 'vendor/bin/infection'
