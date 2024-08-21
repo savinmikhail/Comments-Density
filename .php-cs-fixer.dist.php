@@ -18,7 +18,7 @@ $finder = (new Finder())
     ]);
 
 $config = (new Config())
-    ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache')
+    ->setCacheFile(__DIR__ . '/var/.php-cs-fixer.cache')
     ->setFinder($finder);
 
 (new PhpCsFixerCodingStandard())->applyTo($config, [
