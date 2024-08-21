@@ -1,9 +1,7 @@
 /vendor
 /debug
-/.php-cs-fixer.cache
 /var
 /coverage
-/.phpunit.result.cache
 /composer.lock
 /output.html
 /baseline.sqlite
