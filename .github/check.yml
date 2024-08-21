@@ -2,7 +2,9 @@ name: Check
 
 on:
   workflow_dispatch: ~
-  push: ~
+  push:
+    branches:
+      - main
   pull_request: ~
 
 jobs:
