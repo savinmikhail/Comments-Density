@@ -23,3 +23,23 @@ tasks:
 
   stan:
     cmd: 'vendor/bin/phpstan {{.CLI_ARGS}}'
+
+  install:
+    cmd: 'composer install {{.CLI_ARGS}}'
+    sources:
+      - composer.json
+      - composer.lock
+    generates:
+      - vendor/autoload.php
+
+  composer-normalize-fix:
+    deps: [install]
+    cmds:
+      - 'composer bump {{.CLI_ARGS}}'
+      - 'composer normalize --diff {{.CLI_ARGS}}'
+
+  composer-normalize:
+    cmds:
+      - task: composer-normalize-fix
+        vars:
+          CLI_ARGS: '--dry-run {{.CLI_ARGS}}'
