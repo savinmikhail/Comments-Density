@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Cache;
 
+use function dirname;
+
+use const DIRECTORY_SEPARATOR;
+
 final readonly class Cache
 {
     private string $cacheDir;
@@ -23,7 +27,7 @@ final readonly class Cache
             'data' => $data,
         ];
 
-        file_put_contents($cacheFile, "<?php return " . var_export($cacheContent, true) . ";");
+        file_put_contents($cacheFile, '<?php return ' . var_export($cacheContent, true) . ';');
     }
 
     public function getCache(string $filePath): ?array
@@ -44,13 +48,14 @@ final readonly class Cache
     private function getCacheFilePath(string $filePath): string
     {
         $relativePath = ltrim(str_replace(DIRECTORY_SEPARATOR, '_', $filePath), DIRECTORY_SEPARATOR);
+
         return $this->cacheDir . $relativePath . '.php';
     }
 
     private function ensureDirectoryExists(string $directory): void
     {
         if (!is_dir($directory)) {
-            mkdir($directory, 0777, true);
+            mkdir($directory, 0o777, true);
         }
     }
 }
