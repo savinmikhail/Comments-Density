@@ -49,13 +49,15 @@ final readonly class Cache
     {
         $relativePath = ltrim(str_replace(DIRECTORY_SEPARATOR, '_', $filePath), DIRECTORY_SEPARATOR);
 
-        return $this->cacheDir . $relativePath . '.php';
+        return $this->cacheDir . $relativePath;
     }
 
     private function ensureDirectoryExists(string $directory): void
     {
         if (!is_dir($directory)) {
-            mkdir($directory, 0o777, true);
+            if (!mkdir($directory, 0o777, true) && !is_dir($directory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $directory));
+            }
         }
     }
 }
