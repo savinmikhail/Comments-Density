@@ -4,13 +4,13 @@ tasks:
     cmd: 'vendor/bin/phpunit --coverage-html coverage {{.CLI_ARGS}}'
 
   cs-fix:
-    cmd: 'vendor/bin/php-cs-fixer fix --diff --verbose {{.CLI_ARGS}}'
+    cmd: 'vendor/bin/php-cs-fixer fix --diff --verbose --stop-on-violation {{.CLI_ARGS}}'
 
   cs:
     cmds:
       - task: cs-fix
         vars:
-          CLI_ARGS: "--dry-run {{.CLI_ARGS}}"
+          CLI_ARGS: "--dry-run --stop-on-violation {{.CLI_ARGS}}"
 
   rector-fix:
     cmd: 'vendor/bin/rector process {{.CLI_ARGS}}'
