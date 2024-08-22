@@ -15,9 +15,7 @@ final class MethodRegistrar
 {
     private array $variableTypes = [];
 
-    public function __construct(private readonly ?Class_ $class)
-    {
-    }
+    public function __construct(private readonly ?Class_ $class) {}
 
     public function registerClassMethod(ClassMethod $node): void
     {

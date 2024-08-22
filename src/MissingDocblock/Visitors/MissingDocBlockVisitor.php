@@ -12,14 +12,13 @@ use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\NodeNeedsDocb
 
 final class MissingDocBlockVisitor extends NodeVisitorAbstract
 {
-    /** @var CommentDTO[]  */
+    /** @var CommentDTO[] */
     public array $missingDocBlocks = [];
 
     public function __construct(
         private readonly string $filename,
         private readonly NodeNeedsDocblockChecker $nodeChecker,
-    ) {
-    }
+    ) {}
 
     public function enterNode(Node $node): null
     {
@@ -33,7 +32,7 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
 
         $this->missingDocBlocks[] =
             new CommentDTO(
-                MissingDocBlockAnalyzer::NAME, //todo: use methods from MissingDocBlockAnalyzer
+                MissingDocBlockAnalyzer::NAME, // todo: use methods from MissingDocBlockAnalyzer
                 MissingDocBlockAnalyzer::COLOR,
                 $this->filename,
                 $node->getLine(),

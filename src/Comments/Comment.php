@@ -10,12 +10,12 @@ abstract class Comment implements Stringable, CommentTypeInterface, CommentConst
 {
     protected bool $exceedThreshold = false;
 
-    public function hasExceededThreshold(): bool
+    final public function hasExceededThreshold(): bool
     {
         return $this->exceedThreshold;
     }
 
-    public function matchesPattern(string $token): bool
+    final public function matchesPattern(string $token): bool
     {
         return (bool) preg_match($this->getPattern(), $token);
     }
@@ -26,12 +26,9 @@ abstract class Comment implements Stringable, CommentTypeInterface, CommentConst
     }
 
     /**
-     * @param int $count
      * @param array<string, float> $thresholds
-     *
-     * @return string
      */
-    public function getStatColor(int $count, array $thresholds): string
+    final public function getStatColor(int $count, array $thresholds): string
     {
         if (!isset($thresholds[$this->getName()])) {
             return 'white';
@@ -40,7 +37,28 @@ abstract class Comment implements Stringable, CommentTypeInterface, CommentConst
             return 'green';
         }
         $this->exceedThreshold = true;
+
         return 'red';
+    }
+
+    final public function getPattern(): string
+    {
+        return static::PATTERN;
+    }
+
+    final public function getColor(): string
+    {
+        return static::COLOR;
+    }
+
+    final public function getWeight(): float
+    {
+        return static::WEIGHT;
+    }
+
+    final public function getName(): string
+    {
+        return static::NAME;
     }
 
     /** @param array<string, float> $thresholds */
@@ -53,25 +71,5 @@ abstract class Comment implements Stringable, CommentTypeInterface, CommentConst
         }
 
         return $count <= $comparisonValue;
-    }
-
-    public function getPattern(): string
-    {
-        return static::PATTERN;
-    }
-
-    public function getColor(): string
-    {
-        return static::COLOR;
-    }
-
-    public function getWeight(): float
-    {
-        return static::WEIGHT;
-    }
-
-    public function getName(): string
-    {
-        return static::NAME;
     }
 }

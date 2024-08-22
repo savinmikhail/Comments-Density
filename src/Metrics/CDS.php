@@ -25,12 +25,10 @@ final class CDS
     public function __construct(
         private readonly array $thresholds,
         private readonly CommentFactory $commentFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @return float
      */
     public function calculateCDS(array $commentStatistics): float
     {
@@ -46,9 +44,23 @@ final class CDS
         }
     }
 
+    public function prepareCDS(float $cds): CdsDTO
+    {
+        $cds = round($cds, 2);
+
+        return new CdsDTO(
+            $cds,
+            $this->getColorForCDS($cds),
+        );
+    }
+
+    public function hasExceededThreshold(): bool
+    {
+        return $this->exceedThreshold;
+    }
+
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @return float
      */
     private function calculateRawScore(array $commentStatistics): float
     {
@@ -58,6 +70,7 @@ final class CDS
             $comment = $this->commentFactory->getCommentType($stat->type);
             if ($comment) {
                 $rawScore += $stat->count * $comment->getWeight();
+
                 continue;
             }
             $rawScore += $stat->count * self::MISSING_DOCBLOCK_WEIGHT;
@@ -68,7 +81,6 @@ final class CDS
 
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @return float
      */
     private function getMinPossibleScore(array $commentStatistics): float
     {
@@ -77,39 +89,33 @@ final class CDS
             $comment = $this->commentFactory->getCommentType($stat->type);
             if (!$comment) {
                 $minScore += self::MISSING_DOCBLOCK_WEIGHT * $stat->count;
+
                 continue;
             }
             if ($comment->getWeight() < 0) {
                 $minScore += $comment->getWeight() * $stat->count;
+
                 continue;
             }
             $minScore -= $comment->getWeight() * $stat->count;
         }
+
         return $minScore;
     }
 
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @return float
      */
     private function getMaxPossibleScore(array $commentStatistics): float
     {
         $maxAmountOfDocBlock = 0;
         foreach ($commentStatistics as $statisticsDTO) {
-            if (in_array($statisticsDTO->type, ['missingDocblock', 'docblock'])) {
+            if (in_array($statisticsDTO->type, ['missingDocblock', 'docblock'], true)) {
                 $maxAmountOfDocBlock += $statisticsDTO->count;
             }
         }
-        return $maxAmountOfDocBlock * $this->commentFactory->getCommentType('docBlock')->getWeight();
-    }
 
-    public function prepareCDS(float $cds): CdsDTO
-    {
-        $cds = round($cds, 2);
-        return new CdsDTO(
-            $cds,
-            $this->getColorForCDS($cds),
-        );
+        return $maxAmountOfDocBlock * $this->commentFactory->getCommentType('docBlock')->getWeight();
     }
 
     private function getColorForCDS(float $cds): string
@@ -121,11 +127,7 @@ final class CDS
             return 'green';
         }
         $this->exceedThreshold = true;
-        return 'red';
-    }
 
-    public function hasExceededThreshold(): bool
-    {
-        return $this->exceedThreshold;
+        return 'red';
     }
 }

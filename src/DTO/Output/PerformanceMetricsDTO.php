@@ -9,6 +9,5 @@ final readonly class PerformanceMetricsDTO
     public function __construct(
         public float $executionTime,
         public float $peakMemoryUsage,
-    ) {
-    }
+    ) {}
 }

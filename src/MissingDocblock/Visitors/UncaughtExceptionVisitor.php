@@ -20,7 +20,9 @@ use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\MethodRegistr
 final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 {
     private readonly MethodRegistrar $methodRegistrar;
+
     private readonly ExceptionChecker $exceptionChecker;
+
     private readonly DocBlockFactory $docBlockFactory;
 
     public function __construct(?Class_ $class)
@@ -108,7 +110,7 @@ final class UncaughtExceptionVisitor extends NodeVisitorAbstract
 
         $exceptions = [];
         foreach ($docBlock->getTagsByName('throws') as $tag) {
-            $exceptions[] = (string)$tag->getType();
+            $exceptions[] = (string) $tag->getType();
         }
 
         return $exceptions;

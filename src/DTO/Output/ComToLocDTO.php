@@ -9,6 +9,5 @@ final readonly class ComToLocDTO
     public function __construct(
         public float $comToLoc,
         public string $color,
-    ) {
-    }
+    ) {}
 }

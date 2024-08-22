@@ -18,7 +18,7 @@ use function interface_exists;
 
 final readonly class TraversableChecker
 {
-    public function isTypeIterable(ComplexType|Identifier|Name|null $type): bool
+    public function isTypeIterable(null|ComplexType|Identifier|Name $type): bool
     {
         if ($type === null) {
             return false;
@@ -43,7 +43,7 @@ final readonly class TraversableChecker
 
     private function isClassOrInterfaceTraversable(ComplexType|Identifier|Name $type): bool
     {
-        if (!($type instanceof Name)) {
+        if (!$type instanceof Name) {
             return false;
         }
 
@@ -55,7 +55,6 @@ final readonly class TraversableChecker
 
         return $this->isTraversableRecursively(new ReflectionClass($typeName));
     }
-
 
     private function isTraversableRecursively(ReflectionClass $reflection): bool
     {

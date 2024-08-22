@@ -22,16 +22,15 @@ final class MissingDocBlockAnalyzer
 
     public function __construct(
         private readonly MissingDocblockConfigDTO $docblockConfigDTO,
-    ) {
-    }
+    ) {}
 
     /**
      * Analyzes the AST of a file for missing docblocks.
      *
-     * @param string $code The code to analyze.
-     * @param string $filename The filename of the code.
+     * @param string $code the code to analyze
+     * @param string $filename the filename of the code
      *
-     * @return CommentDTO[] The analysis results.
+     * @return CommentDTO[] the analysis results
      */
     public function analyze(string $code, string $filename): array
     {
@@ -45,7 +44,7 @@ final class MissingDocBlockAnalyzer
 
         $visitor = new MissingDocBlockVisitor(
             $filename,
-            new NodeNeedsDocblockChecker($this->docblockConfigDTO, new MethodNeedsDocblockChecker())
+            new NodeNeedsDocblockChecker($this->docblockConfigDTO, new MethodNeedsDocblockChecker()),
         );
         $traverser->removeVisitor($nameResolver);
         $traverser->addVisitor($visitor);
@@ -55,9 +54,6 @@ final class MissingDocBlockAnalyzer
     }
 
     /**
-     * @param string $code
-     * @param string $filename
-     *
      * @return CommentDTO[]
      */
     public function getMissingDocblocks(string $code, string $filename): array
@@ -71,9 +67,7 @@ final class MissingDocBlockAnalyzer
     }
 
     /**
-     * @param float $count
      * @param array<string, float> $thresholds
-     * @return string
      */
     public function getStatColor(float $count, array $thresholds): string
     {
@@ -84,6 +78,7 @@ final class MissingDocBlockAnalyzer
             return 'green';
         }
         $this->exceedThreshold = true;
+
         return 'red';
     }
 

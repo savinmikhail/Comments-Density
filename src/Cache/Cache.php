@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Cache;
 
+use RuntimeException;
+
 use function dirname;
+use function sprintf;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -56,7 +59,7 @@ final readonly class Cache
     {
         if (!is_dir($directory)) {
             if (!mkdir($directory, 0o777, true) && !is_dir($directory)) {
-                throw new \RuntimeException(sprintf('Directory "%s" was not created', $directory));
+                throw new RuntimeException(sprintf('Directory "%s" was not created', $directory));
             }
         }
     }

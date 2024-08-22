@@ -13,6 +13,7 @@ use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\UncaughtExceptionVisit
 final readonly class MethodNeedsDocblockChecker
 {
     private TemplateChecker $templateChecker;
+
     private TraversableChecker $traversableChecker;
 
     public function __construct()

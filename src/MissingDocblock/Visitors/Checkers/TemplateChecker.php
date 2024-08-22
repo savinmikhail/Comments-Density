@@ -23,12 +23,12 @@ final readonly class TemplateChecker
         $this->docBlockFactory = DocBlockFactory::createInstance();
     }
 
-    public function isTemplatedClass(ComplexType|Identifier|Name|null $type): bool
+    public function isTemplatedClass(null|ComplexType|Identifier|Name $type): bool
     {
         if ($type === null) {
             return false;
         }
-        if (!($type instanceof Name)) {
+        if (!$type instanceof Name) {
             return false;
         }
 

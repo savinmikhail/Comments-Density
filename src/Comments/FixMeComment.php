@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SavinMikhail\CommentsDensity\Comments;
 
 final class FixMeComment extends Comment

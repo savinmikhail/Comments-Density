@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SavinMikhail\CommentsDensity\DTO\Output;
 
 final readonly class CommentDTO
@@ -10,8 +12,7 @@ final readonly class CommentDTO
         public string $file,
         public int $line,
         public string $content,
-    ) {
-    }
+    ) {}
 
     public static function __set_state(array $array): self
     {
@@ -20,7 +21,7 @@ final readonly class CommentDTO
             $array['commentTypeColor'],
             $array['file'],
             $array['line'],
-            $array['content']
+            $array['content'],
         );
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SavinMikhail\CommentsDensity\DTO\Output;
 
 final readonly class CommentStatisticsDTO
@@ -10,6 +12,5 @@ final readonly class CommentStatisticsDTO
         public int $lines,
         public string $color,
         public int $count,
-    ) {
-    }
+    ) {}
 }

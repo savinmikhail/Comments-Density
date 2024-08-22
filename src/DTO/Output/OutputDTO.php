@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SavinMikhail\CommentsDensity\DTO\Output;
 
 final readonly class OutputDTO
@@ -14,6 +16,5 @@ final readonly class OutputDTO
         public ComToLocDTO $comToLocDTO,
         public CdsDTO $cdsDTO,
         public bool $exceedThreshold,
-    ) {
-    }
+    ) {}
 }

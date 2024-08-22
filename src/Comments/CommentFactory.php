@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Comments;
 
 use Generator;
+
 use function in_array;
 
 final readonly class CommentFactory
@@ -40,6 +41,7 @@ final readonly class CommentFactory
                 return $commentType;
             }
         }
+
         return null;
     }
 
@@ -56,6 +58,7 @@ final readonly class CommentFactory
                 return $commentType;
             }
         }
+
         return null;
     }
 }

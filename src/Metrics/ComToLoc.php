@@ -16,21 +16,18 @@ final class ComToLoc
     /**
      * @param array<string, float> $thresholds
      */
-    public function __construct(private readonly array $thresholds)
-    {
-    }
+    public function __construct(private readonly array $thresholds) {}
 
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @param int $linesOfCode
-     * @return ComToLocDTO
      */
     public function prepareComToLoc(array $commentStatistics, int $linesOfCode): ComToLocDTO
     {
         $ratio = $this->getRatio($commentStatistics, $linesOfCode);
+
         return new ComToLocDTO(
             $ratio,
-            $this->getColorForRatio($ratio)
+            $this->getColorForRatio($ratio),
         );
     }
 
@@ -41,8 +38,6 @@ final class ComToLoc
 
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @param int $linesOfCode
-     * @return float
      */
     private function getRatio(array $commentStatistics, int $linesOfCode): float
     {
@@ -68,6 +63,7 @@ final class ComToLoc
             return 'green';
         }
         $this->exceedThreshold = true;
+
         return 'red';
     }
 }

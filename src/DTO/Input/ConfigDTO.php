@@ -9,11 +9,8 @@ final readonly class ConfigDTO
     /**
      * @param array<string, float> $thresholds
      * @param string[] $exclude
-     * @param OutputDTO $output
      * @param string[] $directories
      * @param string[] $only
-     * @param MissingDocblockConfigDTO $docblockConfigDTO
-     * @param bool $useBaseline
      */
     public function __construct(
         public array $thresholds,
@@ -24,6 +21,5 @@ final readonly class ConfigDTO
         public MissingDocblockConfigDTO $docblockConfigDTO,
         public bool $useBaseline,
         public string $cacheDir,
-    ) {
-    }
+    ) {}
 }

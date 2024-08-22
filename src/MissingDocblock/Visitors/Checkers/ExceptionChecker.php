@@ -14,8 +14,9 @@ use ReflectionClass;
 
 final class ExceptionChecker
 {
-    private array $tryCatchStack = [];
     public bool $hasUncaughtThrows = false;
+
+    private array $tryCatchStack = [];
 
     public function checkIfExceptionIsCaught(Throw_ $node): void
     {
@@ -45,6 +46,7 @@ final class ExceptionChecker
                 return true;
             }
         }
+
         return false;
     }
 
@@ -57,13 +59,14 @@ final class ExceptionChecker
                 }
             }
         }
+
         return false;
     }
 
     private function nodeIsWithin(Node $node, Node $container): bool
     {
-        return $node->getStartFilePos() >= $container->getStartFilePos() &&
-            $node->getEndFilePos() <= $container->getEndFilePos();
+        return $node->getStartFilePos() >= $container->getStartFilePos()
+            && $node->getEndFilePos() <= $container->getEndFilePos();
     }
 
     private function getExceptionFQN(Throw_ $throwNode): string
@@ -113,6 +116,7 @@ final class ExceptionChecker
         foreach ($this->tryCatchStack as $tryCatch) {
             $catchStack = array_merge($catchStack, $tryCatch->catches);
         }
+
         return $catchStack;
     }
 
@@ -127,6 +131,7 @@ final class ExceptionChecker
         }
 
         $reflectionClass = new ReflectionClass($className);
+
         return $reflectionClass->isSubclassOf($parentClassName) || $className === $parentClassName;
     }
 }

@@ -14,9 +14,8 @@ final readonly class MetricsFacade
     public function __construct(
         private CDS $cds,
         private ComToLoc $comToLoc,
-        private ResourceUtilization $performanceMonitor
-    ) {
-    }
+        private ResourceUtilization $performanceMonitor,
+    ) {}
 
     public function startPerformanceMonitoring(): void
     {
@@ -40,7 +39,6 @@ final readonly class MetricsFacade
 
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @return float
      */
     public function calculateCDS(array $commentStatistics): float
     {
@@ -54,8 +52,6 @@ final readonly class MetricsFacade
 
     /**
      * @param CommentStatisticsDTO[] $commentStatistics
-     * @param int $linesOfCode
-     * @return ComToLocDTO
      */
     public function prepareComToLoc(array $commentStatistics, int $linesOfCode): ComToLocDTO
     {

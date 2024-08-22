@@ -13,7 +13,9 @@ use function round;
 final class ResourceUtilization
 {
     private float $startTime;
+
     private float $endTime;
+
     private float $peakMemoryUsage;
 
     public function start(): void
@@ -27,6 +29,14 @@ final class ResourceUtilization
         $this->peakMemoryUsage = memory_get_peak_usage(true);
     }
 
+    public function getPerformanceMetrics(): PerformanceMetricsDTO
+    {
+        return new PerformanceMetricsDTO(
+            $this->getExecutionTime(),
+            $this->getPeakMemoryUsage(),
+        );
+    }
+
     private function getExecutionTime(): float
     {
         return round(($this->endTime - $this->startTime) * 1000, 2);
@@ -35,13 +45,5 @@ final class ResourceUtilization
     private function getPeakMemoryUsage(): float
     {
         return round($this->peakMemoryUsage / 1024 / 1024, 2); // Convert to MB
-    }
-
-    public function getPerformanceMetrics(): PerformanceMetricsDTO
-    {
-        return new PerformanceMetricsDTO(
-            $this->getExecutionTime(),
-            $this->getPeakMemoryUsage()
-        );
     }
 }
