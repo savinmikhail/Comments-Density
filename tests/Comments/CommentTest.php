@@ -64,6 +64,31 @@ class CommentTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public static function isExceededThresholdDataProvider(): array
+    {
+        return [
+            [RegularComment::class, 5, ['regular' => 10], false],
+            [RegularComment::class, 15, ['regular' => 10], true],
+            [TodoComment::class, 5, ['todo' => 5], false],
+            [TodoComment::class, 4, ['todo' => 5], false],
+            [FixMeComment::class, 5, ['fixme' => 4], true],
+            [FixMeComment::class, 3, ['fixme' => 4], false],
+            [DocBlockComment::class, 5, ['docBlock' => 4], false],
+            [DocBlockComment::class, 3, ['docBlock' => 4], true],
+            [LicenseComment::class, 3, ['license' => 4], true],
+            [LicenseComment::class, 5, ['license' => 4], false],
+        ];
+    }
+
+    #[DataProvider('isExceededThresholdDataProvider')]
+    public function testIsExceededThreshold(string $class, int $count, array $thresholds, bool $expected): void
+    {
+        /** @var Comment $comment */
+        $comment = new $class();
+        $this->invokeMethod($comment, 'getStatColor', [$count, $thresholds]);
+        $this->assertEquals($expected, $comment->hasExceededThreshold());
+    }
+
     public static function getStatColorDataProvider(): array
     {
         return [

@@ -34,13 +34,13 @@ final class CacheTest extends TestCase
         file_put_contents($filePath, '<?php // test file');
 
         $commentDTO = new CommentDTO('type', 'color', $filePath, 1, 'content');
-        $data = [$commentDTO];
+        $comments = [$commentDTO];
 
-        $cache->setCache($filePath, $data);
+        $cache->setCache($filePath, $comments);
         $cachedData = $cache->getCache($filePath);
 
         $this->assertNotNull($cachedData);
-        $this->assertEquals($data, $cachedData);
+        $this->assertEquals($comments, $cachedData);
 
         unlink($filePath);
     }
