@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\DTO\Input;
+namespace SavinMikhail\CommentsDensity\Config\DTO;
 
 final readonly class MissingDocblockConfigDTO
 {
@@ -14,6 +14,5 @@ final readonly class MissingDocblockConfigDTO
         public bool $function,
         public bool $property,
         public bool $constant,
-        public bool $requireForAllMethods,
     ) {}
 }
