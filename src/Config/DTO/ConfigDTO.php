@@ -26,6 +26,18 @@ final readonly class ConfigDTO
         public string $cacheDir = 'var/cache/comments-density',
         /** Disable certain types; set to empty array for full statistics */
         public array $disable = [],
-        public array $only = [],
     ) {}
+
+    public function getAllowedTypes(): array
+    {
+        $types = [
+            'docBlock',
+            'regular',
+            'todo',
+            'fixme',
+            'missingDocBlock',
+        ];
+
+        return array_diff($types, $this->disable);
+    }
 }

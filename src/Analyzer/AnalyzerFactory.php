@@ -22,7 +22,7 @@ final readonly class AnalyzerFactory
         OutputInterface $output,
         BaselineStorageInterface $baselineStorage,
     ): Analyzer {
-        $commentFactory = new CommentFactory($configDto->only);
+        $commentFactory = new CommentFactory($configDto->getAllowedTypes());
         $missingDocBlock = new MissingDocBlockAnalyzer($configDto->docblockConfigDTO);
         $cds = new CDS($configDto->thresholds, $commentFactory);
 

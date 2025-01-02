@@ -89,8 +89,12 @@ final readonly class AnalyzeFileTask
     private function shouldAnalyzeMissingDocBlocks(): bool
     {
         return
-            $this->configDTO->only === []
-            || in_array($this->missingDocBlock->getName(), $this->configDTO->only, true);
+            $this->configDTO->getAllowedTypes() === []
+            || in_array(
+                $this->missingDocBlock->getName(),
+                $this->configDTO->getAllowedTypes(),
+                true
+            );
     }
 
     /**
