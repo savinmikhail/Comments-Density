@@ -74,54 +74,23 @@ final class CommentsDensityPlugin implements PluginInterface, EventSubscriberInt
     {
         $interface = $event->getIO();
 
-        self::promptForPreCommitHook($interface);
         self::promptForConfigFile($interface);
-    }
-
-    public static function promptForPreCommitHook(IOInterface $ioHelper): void
-    {
-        $ioHelper->write('Run pre-commit installation');
-        $shouldInstallHook = $ioHelper->askConfirmation('Do you want to install the pre-commit hook? [y/N] ');
-
-        if ($shouldInstallHook) {
-            $ioHelper->write('Installing pre-commit hook...');
-
-            $source = __DIR__ . '/../../pre-commit.sh';
-            $destination = '.git/hooks/pre-commit';
-
-            if (!file_exists($source)) {
-                $ioHelper->writeError("Error: Source file {$source} does not exist.");
-
-                return;
-            }
-
-            copy($source, $destination);
-            chmod($destination, 0o755);
-
-            $ioHelper->write('Pre-commit hook installed.');
-
-            return;
-        }
-
-        $ioHelper->write('Pre-commit hook installation skipped.');
     }
 
     private static function promptForConfigFile(IOInterface $interface): void
     {
         $interface->write('Run configuration file setup');
-        $shouldCreateConfig = $interface->askConfirmation('Do you want to create a default configuration file? [y/N] ');
+        $shouldCreateConfig = $interface
+            ->askConfirmation('Do you want to create a default configuration file? [y/n]');
 
-        if ($shouldCreateConfig) {
-            $interface->write('Creating default configuration file...');
-
-            file_put_contents('comments_density.php', self::CONFIG);
-
-            $interface->write('Default configuration file created.');
-
+        if (!$shouldCreateConfig) {
+            $interface->write('Configuration file setup skipped.');
             return;
         }
 
-        $interface->write('Configuration file setup skipped.');
+        file_put_contents('comments_density.php', self::CONFIG);
+
+        $interface->write('Default configuration file created.');
     }
 
     /**
