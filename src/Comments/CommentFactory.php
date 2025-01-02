@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Comments;
 
-use Generator;
-
 use function in_array;
 
 final readonly class CommentFactory
 {
-    /** @var array<array-key, CommentTypeInterface> */
+    /** @var CommentTypeInterface[] */
     private array $commentTypes;
 
     /**
@@ -27,7 +25,10 @@ final readonly class CommentFactory
         ];
     }
 
-    public function getCommentTypes(): Generator
+    /**
+     * @return CommentTypeInterface[]
+     */
+    public function getCommentTypes(): iterable
     {
         foreach ($this->commentTypes as $commentType) {
             yield $commentType;

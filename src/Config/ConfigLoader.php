@@ -14,7 +14,7 @@ use const DIRECTORY_SEPARATOR;
 final readonly class ConfigLoader
 {
     private const CONFIG_FILE = 'comments_density.php';
-    private const DIR_LEVEL = COMMENTS_DENSITY_ENVIRONMENT === 'dev' ? 1 : 4;
+    private const DIR_LEVEL = COMMENTS_DENSITY_ENVIRONMENT === 'dev' ? 2 : 5;
 
     /**
      * @throws CommentsDensityException

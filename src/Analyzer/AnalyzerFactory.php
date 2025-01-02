@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
-use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
@@ -13,6 +12,7 @@ use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\Metrics\ResourceUtilization;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final readonly class AnalyzerFactory
@@ -40,7 +40,7 @@ final readonly class AnalyzerFactory
             $output,
             $missingDocBlock,
             $baselineStorage,
-            new Cache($configDto->cacheDir),
+            new FilesystemAdapter(directory: $configDto->cacheDir),
             new CommentStatisticsAggregator($configDto, $commentFactory, $missingDocBlock),
         );
     }

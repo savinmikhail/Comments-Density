@@ -9,10 +9,15 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Config\ConfigLoader;
 use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
+use SplFileInfo;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
 abstract class Command extends SymfonyCommand
 {
+    /**
+     * @throws CommentsDensityException
+     */
     protected function getConfigDto(): ConfigDTO
     {
         return (new ConfigLoader())->getConfigDto();
@@ -20,8 +25,9 @@ abstract class Command extends SymfonyCommand
 
     /**
      * @param string[] $directories
+     * @return SplFileInfo[]
      */
-    protected function getFilesFromDirectories(array $directories): Generator
+    protected function getFilesFromDirectories(array $directories): iterable
     {
         foreach ($directories as $directory) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));

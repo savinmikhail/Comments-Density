@@ -9,6 +9,7 @@ use Mikhail\PrimitiveWrappers\Int\Integer;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
+
 use function in_array;
 use function round;
 

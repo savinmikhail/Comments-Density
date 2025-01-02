@@ -32,11 +32,11 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
 
         $this->missingDocBlocks[] =
             new CommentDTO(
-                MissingDocBlockAnalyzer::NAME, // todo: use methods from MissingDocBlockAnalyzer
+                MissingDocBlockAnalyzer::NAME, // todo
                 MissingDocBlockAnalyzer::COLOR,
                 $this->filename,
                 $node->getLine(),
-                $this->nodeChecker->determineMissingContent(),
+                '',
             );
 
         return null;

@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
-use Generator;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
-use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
+use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+
 use function array_push;
 
 final class Analyzer
@@ -29,11 +30,14 @@ final class Analyzer
         private readonly OutputInterface $output,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
         private readonly BaselineStorageInterface $baselineStorage,
-        private readonly Cache $cache,
+        private readonly CacheInterface $cache,
         private readonly CommentStatisticsAggregator $statisticsAggregator,
     ) {}
 
-    public function analyze(Generator $files): OutputDTO
+    /**
+     * @param SplFileInfo[] $files
+     */
+    public function analyze(iterable $files): OutputDTO
     {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];

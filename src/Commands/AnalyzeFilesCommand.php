@@ -57,8 +57,9 @@ final class AnalyzeFilesCommand extends Command
 
     /**
      * @param string[] $filePaths
+     * @return SplFileInfo[]
      */
-    protected function generateFiles(array $filePaths): Generator
+    protected function generateFiles(array $filePaths): iterable
     {
         foreach ($filePaths as $filePath) {
             yield new SplFileInfo($filePath);

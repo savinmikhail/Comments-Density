@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+
 use function array_merge;
 use function count;
 use function file;
@@ -24,7 +25,7 @@ use const T_DOC_COMMENT;
 final readonly class AnalyzeFileTask
 {
     public function __construct(
-        private Cache $cache,
+        private CacheInterface $cache,
         private MissingDocBlockAnalyzer $docBlockAnalyzer,
         private MissingDocBlockAnalyzer $missingDocBlock,
         private CommentFactory $commentFactory,
@@ -41,12 +42,16 @@ final readonly class AnalyzeFileTask
             return ['lines' => 0, 'comments' => []];
         }
 
-        $fileComments = $this->cache->getCache($file->getRealPath());
+        $filePath = $file->getRealPath();
+        $lastModified = filemtime($filePath);
+        $cacheKey = md5($filePath . $lastModified);
 
-        if (!$fileComments) {
-            $fileComments = $this->analyzeFile($file->getRealPath());
-            $this->cache->setCache($file->getRealPath(), $fileComments);
-        }
+        $fileComments = $this->cache->get(
+            $cacheKey,
+            function () use ($filePath): iterable {
+                return $this->analyzeFile($filePath);
+            }
+        );
 
         $totalLinesOfCode = $this->countTotalLines($file->getRealPath());
 
