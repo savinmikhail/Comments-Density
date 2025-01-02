@@ -7,12 +7,12 @@ namespace SavinMikhail\CommentsDensity\Config\DTO;
 final readonly class MissingDocblockConfigDTO
 {
     public function __construct(
-        public bool $class,
-        public bool $interface,
-        public bool $trait,
-        public bool $enum,
-        public bool $function,
-        public bool $property,
-        public bool $constant,
+        public bool $class = false,
+        public bool $interface = false,
+        public bool $trait = false,
+        public bool $enum = false,
+        public bool $function = false,
+        public bool $property = false,
+        public bool $constant = false,
     ) {}
 }

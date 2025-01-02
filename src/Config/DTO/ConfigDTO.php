@@ -20,11 +20,12 @@ final readonly class ConfigDTO
         public OutputDTO $output,
         /** Directories to be scanned for comments */
         public array $directories,
-        /** Only this type will be analyzed; set to empty array for full statistics */
-        public array $only,
         public MissingDocblockConfigDTO $docblockConfigDTO,
         /** Filter collected comments against the baseline stored in baseline.php */
-        public bool $useBaseline,
-        public string $cacheDir,
+        public bool $useBaseline = true,
+        public string $cacheDir = 'var/cache/comments-density',
+        /** Disable certain types; set to empty array for full statistics */
+        public array $disable = [],
+        public array $only = [],
     ) {}
 }

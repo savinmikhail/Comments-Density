@@ -53,7 +53,7 @@ final readonly class CommentFactory
                 continue;
             }
             if (
-                empty($this->allowedTypes)
+                $this->allowedTypes === []
                 || in_array($commentType->getName(), $this->allowedTypes, true)
             ) {
                 return $commentType;

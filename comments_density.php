@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConsoleOutputDTO;
 use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\Config\DTO\OutputDTO;
 
@@ -19,25 +20,12 @@ return new ConfigDTO(
     exclude: [
         'src/DTO',
     ],
-    output: new OutputDTO(
-        type: 'console',
-        file: 'output.html'
-    ),
+    output: ConsoleOutputDTO::create(),
     directories: [
         'src',
     ],
-    only: [
-        'todo'
-    ],
-    docblockConfigDTO: new MissingDocblockConfigDTO(
-        class: false,
-        interface: false,
-        trait: false,
-        enum: false,
-        function: false,
-        property: false,
-        constant: false,
-    ),
-    useBaseline: true,
-    cacheDir: 'var/cache/comments-density',
+    docblockConfigDTO: new MissingDocblockConfigDTO(),
+    disable: [
+        'missingDocBlock',
+    ]
 );
