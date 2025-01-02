@@ -7,7 +7,7 @@ namespace SavinMikhail\CommentsDensity\Analyzer;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
 use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;

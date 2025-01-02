@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function array_merge;
 use function count;
 use function file;
@@ -19,7 +18,6 @@ use function file_get_contents;
 use function in_array;
 use function is_array;
 use function token_get_all;
-
 use const T_COMMENT;
 use const T_DOC_COMMENT;
 

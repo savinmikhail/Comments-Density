@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Reporters;
 
-use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\ComToLocDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function array_map;
 
 final readonly class ConsoleReporter implements ReporterInterface

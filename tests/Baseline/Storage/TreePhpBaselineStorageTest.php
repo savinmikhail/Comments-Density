@@ -6,11 +6,9 @@ namespace SavinMikhail\Tests\CommentsDensity\Baseline\Storage;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
-
 use function ltrim;
-
 use const DIRECTORY_SEPARATOR;
 
 final class TreePhpBaselineStorageTest extends TestCase

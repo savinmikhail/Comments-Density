@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Reporters;
 
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final readonly class ReporterFactory

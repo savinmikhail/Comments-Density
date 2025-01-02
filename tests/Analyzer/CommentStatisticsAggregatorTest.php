@@ -7,13 +7,13 @@ namespace SavinMikhail\Tests\CommentsDensity\Analyzer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\Analyzer\CommentStatisticsAggregator;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Comments\Comment;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Input\OutputDTO as OutputConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\OutputDTO as OutputConfigDTO;
 use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 

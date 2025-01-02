@@ -7,8 +7,8 @@ namespace SavinMikhail\CommentsDensity\Commands;
 use Generator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use SavinMikhail\CommentsDensity\ConfigLoader;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
+use SavinMikhail\CommentsDensity\Config\ConfigLoader;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
 abstract class Command extends SymfonyCommand

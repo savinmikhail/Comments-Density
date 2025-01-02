@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Reporters;
 
-use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
-
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\OutputDTO;
 use function file_put_contents;
 use function htmlspecialchars;
 use function nl2br;
-
 use const ENT_QUOTES;
 use const ENT_SUBSTITUTE;
 

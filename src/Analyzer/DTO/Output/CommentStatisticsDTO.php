@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\DTO\Output;
+namespace SavinMikhail\CommentsDensity\Analyzer\DTO\Output;
 
 final readonly class CommentStatisticsDTO
 {

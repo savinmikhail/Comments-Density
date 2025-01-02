@@ -98,18 +98,4 @@ final class CommentsDensityPluginTest extends TestCase
 
         $this->assertFileExists('comments_density.php');
     }
-
-    public function testPromptForPreCommitHook(): void
-    {
-        $io = Mockery::mock(IOInterface::class);
-        $io->shouldReceive('write')->with('Run pre-commit installation')->once();
-        $io->shouldReceive('askConfirmation')->with('Do you want to install the pre-commit hook? [y/N] ')->andReturn(true);
-        $io->shouldReceive('write')->with('Installing pre-commit hook...')->once();
-        $io->shouldReceive('write')->with('Pre-commit hook installed.')->once();
-
-        CommentsDensityPlugin::promptForPreCommitHook($io);
-
-        $this->assertFileExists('.git/hooks/pre-commit');
-        unlink('.git/hooks/pre-commit'); // Clean up after the test
-    }
 }

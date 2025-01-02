@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity\Metrics;
 
 use PHPUnit\Framework\TestCase;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
-use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Metrics\CDS;
 
 final class CDSTest extends TestCase

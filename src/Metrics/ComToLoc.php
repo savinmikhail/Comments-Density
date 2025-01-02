@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Metrics;
 
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
-
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\ComToLocDTO;
 use function round;
 
 final class ComToLoc

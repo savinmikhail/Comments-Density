@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
-
 use function substr_count;
-
 use const PHP_EOL;
 
 final readonly class CommentStatisticsAggregator

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity\Cache;
 
 use PHPUnit\Framework\TestCase;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\Cache\Cache;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
 
 final class CacheTest extends TestCase
 {

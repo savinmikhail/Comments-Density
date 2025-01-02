@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity\Reporters;
 
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\ComToLocDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\Reporters\HtmlReporter;
 
 final class HtmlReporterTest extends TestCase

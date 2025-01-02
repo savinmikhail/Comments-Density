@@ -6,7 +6,7 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock\Visitors;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\NodeNeedsDocblockChecker;
 

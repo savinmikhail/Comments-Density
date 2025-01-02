@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Metrics;
 
-use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\ComToLocDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\PerformanceMetricsDTO;
 
 final readonly class MetricsFacade
 {

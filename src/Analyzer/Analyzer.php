@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Analyzer;
 
 use Generator;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SavinMikhail\CommentsDensity\Cache\Cache;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function array_push;
 
 final class Analyzer

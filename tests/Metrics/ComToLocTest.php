@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity\Metrics;
 
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Metrics\ComToLoc;
 
 final class ComToLocTest extends TestCase

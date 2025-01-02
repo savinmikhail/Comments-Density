@@ -6,10 +6,9 @@ namespace SavinMikhail\CommentsDensity\Metrics;
 
 use InvalidArgumentException;
 use Mikhail\PrimitiveWrappers\Int\Integer;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentStatisticsDTO;
-
 use function in_array;
 use function round;
 

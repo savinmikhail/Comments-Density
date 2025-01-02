@@ -10,8 +10,8 @@ use SavinMikhail\CommentsDensity\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SavinMikhail\CommentsDensity\Cache\Cache;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class AnalyzerFactoryTest extends TestCase

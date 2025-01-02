@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace SavinMikhail\Tests\CommentsDensity;
 
-use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\ConfigLoader;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
+use SavinMikhail\CommentsDensity\Config\ConfigLoader;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
 
 class ConfigLoaderTest extends TestCase
 {

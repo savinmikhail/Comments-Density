@@ -8,19 +8,19 @@ use FilesystemIterator;
 use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\ComToLocDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
-use SavinMikhail\CommentsDensity\DTO\Input\ConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\OutputDTO as InputOutputDTO;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use SavinMikhail\CommentsDensity\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CdsDTO;
-use SavinMikhail\CommentsDensity\DTO\Input\OutputDTO as InputOutputDTO;
 
 class AnalyzeCommentCommandTest extends TestCase
 {

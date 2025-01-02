@@ -7,9 +7,8 @@ namespace SavinMikhail\CommentsDensity\MissingDocblock;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
-use SavinMikhail\CommentsDensity\DTO\Input\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\MethodNeedsDocblockChecker;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\Checkers\NodeNeedsDocblockChecker;
 use SavinMikhail\CommentsDensity\MissingDocblock\Visitors\MissingDocBlockVisitor;
 
@@ -44,7 +43,7 @@ final class MissingDocBlockAnalyzer
 
         $visitor = new MissingDocBlockVisitor(
             $filename,
-            new NodeNeedsDocblockChecker($this->docblockConfigDTO, new MethodNeedsDocblockChecker()),
+            new NodeNeedsDocblockChecker($this->docblockConfigDTO),
         );
         $traverser->removeVisitor($nameResolver);
         $traverser->addVisitor($visitor);

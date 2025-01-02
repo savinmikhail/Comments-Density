@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Reporters;
 
-use SavinMikhail\CommentsDensity\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\OutputDTO;
 
 interface ReporterInterface
 {
