@@ -8,10 +8,16 @@ use SplFileInfo;
 
 use function count;
 
-final class FileTotalLinesCounter
+final readonly class FileTotalLinesCounter
 {
-    public function run(SplFileInfo $file): int
+    public function __construct(
+        private SplFileInfo $file
+    )
     {
-        return count(file($file->getRealPath()));
+    }
+
+    public function __invoke(): int
+    {
+        return count(file($this->file->getRealPath()));
     }
 }
