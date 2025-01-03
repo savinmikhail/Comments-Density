@@ -8,9 +8,6 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\FormatterFactory;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
@@ -30,7 +27,7 @@ final class BaselineCommand extends Command
     }
     protected function configure(): void
     {
-        $this->setName('generate:baseline')
+        $this->setName('baseline')
             ->setDescription('Generate a baseline of comments to ignore them in the future')
             ->setHelp('This command allows you to ignore old tech debt and start this quality check from this point');
     }
@@ -45,9 +42,9 @@ final class BaselineCommand extends Command
         $files = $this->getFilesFromDirectories($configDto->directories);
 
         $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $output, $this->storage);
-        $outputDTO = $analyzer->analyze($files);
+        $report = $analyzer->analyze($files);
 
-        $this->storage->setComments($outputDTO->comments); // todo create some baseline reporter
+        $this->storage->setComments($report->comments); // todo create some baseline reporter
 
         $output->writeln('<info>Baseline generated successfully!</info>');
 

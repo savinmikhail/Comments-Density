@@ -10,7 +10,9 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\ConsoleFormatter;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\FormatterFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\HtmlFormatter;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
@@ -22,7 +24,6 @@ final class AnalyzeCommentCommand extends Command
     public function __construct(
         private readonly ConfigLoader           $configLoader = new ConfigLoader(),
         private readonly TreePhpBaselineStorage $storage = new TreePhpBaselineStorage(),
-        private readonly FormatterFactory       $reporterFactory = new FormatterFactory(),
         private readonly AnalyzerFactory        $analyzerFactory = new AnalyzerFactory(),
         ?string                                 $name = null,
     )
@@ -32,7 +33,7 @@ final class AnalyzeCommentCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('analyze:comments')
+        $this->setName('analyze')
             ->setDescription('Analyzes the comment density in files within a directory.')
             ->setHelp('This command allows you to analyze the comments in PHP files within a specified directory.');
     }
@@ -46,15 +47,19 @@ final class AnalyzeCommentCommand extends Command
         $configDto = $this->configLoader->getConfigDto();
         $files = $this->getFilesFromDirectories($configDto->directories);
 
-        $reporter = $this->reporterFactory->createReporter($output, $configDto);
+        $formatters = ['console' => new ConsoleFormatter($output)];
+        if ($configDto->output->type === 'html') {
+            $formatters['html'] = new HtmlFormatter($configDto->output->file);
+        }
+        $formatter = $formatters[$configDto->output->type] ?? $formatters['console'];
 
         $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $output, $this->storage);
 
-        $outputDTO = $analyzer->analyze($files);
+        $report = $analyzer->analyze($files);
 
-        $reporter->report($outputDTO);
+        $formatter->report($report);
 
-        if ($outputDTO->exceedThreshold) {
+        if ($report->exceedThreshold) {
             $output->writeln('<error>Comment thresholds were exceeded!</error>');
 
             return Command::FAILURE;
