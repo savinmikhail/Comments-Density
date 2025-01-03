@@ -8,11 +8,14 @@ use InvalidArgumentException;
 use Mikhail\PrimitiveWrappers\Int\Integer;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 
 use function in_array;
 use function round;
 
+/**
+ * comments density score (from 0 to 1)
+ */
 final class CDS
 {
     private const MISSING_DOCBLOCK_WEIGHT = -1;
@@ -23,8 +26,8 @@ final class CDS
      * @param array<string, float> $thresholds
      */
     public function __construct(
-        private readonly array $thresholds,
-        private readonly CommentFactory $commentFactory,
+        private readonly array              $thresholds,
+        private readonly CommentTypeFactory $commentFactory,
     ) {}
 
     /**

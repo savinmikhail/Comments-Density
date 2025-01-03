@@ -10,7 +10,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\CommentStatisticsAggre
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\Comment;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\OutputDTO as OutputConfigDTO;
@@ -38,7 +38,7 @@ final class CommentStatisticsAggregatorTest extends TestCase
             cacheDir: 'tmp',
         );
 
-        $this->commentFactory = $this->createMock(CommentFactory::class);
+        $this->commentFactory = $this->createMock(CommentTypeFactory::class);
         $this->missingDocBlock = $this->createMock(MissingDocBlockAnalyzer::class);
         $this->aggregator = new CommentStatisticsAggregator(
             $configDTO,

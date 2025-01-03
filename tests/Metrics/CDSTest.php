@@ -8,18 +8,18 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\CDS;
 
 final class CDSTest extends TestCase
 {
     private CDS $cds;
 
-    private CommentFactory $commentFactory;
+    private CommentTypeFactory $commentFactory;
 
     protected function setUp(): void
     {
-        $this->commentFactory = new CommentFactory();
+        $this->commentFactory = new CommentTypeFactory();
         $this->cds = new CDS(['CDS' => 0.5], $this->commentFactory);
     }
 
@@ -59,7 +59,7 @@ final class CDSTest extends TestCase
         self::assertEquals('green', $method->invokeArgs($this->cds, [0.75]));
         self::assertEquals('red', $method->invokeArgs($this->cds, [0.25]));
 
-        $cds = new CDS([], new CommentFactory());
+        $cds = new CDS([], new CommentTypeFactory());
         $reflection = new ReflectionClass($cds);
         $method = $reflection->getMethod('getColorForCDS');
         $method->setAccessible(true);

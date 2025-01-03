@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\Comment;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\DocBlockComment;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\FixMeComment;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\LicenseComment;
@@ -76,7 +76,7 @@ final class CommentTest extends TestCase
     #[DataProvider('regularCommentRegexDataProvider')]
     public function testRegularCommentRegex(string $comment, string $class): void
     {
-        $factory = new CommentFactory();
+        $factory = new CommentTypeFactory();
         $commentType = $factory->classifyComment($comment);
         self::assertInstanceOf($class, $commentType);
     }

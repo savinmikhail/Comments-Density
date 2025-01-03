@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\CDS;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\ComToLoc;
@@ -20,7 +20,7 @@ final readonly class AnalyzerFactory
         ConfigDTO $configDto,
         BaselineStorageInterface $baselineStorage,
     ): Analyzer {
-        $commentFactory = new CommentFactory($configDto->getAllowedTypes());
+        $commentFactory = new CommentTypeFactory($configDto->getAllowedTypes());
         $missingDocBlock = new MissingDocBlockAnalyzer($configDto->docblockConfigDTO);
         $cds = new CDS($configDto->thresholds, $commentFactory);
 

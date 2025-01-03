@@ -6,7 +6,7 @@ namespace SavinMikhail\CommentsDensity\AnalyzeComments\Comments;
 
 use function in_array;
 
-final readonly class CommentFactory
+final readonly class CommentTypeFactory
 {
     /** @var CommentTypeInterface[] */
     private array $commentTypes;

@@ -6,7 +6,7 @@ namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
@@ -18,8 +18,8 @@ use const PHP_EOL;
 final readonly class CommentStatisticsAggregator
 {
     public function __construct(
-        private ConfigDTO $configDTO,
-        private CommentFactory $commentFactory,
+        private ConfigDTO               $configDTO,
+        private CommentTypeFactory      $commentFactory,
         private MissingDocBlockAnalyzer $missingDocBlock,
     ) {}
 

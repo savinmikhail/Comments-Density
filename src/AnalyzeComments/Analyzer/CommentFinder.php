@@ -7,7 +7,7 @@ namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 use PhpToken;
 use Psr\Cache\InvalidArgumentException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 use SplFileInfo;
@@ -25,8 +25,8 @@ use const T_DOC_COMMENT;
 final readonly class CommentFinder
 {
     public function __construct(
-        private CommentFactory $commentFactory,
-        private ConfigDTO $configDTO,
+        private CommentTypeFactory      $commentFactory,
+        private ConfigDTO               $configDTO,
         private MissingDocBlockAnalyzer $missingDocBlockAnalyzer
     ) {}
 
@@ -66,8 +66,7 @@ final readonly class CommentFinder
     {
         $comments = [];
         foreach ($tokens as $token) {
-
-            if (!in_array($token->id, [T_COMMENT, T_DOC_COMMENT], true)) {
+            if ($token->is([T_COMMENT, T_DOC_COMMENT])) {
                 continue;
             }
             $commentType = $this->commentFactory->classifyComment($token->text);

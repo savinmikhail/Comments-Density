@@ -9,6 +9,9 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO
 
 use function round;
 
+/**
+ * lines of comments to lines of code relation
+ */
 final class ComToLoc
 {
     private bool $exceedThreshold = false;

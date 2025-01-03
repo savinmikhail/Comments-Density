@@ -8,7 +8,7 @@ use Psr\Cache\InvalidArgumentException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\MetricsFacade;
@@ -24,12 +24,12 @@ final class Analyzer
     private int $totalLinesOfCode = 0;
 
     public function __construct(
-        private readonly ConfigDTO $configDTO,
-        private readonly CommentFactory $commentFactory,
-        private readonly MetricsFacade $metrics,
-        private readonly MissingDocBlockAnalyzer $missingDocBlockAnalyzer,
-        private readonly BaselineStorageInterface $baselineStorage,
-        private readonly CacheInterface $cache,
+        private readonly ConfigDTO                   $configDTO,
+        private readonly CommentTypeFactory          $commentFactory,
+        private readonly MetricsFacade               $metrics,
+        private readonly MissingDocBlockAnalyzer     $missingDocBlockAnalyzer,
+        private readonly BaselineStorageInterface    $baselineStorage,
+        private readonly CacheInterface              $cache,
         private readonly CommentStatisticsAggregator $statisticsAggregator,
     ) {}
 
