@@ -9,7 +9,6 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStat
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
-use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 
 use function substr_count;
 
@@ -20,7 +19,6 @@ final readonly class CommentStatisticsAggregator
     public function __construct(
         private ConfigDTO $configDTO,
         private CommentTypeFactory $commentFactory,
-        private MissingDocBlockAnalyzer $missingDocBlock,
     ) {}
 
     /**
@@ -67,16 +65,6 @@ final readonly class CommentStatisticsAggregator
      */
     private function prepareCommentStatistic(string $type, array $stat): CommentStatisticsDTO
     {
-        if ($type === $this->missingDocBlock->getName()) {
-            return new CommentStatisticsDTO(
-                $this->missingDocBlock->getColor(),
-                $this->missingDocBlock->getName(),
-                $stat['lines'],
-                $this->missingDocBlock->getStatColor($stat['count'], $this->configDTO->thresholds),
-                $stat['count'],
-            );
-        }
-
         $commentType = $this->commentFactory->getCommentType($type);
         if ($commentType) {
             return new CommentStatisticsDTO(

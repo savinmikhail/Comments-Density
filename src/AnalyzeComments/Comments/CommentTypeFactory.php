@@ -22,6 +22,7 @@ final readonly class CommentTypeFactory
             new RegularComment(),
             new LicenseComment(),
             new DocBlockComment(),
+            new MissingDocBlock(),
         ];
     }
 

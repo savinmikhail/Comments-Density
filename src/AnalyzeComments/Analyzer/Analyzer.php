@@ -12,7 +12,6 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\MetricsFacade;
-use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SplFileInfo;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -27,7 +26,6 @@ final class Analyzer
         private readonly ConfigDTO $configDTO,
         private readonly CommentTypeFactory $commentFactory,
         private readonly MetricsFacade $metrics,
-        private readonly MissingDocBlockAnalyzer $missingDocBlockAnalyzer,
         private readonly BaselineStorageInterface $baselineStorage,
         private readonly CacheInterface $cache,
         private readonly CommentStatisticsAggregator $statisticsAggregator,
@@ -51,7 +49,6 @@ final class Analyzer
             $task = new CommentFinder(
                 $this->commentFactory,
                 $this->configDTO,
-                $this->missingDocBlockAnalyzer,
             );
 
             $fileComments = $this->cache->get(
@@ -86,9 +83,6 @@ final class Analyzer
     private function checkThresholdsExceeded(): bool
     {
         if ($this->metrics->hasExceededThreshold()) {
-            return true;
-        }
-        if ($this->missingDocBlockAnalyzer->hasExceededThreshold()) {
             return true;
         }
         foreach ($this->commentFactory->getCommentTypes() as $commentType) {

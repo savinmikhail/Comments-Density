@@ -23,6 +23,6 @@ return new ConfigDTO(
     directories: [
         'src',
     ],
-    docblockConfigDTO: new MissingDocblockConfigDTO(),
+    docblockConfigDTO: new MissingDocblockConfigDTO(class: true),
     disable: []
 );

@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
-use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 
 final class CommentVisitor extends NodeVisitorAbstract
 {

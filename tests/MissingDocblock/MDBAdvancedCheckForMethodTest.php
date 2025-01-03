@@ -7,8 +7,8 @@ namespace SavinMikhail\Tests\CommentsDensity\MissingDocblock;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\MissingDocBlock;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 
 use function file_get_contents;
 
@@ -666,7 +666,7 @@ final class MDBAdvancedCheckForMethodTest extends TestCase
     #[DataProvider('templateGenericDataProvider')]
     public function testTemplateGeneric(string $code, int $expectedCount): void
     {
-        $analyzer = new MissingDocBlockAnalyzer(
+        $analyzer = new MissingDocBlock(
             new MissingDocblockConfigDTO(
                 false,
                 false,
@@ -686,7 +686,7 @@ final class MDBAdvancedCheckForMethodTest extends TestCase
     #[DataProvider('genericDocblockDataProvider')]
     public function testGenericDocblockDetection(string $code, int $expectedCount): void
     {
-        $analyzer = new MissingDocBlockAnalyzer(
+        $analyzer = new MissingDocBlock(
             new MissingDocblockConfigDTO(
                 false,
                 false,
@@ -706,7 +706,7 @@ final class MDBAdvancedCheckForMethodTest extends TestCase
     #[DataProvider('uncaughtExceptionDocblockDataProvider')]
     public function testExceptionDocblockDetection(string $code, int $expectedCount): void
     {
-        $analyzer = new MissingDocBlockAnalyzer(
+        $analyzer = new MissingDocBlock(
             new MissingDocblockConfigDTO(
                 false,
                 false,

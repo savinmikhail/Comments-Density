@@ -7,16 +7,16 @@ namespace SavinMikhail\Tests\CommentsDensity\MissingDocblock;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\MissingDocBlock;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 
 final class MissingDocBlockAnalyzerTest extends TestCase
 {
-    private MissingDocBlockAnalyzer $analyzer;
+    private MissingDocBlock $analyzer;
 
     protected function setUp(): void
     {
-        $this->analyzer = new MissingDocBlockAnalyzer(
+        $this->analyzer = new MissingDocBlock(
             new MissingDocblockConfigDTO(
                 true,
                 true,

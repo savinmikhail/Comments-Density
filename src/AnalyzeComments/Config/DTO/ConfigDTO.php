@@ -33,6 +33,7 @@ final readonly class ConfigDTO
         $types = [
             'docBlock',
             'regular',
+            'license',
             'todo',
             'fixme',
             'missingDocBlock',

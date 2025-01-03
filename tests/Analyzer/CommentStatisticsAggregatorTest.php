@@ -11,11 +11,11 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\Comment;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\MissingDocBlock;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\OutputDTO as OutputConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
-use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 
 final class CommentStatisticsAggregatorTest extends TestCase
 {
@@ -39,7 +39,7 @@ final class CommentStatisticsAggregatorTest extends TestCase
         );
 
         $this->commentFactory = $this->createMock(CommentTypeFactory::class);
-        $this->missingDocBlock = $this->createMock(MissingDocBlockAnalyzer::class);
+        $this->missingDocBlock = $this->createMock(MissingDocBlock::class);
         $this->aggregator = new CommentStatisticsAggregator(
             $configDTO,
             $this->commentFactory,

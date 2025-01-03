@@ -13,7 +13,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\CommentVisito
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\MissingDocBlockVisitor;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
+
 use function in_array;
 
 final readonly class CommentFinder
@@ -23,7 +23,6 @@ final readonly class CommentFinder
     public function __construct(
         private CommentTypeFactory $commentFactory,
         private ConfigDTO $configDTO,
-        private MissingDocBlockAnalyzer $missingDocBlockAnalyzer,
         ?Parser $parser = null,
     ) {
         $this->parser = $parser ?? (new ParserFactory())->createForHostVersion();
@@ -36,14 +35,11 @@ final readonly class CommentFinder
     {
         $traverser = new NodeTraverser();
 
-//        $nameResolverVisitor = new NameResolver();
-//        $traverser->addVisitor($nameResolverVisitor);
-
         $missingDocBlockVisitor = new MissingDocBlockVisitor(
             $filename,
             new NodeNeedsDocblockChecker($this->configDTO->docblockConfigDTO),
         );
-        if ($this->shouldAnalyzeMissingDocBlocks()) {
+        if (in_array('missingDocBlock', $this->configDTO->getAllowedTypes(), true)) {
             $traverser->addVisitor($missingDocBlockVisitor);
         }
 
@@ -56,16 +52,5 @@ final readonly class CommentFinder
         $traverser->traverse($this->parser->parse($content));
 
         return [...$missingDocBlockVisitor->missingDocBlocks, ...$commentVisitor->comments];
-    }
-
-    private function shouldAnalyzeMissingDocBlocks(): bool
-    {
-        return
-            $this->configDTO->getAllowedTypes() === []
-            || in_array(
-                $this->missingDocBlockAnalyzer->getName(),
-                $this->configDTO->getAllowedTypes(),
-                true,
-            );
     }
 }
