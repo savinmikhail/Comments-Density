@@ -46,10 +46,10 @@ final readonly class CommentFactory
         return null;
     }
 
-    public function classifyComment(string $token): ?CommentTypeInterface
+    public function classifyComment(string $comment): ?CommentTypeInterface
     {
         foreach ($this->commentTypes as $commentType) {
-            if (! $commentType->matchesPattern($token)) {
+            if (! $commentType->matchesPattern($comment)) {
                 continue;
             }
             if (

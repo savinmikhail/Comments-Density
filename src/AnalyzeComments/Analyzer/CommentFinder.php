@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
+use PhpToken;
 use Psr\Cache\InvalidArgumentException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
@@ -34,7 +35,7 @@ final readonly class CommentFinder
      */
     public function run(string $content, string $filename): array
     {
-        $tokens = token_get_all($content);
+        $tokens = PhpToken::tokenize($content);
 
         $comments = $this->getCommentsFromFile($tokens, $filename);
         if ($this->shouldAnalyzeMissingDocBlocks()) {
@@ -57,7 +58,7 @@ final readonly class CommentFinder
     }
 
     /**
-     * @param array $tokens
+     * @param PhpToken[] $tokens
      * @param string $filename
      * @return CommentDTO[]
      */
@@ -65,18 +66,19 @@ final readonly class CommentFinder
     {
         $comments = [];
         foreach ($tokens as $token) {
-            if (!is_array($token) || !in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
+
+            if (!in_array($token->id, [T_COMMENT, T_DOC_COMMENT], true)) {
                 continue;
             }
-            $commentType = $this->commentFactory->classifyComment($token[1]);
+            $commentType = $this->commentFactory->classifyComment($token->text);
             if ($commentType) {
                 $comments[] =
                     new CommentDTO(
                         $commentType->getName(),
                         $commentType->getColor(),
                         $filename,
-                        $token[2],
-                        $token[1],
+                        $token->line,
+                        $token->text,
                     );
             }
         }
