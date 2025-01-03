@@ -16,16 +16,18 @@
     ],
     "require": {
         "php": ">=8.2",
+        "ext-tokenizer": "*",
         "composer-plugin-api": "^2.0",
+        "composer/composer": "^2.8",
         "composer/xdebug-handler": "^3.0.5",
         "nikic/php-parser": "^5.1",
         "savinmikhail/primitive_wrappers": "^1.2",
         "symfony/cache": "^7.2",
+        "symfony/cache-contracts": "^3.5",
         "symfony/console": "^6.4.10"
     },
     "require-dev": {
         "bamarni/composer-bin-plugin": "^1.8",
-        "composer/composer": "^2.7.7",
         "dg/bypass-finals": "^1.8",
         "ergebnis/composer-normalize": "^2.43",
         "friendsofphp/php-cs-fixer": "^3.62",
