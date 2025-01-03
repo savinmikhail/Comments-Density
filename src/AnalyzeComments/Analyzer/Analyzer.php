@@ -24,12 +24,12 @@ final class Analyzer
     private int $totalLinesOfCode = 0;
 
     public function __construct(
-        private readonly ConfigDTO                   $configDTO,
-        private readonly CommentTypeFactory          $commentFactory,
-        private readonly MetricsFacade               $metrics,
-        private readonly MissingDocBlockAnalyzer     $missingDocBlockAnalyzer,
-        private readonly BaselineStorageInterface    $baselineStorage,
-        private readonly CacheInterface              $cache,
+        private readonly ConfigDTO $configDTO,
+        private readonly CommentTypeFactory $commentFactory,
+        private readonly MetricsFacade $metrics,
+        private readonly MissingDocBlockAnalyzer $missingDocBlockAnalyzer,
+        private readonly BaselineStorageInterface $baselineStorage,
+        private readonly CacheInterface $cache,
         private readonly CommentStatisticsAggregator $statisticsAggregator,
     ) {}
 
@@ -56,7 +56,7 @@ final class Analyzer
 
             $fileComments = $this->cache->get(
                 $this->getCacheKey($file),
-                fn(): array => $task->run($contentExtractor->getContent(), $file->getRealPath()),
+                static fn(): array => $task->run($contentExtractor->getContent(), $file->getRealPath()),
             );
 
             $lines = (new FileTotalLinesCounter())->run($file);
@@ -79,6 +79,7 @@ final class Analyzer
     {
         $filePath = $file->getRealPath();
         $lastModified = filemtime($filePath);
+
         return md5($filePath . $lastModified);
     }
 

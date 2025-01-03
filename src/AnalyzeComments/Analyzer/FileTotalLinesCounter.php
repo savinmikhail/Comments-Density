@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
 use SplFileInfo;
 
-class FileTotalLinesCounter
+use function count;
+
+final class FileTotalLinesCounter
 {
     public function run(SplFileInfo $file): int
     {

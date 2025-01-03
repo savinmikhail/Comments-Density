@@ -14,7 +14,7 @@ use function in_array;
 use function round;
 
 /**
- * comments density score (from 0 to 1)
+ * comments density score (from 0 to 1).
  */
 final class CDS
 {
@@ -26,7 +26,7 @@ final class CDS
      * @param array<string, float> $thresholds
      */
     public function __construct(
-        private readonly array              $thresholds,
+        private readonly array $thresholds,
         private readonly CommentTypeFactory $commentFactory,
     ) {}
 

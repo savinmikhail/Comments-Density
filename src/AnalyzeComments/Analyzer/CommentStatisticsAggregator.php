@@ -18,8 +18,8 @@ use const PHP_EOL;
 final readonly class CommentStatisticsAggregator
 {
     public function __construct(
-        private ConfigDTO               $configDTO,
-        private CommentTypeFactory      $commentFactory,
+        private ConfigDTO $configDTO,
+        private CommentTypeFactory $commentFactory,
         private MissingDocBlockAnalyzer $missingDocBlock,
     ) {}
 

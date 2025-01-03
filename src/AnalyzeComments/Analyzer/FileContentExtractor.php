@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
@@ -9,10 +11,8 @@ final readonly class FileContentExtractor
 {
     public function __construct(
         private SplFileInfo $file,
-        private ConfigDTO $configDTO
-    )
-    {
-    }
+        private ConfigDTO $configDTO,
+    ) {}
 
     public function getContent(): string
     {
@@ -43,5 +43,4 @@ final readonly class FileContentExtractor
 
         return false;
     }
-
 }
