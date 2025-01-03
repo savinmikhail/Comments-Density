@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock;
 
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
@@ -19,37 +20,34 @@ final class MissingDocBlockAnalyzer
 
     private bool $exceedThreshold = false;
 
+    private readonly Parser $parser;
+
     public function __construct(
         private readonly MissingDocblockConfigDTO $docblockConfigDTO,
-    ) {}
+        ?Parser $parser = null,
+    ) {
+        $this->parser = $parser ?? (new ParserFactory())->createForHostVersion();
+    }
 
     /**
-     * Analyzes the AST of a file for missing docblocks.
-     *
-     * @param string $code the code to analyze
-     * @param string $filename the filename of the code
-     *
-     * @return CommentDTO[] the analysis results
+     * @return CommentDTO[]
      */
     public function analyze(string $code, string $filename): array
     {
-        $parser = (new ParserFactory())->createForHostVersion();
-        $ast = $parser->parse($code);
         $traverser = new NodeTraverser();
 
-        $nameResolver = new NameResolver();
-        $traverser->addVisitor($nameResolver);
-        $fqnNodes = $traverser->traverse($ast);
+        $nameResolverVisitor = new NameResolver();
+        $traverser->addVisitor($nameResolverVisitor);
 
-        $visitor = new MissingDocBlockVisitor(
+        $missingDocBlockVisitor = new MissingDocBlockVisitor(
             $filename,
             new NodeNeedsDocblockChecker($this->docblockConfigDTO),
         );
-        $traverser->removeVisitor($nameResolver);
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($fqnNodes);
+        $traverser->addVisitor($missingDocBlockVisitor);
 
-        return $visitor->missingDocBlocks;
+        $traverser->traverse($this->parser->parse($code));
+
+        return $missingDocBlockVisitor->missingDocBlocks;
     }
 
     /**
