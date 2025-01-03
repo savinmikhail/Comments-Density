@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\Visitors;
+namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\Checkers\NodeNeedsDocblockChecker;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
-use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\Visitors\Checkers\NodeNeedsDocblockChecker;
 
 final class MissingDocBlockVisitor extends NodeVisitorAbstract
 {
@@ -32,7 +32,7 @@ final class MissingDocBlockVisitor extends NodeVisitorAbstract
 
         $this->missingDocBlocks[] =
             new CommentDTO(
-                MissingDocBlockAnalyzer::NAME, // todo
+                MissingDocBlockAnalyzer::NAME,
                 MissingDocBlockAnalyzer::COLOR,
                 $this->filename,
                 $node->getLine(),

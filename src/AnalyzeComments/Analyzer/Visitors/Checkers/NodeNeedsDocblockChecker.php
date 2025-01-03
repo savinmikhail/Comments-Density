@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\Visitors\Checkers;
+namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\Checkers;
 
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;

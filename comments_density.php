@@ -24,7 +24,5 @@ return new ConfigDTO(
         'src',
     ],
     docblockConfigDTO: new MissingDocblockConfigDTO(),
-    disable: [
-        'missingDocBlock',
-    ]
+    disable: []
 );

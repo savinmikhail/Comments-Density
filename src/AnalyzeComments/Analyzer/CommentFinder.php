@@ -4,40 +4,58 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
-use PhpToken;
+use PhpParser\NodeTraverser;
+use PhpParser\Parser;
+use PhpParser\ParserFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\Checkers\NodeNeedsDocblockChecker;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\CommentVisitor;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\MissingDocBlockVisitor;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
-
-use function array_merge;
 use function in_array;
-
-use const T_COMMENT;
-use const T_DOC_COMMENT;
 
 final readonly class CommentFinder
 {
+    private Parser $parser;
+
     public function __construct(
         private CommentTypeFactory $commentFactory,
         private ConfigDTO $configDTO,
         private MissingDocBlockAnalyzer $missingDocBlockAnalyzer,
-    ) {}
+        ?Parser $parser = null,
+    ) {
+        $this->parser = $parser ?? (new ParserFactory())->createForHostVersion();
+    }
 
     /**
      * @return CommentDTO[]
      */
     public function run(string $content, string $filename): array
     {
-        $tokens = PhpToken::tokenize($content);
+        $traverser = new NodeTraverser();
 
-        $comments = $this->getCommentsFromFile($tokens, $filename);
+//        $nameResolverVisitor = new NameResolver();
+//        $traverser->addVisitor($nameResolverVisitor);
+
+        $missingDocBlockVisitor = new MissingDocBlockVisitor(
+            $filename,
+            new NodeNeedsDocblockChecker($this->configDTO->docblockConfigDTO),
+        );
         if ($this->shouldAnalyzeMissingDocBlocks()) {
-            $missingDocBlocks = $this->missingDocBlockAnalyzer->getMissingDocblocks($content, $filename);
-            $comments = array_merge($missingDocBlocks, $comments);
+            $traverser->addVisitor($missingDocBlockVisitor);
         }
 
-        return $comments;
+        $commentVisitor = new CommentVisitor(
+            $filename,
+            $this->commentFactory,
+        );
+        $traverser->addVisitor($commentVisitor);
+
+        $traverser->traverse($this->parser->parse($content));
+
+        return [...$missingDocBlockVisitor->missingDocBlocks, ...$commentVisitor->comments];
     }
 
     private function shouldAnalyzeMissingDocBlocks(): bool
@@ -49,32 +67,5 @@ final readonly class CommentFinder
                 $this->configDTO->getAllowedTypes(),
                 true,
             );
-    }
-
-    /**
-     * @param PhpToken[] $tokens
-     * @return CommentDTO[]
-     */
-    private function getCommentsFromFile(array $tokens, string $filename): array
-    {
-        $comments = [];
-        foreach ($tokens as $token) {
-            if ($token->is([T_COMMENT, T_DOC_COMMENT])) {
-                continue;
-            }
-            $commentType = $this->commentFactory->classifyComment($token->text);
-            if ($commentType) {
-                $comments[] =
-                    new CommentDTO(
-                        $commentType->getName(),
-                        $commentType->getColor(),
-                        $filename,
-                        $token->line,
-                        $token->text,
-                    );
-            }
-        }
-
-        return $comments;
     }
 }
