@@ -17,7 +17,7 @@ final readonly class HtmlFormatter implements FormatterInterface
 {
     public function __construct(private string $reportPath) {}
 
-    public function report(Report $dto): void
+    public function report(Report $report): void
     {
         $html = "<html><head><meta charset='UTF-8'><title>Comment Density Report</title>";
         $html .= '<style>
@@ -27,9 +27,9 @@ final readonly class HtmlFormatter implements FormatterInterface
             th { background-color: #333; }
             td { background-color: #444; }
             </style></head><body>';
-        $html .= $this->generateHeader($dto);
-        $html .= $this->generateCommentStatisticsTable($dto);
-        $html .= $this->generateDetailedCommentsTable($dto);
+        $html .= $this->generateHeader($report);
+        $html .= $this->generateCommentStatisticsTable($report);
+        $html .= $this->generateDetailedCommentsTable($report);
         $html .= '</body></html>';
 
         file_put_contents($this->reportPath, $html);

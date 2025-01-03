@@ -8,5 +8,5 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 
 interface FormatterInterface
 {
-    public function report(Report $dto): void;
+    public function report(Report $report): void;
 }

@@ -10,6 +10,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStat
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\Filter\ViolatingCommentsOnlyFilter;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -19,16 +20,17 @@ final readonly class ConsoleFormatter implements FormatterInterface
 {
     public function __construct(
         private OutputInterface $output,
+        private ViolatingCommentsOnlyFilter $violatingCommentsOnlyFilter = new ViolatingCommentsOnlyFilter(),
     ) {}
 
-    public function report(Report $dto): void
+    public function report(Report $report): void
     {
-        $this->printDetailedComments($dto->comments);
-        $this->printTable($dto->commentsStatistics);
-        $this->printComToLoc($dto->comToLocDTO);
-        $this->printCDS($dto->cdsDTO);
-        $this->printFilesAnalyzed($dto->filesAnalyzed);
-        $this->printPerformanceMetrics($dto->performanceDTO);
+        $this->printDetailedComments($this->violatingCommentsOnlyFilter->filter($report));
+        $this->printTable($report->commentsStatistics);
+        $this->printComToLoc($report->comToLocDTO);
+        $this->printCDS($report->cdsDTO);
+        $this->printFilesAnalyzed($report->filesAnalyzed);
+        $this->printPerformanceMetrics($report->performanceDTO);
     }
 
     private function printFilesAnalyzed(int $filesAnalyzed): void

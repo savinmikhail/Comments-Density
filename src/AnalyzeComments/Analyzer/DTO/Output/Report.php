@@ -8,9 +8,9 @@ final readonly class Report
 {
     public function __construct(
         public int $filesAnalyzed,
-        /** @var array<array-key, CommentStatisticsDTO> */
+        /** @var CommentStatisticsDTO[] */
         public array $commentsStatistics,
-        /** @var array<array-key, CommentDTO> */
+        /** @var CommentDTO[] */
         public array $comments,
         public PerformanceMetricsDTO $performanceDTO,
         public ComToLocDTO $comToLocDTO,
