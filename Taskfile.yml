@@ -49,3 +49,25 @@ tasks:
   composer-audit: 'composer audit {{.CLI_ARGS}}'
 
   infection: 'vendor/bin/infection'
+
+  composer-check-require:
+    deps: [install]
+    cmd: 'vendor/bin/composer-require-checker check {{.CLI_ARGS}}'
+
+  composer-check-unused:
+    deps: [install]
+    cmd: 'vendor/bin/composer-unused {{.CLI_ARGS}}'
+
+  check:
+    cmds:
+      - task: lint
+      - task: psalm
+      - task: rector
+      - task: deptrac-directories
+      - task: test
+      - task: infection
+      - task: composer-validate
+      - task: composer-audit
+      - task: composer-normalize
+      - task: composer-check-require
+      - task: composer-check-unused
