@@ -20,7 +20,9 @@ use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
 final class CommentStatisticsAggregatorTest extends TestCase
 {
     private MockObject $commentFactory;
+
     private MockObject $missingDocBlock;
+
     private CommentStatisticsAggregator $aggregator;
 
     protected function setUp(): void
@@ -41,11 +43,11 @@ final class CommentStatisticsAggregatorTest extends TestCase
         $this->aggregator = new CommentStatisticsAggregator(
             $configDTO,
             $this->commentFactory,
-            $this->missingDocBlock
+            $this->missingDocBlock,
         );
     }
 
-    public function testCalculateCommentStatisticsReturnsExpectedResult()
+    public function testCalculateCommentStatisticsReturnsExpectedResult(): void
     {
         $comments = [
             new CommentDTO(
@@ -53,14 +55,14 @@ final class CommentStatisticsAggregatorTest extends TestCase
                 'red',
                 'file.php',
                 2,
-                'Missing @throws tag'
+                'Missing @throws tag',
             ),
             new CommentDTO(
                 'missingDocblock',
                 'red',
                 'file.php',
                 5,
-                'Missing @throws tag'
+                'Missing @throws tag',
             ),
             new CommentDTO(
                 'regular',
@@ -91,10 +93,10 @@ final class CommentStatisticsAggregatorTest extends TestCase
 
         $result = $this->aggregator->calculateCommentStatistics($comments);
 
-        $this->assertEquals($expectedStatistics, $result);
+        self::assertEquals($expectedStatistics, $result);
     }
 
-    public function testCalculateCommentStatisticsWithMissingDocBlock()
+    public function testCalculateCommentStatisticsWithMissingDocBlock(): void
     {
         $comments = [
             new CommentDTO(
@@ -102,7 +104,7 @@ final class CommentStatisticsAggregatorTest extends TestCase
                 'red',
                 'file.php',
                 2,
-                'Missing @throws tag'
+                'Missing @throws tag',
             ),
         ];
 
@@ -116,7 +118,7 @@ final class CommentStatisticsAggregatorTest extends TestCase
 
         $result = $this->aggregator->calculateCommentStatistics($comments);
 
-        $this->assertEquals($expectedStatistics, $result);
+        self::assertEquals($expectedStatistics, $result);
     }
 
     public function testCalculateCommentStatisticsThrowsExceptionForUnknownType(): void

@@ -6,13 +6,13 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
 use ArrayAccess;
 
-class UserArray implements ArrayAccess
+final class UserArray implements ArrayAccess
 {
     private array $container = [];
 
     public function offsetSet($offset, $value): void
     {
-        if (is_null($offset)) {
+        if ($offset === null) {
             $this->container[] = $value;
         } else {
             $this->container[$offset] = $value;

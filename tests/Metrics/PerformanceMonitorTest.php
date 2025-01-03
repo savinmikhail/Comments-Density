@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity\Metrics;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\Metrics\ResourceUtilization;
 
@@ -13,19 +14,19 @@ final class PerformanceMonitorTest extends TestCase
     public function testStart(): void
     {
         $performanceMonitor = new ResourceUtilization();
-        $reflection = new \ReflectionClass($performanceMonitor);
+        $reflection = new ReflectionClass($performanceMonitor);
         $startTimeProperty = $reflection->getProperty('startTime');
         $startTimeProperty->setAccessible(true);
 
         $performanceMonitor->start();
 
-        $this->assertNotNull($startTimeProperty->getValue($performanceMonitor));
+        self::assertNotNull($startTimeProperty->getValue($performanceMonitor));
     }
 
     public function testStop(): void
     {
         $performanceMonitor = new ResourceUtilization();
-        $reflection = new \ReflectionClass($performanceMonitor);
+        $reflection = new ReflectionClass($performanceMonitor);
         $endTimeProperty = $reflection->getProperty('endTime');
         $endTimeProperty->setAccessible(true);
         $peakMemoryUsageProperty = $reflection->getProperty('peakMemoryUsage');
@@ -35,8 +36,8 @@ final class PerformanceMonitorTest extends TestCase
         usleep(50000);
         $performanceMonitor->stop();
 
-        $this->assertNotNull($endTimeProperty->getValue($performanceMonitor));
-        $this->assertNotNull($peakMemoryUsageProperty->getValue($performanceMonitor));
+        self::assertNotNull($endTimeProperty->getValue($performanceMonitor));
+        self::assertNotNull($peakMemoryUsageProperty->getValue($performanceMonitor));
     }
 
     public function testGetPerformanceMetrics(): void
@@ -48,15 +49,15 @@ final class PerformanceMonitorTest extends TestCase
 
         $performanceMetrics = $performanceMonitor->getPerformanceMetrics();
 
-        $this->assertInstanceOf(PerformanceMetricsDTO::class, $performanceMetrics);
+        self::assertInstanceOf(PerformanceMetricsDTO::class, $performanceMetrics);
 
-        $reflection = new \ReflectionClass($performanceMetrics);
+        $reflection = new ReflectionClass($performanceMetrics);
         $executionTimeProperty = $reflection->getProperty('executionTime');
         $executionTimeProperty->setAccessible(true);
         $peakMemoryUsageProperty = $reflection->getProperty('peakMemoryUsage');
         $peakMemoryUsageProperty->setAccessible(true);
 
-        $this->assertGreaterThan(0, $executionTimeProperty->getValue($performanceMetrics));
-        $this->assertGreaterThan(0, $peakMemoryUsageProperty->getValue($performanceMetrics));
+        self::assertGreaterThan(0, $executionTimeProperty->getValue($performanceMetrics));
+        self::assertGreaterThan(0, $peakMemoryUsageProperty->getValue($performanceMetrics));
     }
 }

@@ -10,7 +10,7 @@ final readonly class ConfigDTO
      * @param array<string, float> $thresholds
      * @param string[] $exclude
      * @param string[] $directories
-     * @param string[] $only
+     * @param string[] $disable
      */
     public function __construct(
         /** Limit occurrences of each comment type */

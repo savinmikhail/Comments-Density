@@ -8,12 +8,15 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
+
 use function ltrim;
+
 use const DIRECTORY_SEPARATOR;
 
 final class TreePhpBaselineStorageTest extends TestCase
 {
     private string $path;
+
     private TreePhpBaselineStorage $storage;
 
     protected function setUp(): void
@@ -34,7 +37,7 @@ final class TreePhpBaselineStorageTest extends TestCase
     {
         unlink($this->path);
         $this->storage->init($this->path);
-        $this->assertFileExists($this->path);
+        self::assertFileExists($this->path);
     }
 
     public function testSetComments(): void
@@ -50,16 +53,16 @@ final class TreePhpBaselineStorageTest extends TestCase
             'path' => [
                 'to' => [
                     'file1.php' => [
-                        10 => ['comment' => 'Test comment 1', 'type' => 'regular']
+                        10 => ['comment' => 'Test comment 1', 'type' => 'regular'],
                     ],
                     'file2.php' => [
-                        20 => ['comment' => 'Test comment 2', 'type' => 'regular']
-                    ]
-                ]
-            ]
+                        20 => ['comment' => 'Test comment 2', 'type' => 'regular'],
+                    ],
+                ],
+            ],
         ];
 
-        $this->assertEquals($expectedData, include $this->path);
+        self::assertEquals($expectedData, include $this->path);
     }
 
     public function testFilterComments(): void
@@ -70,7 +73,7 @@ final class TreePhpBaselineStorageTest extends TestCase
                 'red',
                 '/path/to/file1.php',
                 10,
-                'Test comment 1'
+                'Test comment 1',
             ),
         ];
         $this->storage->setComments($existingComments);
@@ -83,10 +86,10 @@ final class TreePhpBaselineStorageTest extends TestCase
         $filteredComments = $this->storage->filterComments($comments);
 
         $expectedFilteredComments = [
-            new CommentDTO('regular', 'red', '/path/to/file2.php', 20, 'Test comment 2')
+            new CommentDTO('regular', 'red', '/path/to/file2.php', 20, 'Test comment 2'),
         ];
 
-        $this->assertEquals($expectedFilteredComments, $filteredComments);
+        self::assertEquals($expectedFilteredComments, $filteredComments);
     }
 
     public function testAddCommentToTree(): void
@@ -104,13 +107,13 @@ final class TreePhpBaselineStorageTest extends TestCase
             'path' => [
                 'to' => [
                     'file.php' => [
-                        10 => ['comment' => 'test comment', 'type' => 'regular']
-                    ]
-                ]
-            ]
+                        10 => ['comment' => 'test comment', 'type' => 'regular'],
+                    ],
+                ],
+            ],
         ];
 
-        $this->assertEquals($expectedTree, $tree);
+        self::assertEquals($expectedTree, $tree);
     }
 
     public function testCommentExistsInTree(): void
@@ -119,10 +122,10 @@ final class TreePhpBaselineStorageTest extends TestCase
             'path' => [
                 'to' => [
                     'file.php' => [
-                        10 => ['comment' => 'Test comment', 'type' => 'regular']
-                    ]
-                ]
-            ]
+                        10 => ['comment' => 'Test comment', 'type' => 'regular'],
+                    ],
+                ],
+            ],
         ];
 
         $pathParts = explode(DIRECTORY_SEPARATOR, ltrim('/path/to/file.php', DIRECTORY_SEPARATOR));
@@ -133,6 +136,6 @@ final class TreePhpBaselineStorageTest extends TestCase
         $method->setAccessible(true);
         $result = $method->invokeArgs($this->storage, [$tree, $pathParts, $line]);
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 }

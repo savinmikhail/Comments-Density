@@ -14,7 +14,6 @@ final readonly class ClassWithMethodThatThrowsAndHasTag
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function bar(): never

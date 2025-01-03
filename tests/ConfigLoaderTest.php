@@ -6,12 +6,17 @@ namespace SavinMikhail\Tests\CommentsDensity;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use SavinMikhail\CommentsDensity\Config\ConfigLoader;
 use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
 
-class ConfigLoaderTest extends TestCase
+use function define;
+
+use const DIRECTORY_SEPARATOR;
+
+final class ConfigLoaderTest extends TestCase
 {
     private ConfigLoader $configLoader;
 
@@ -21,16 +26,7 @@ class ConfigLoaderTest extends TestCase
         $this->configLoader = new ConfigLoader();
     }
 
-    private function invokeMethod(object $object, string $methodName, array $parameters = [])
-    {
-        $reflection = new \ReflectionClass($object);
-        $method = $reflection->getMethod($methodName);
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($object, $parameters);
-    }
-
-    public function testParseConfigFileThrowsExceptionWhenFileDoesNotExist()
+    public function testParseConfigFileThrowsExceptionWhenFileDoesNotExist(): void
     {
         $this->expectException(CommentsDensityException::class);
         $this->expectExceptionMessage('Config file does not exists! Looking for non_existent_file.php');
@@ -38,74 +34,74 @@ class ConfigLoaderTest extends TestCase
         $this->invokeMethod($this->configLoader, 'parseConfigFile', ['non_existent_file.php']);
     }
 
-    public function testParseConfigFileReturnsArrayWhenFileExists()
+    public function testParseConfigFileReturnsArrayWhenFileExists(): void
     {
         vfsStream::setup('root', null, ['comments_density.php' => '<?php return ["key" => "value"];']);
         $filePath = vfsStream::url('root/comments_density.php');
 
         $config = $this->invokeMethod($this->configLoader, 'parseConfigFile', [$filePath]);
 
-        $this->assertIsArray($config);
-        $this->assertArrayHasKey('key', $config);
-        $this->assertEquals('value', $config['key']);
+        self::assertIsArray($config);
+        self::assertArrayHasKey('key', $config);
+        self::assertEquals('value', $config['key']);
     }
 
-    public function testGetOutput()
+    public function testGetOutput(): void
     {
         $config = [
             'output' => [
-                'file' => 'tuptuo.html'
-            ]
+                'file' => 'tuptuo.html',
+            ],
         ];
 
         $outputConfig = $this->invokeMethod($this->configLoader, 'getOutput', [$config]);
 
-        $this->assertStringContainsString(DIRECTORY_SEPARATOR . 'tuptuo.html', $outputConfig->file);
+        self::assertStringContainsString(DIRECTORY_SEPARATOR . 'tuptuo.html', $outputConfig->file);
     }
 
-    public function testGetOnly()
+    public function testGetOnly(): void
     {
         $config = [
-            'only' => ['fixme', 'todo']
+            'only' => ['fixme', 'todo'],
         ];
 
         $only = $this->invokeMethod($this->configLoader, 'getOnly', [$config]);
 
-        $this->assertEquals($config['only'], $only);
+        self::assertEquals($config['only'], $only);
     }
 
-    public function testGetOnlyReturnsEmptyArrayWhenNotSet()
+    public function testGetOnlyReturnsEmptyArrayWhenNotSet(): void
     {
         $config = [];
 
         $only = $this->invokeMethod($this->configLoader, 'getOnly', [$config]);
 
-        $this->assertEmpty($only);
+        self::assertEmpty($only);
     }
 
-    public function testGetThresholds()
+    public function testGetThresholds(): void
     {
         $config = [
-            'thresholds' => ['key' => 'value']
+            'thresholds' => ['key' => 'value'],
         ];
 
         $thresholds = $this->invokeMethod($this->configLoader, 'getThresholds', [$config]);
 
-        $this->assertEquals($config['thresholds'], $thresholds);
+        self::assertEquals($config['thresholds'], $thresholds);
     }
 
-    public function testGetThresholdsReturnsEmptyArrayWhenNotSet()
+    public function testGetThresholdsReturnsEmptyArrayWhenNotSet(): void
     {
         $config = [];
 
         $thresholds = $this->invokeMethod($this->configLoader, 'getThresholds', [$config]);
 
-        $this->assertEmpty($thresholds);
+        self::assertEmpty($thresholds);
     }
 
-    public function testGetConfigDto()
+    public function testGetConfigDto(): void
     {
-        $this->markTestIncomplete();
+        self::markTestIncomplete();
         $root = vfsStream::setup('root', null, [
             'dir1' => [],
             'dir2' => [],
@@ -126,7 +122,7 @@ class ConfigLoaderTest extends TestCase
                     "requireForAllMethods" => true,
                 ],
                 "use_baseline" => true,
-            ];'
+            ];',
         ]);
 
         $configFile = vfsStream::url('root/comments_density.php');
@@ -142,13 +138,13 @@ class ConfigLoaderTest extends TestCase
 
         $configDto = $configLoaderMock->getConfigDto();
 
-        $this->assertInstanceOf(ConfigDTO::class, $configDto);
+        self::assertInstanceOf(ConfigDTO::class, $configDto);
     }
 
-    public function testGetDirectoriesThrowsExceptionWhenDirectoryDoesNotExist()
+    public function testGetDirectoriesThrowsExceptionWhenDirectoryDoesNotExist(): void
     {
         $config = [
-            'directories' => ['non_existent_directory']
+            'directories' => ['non_existent_directory'],
         ];
 
         $this->expectException(CommentsDensityException::class);
@@ -157,13 +153,13 @@ class ConfigLoaderTest extends TestCase
         $this->invokeMethod($this->configLoader, 'getDirectories', [$config]);
     }
 
-    public function testGetDirectories()
+    public function testGetDirectories(): void
     {
-        $this->markTestIncomplete();
+        self::markTestIncomplete();
 
         vfsStream::setup('root', null, ['dir1' => [], 'dir2' => []]);
         $config = [
-            'directories' => ['dir1', 'dir2']
+            'directories' => ['dir1', 'dir2'],
         ];
 
         $configLoaderMock = $this->getMockBuilder(ConfigLoader::class)
@@ -175,12 +171,12 @@ class ConfigLoaderTest extends TestCase
 
         $directories = $this->invokeMethod($configLoaderMock, 'getDirectories', [$config]);
 
-        $this->assertCount(2, $directories);
+        self::assertCount(2, $directories);
     }
 
-    public function testGetProjectRoot()
+    public function testGetProjectRoot(): void
     {
-        $this->markTestIncomplete();
+        self::markTestIncomplete();
 
         $configLoaderMock = $this->getMockBuilder(ConfigLoader::class)
             ->onlyMethods(['getProjectRoot'])
@@ -191,10 +187,10 @@ class ConfigLoaderTest extends TestCase
 
         $projectRoot = $this->invokeMethod($configLoaderMock, 'getProjectRoot');
 
-        $this->assertStringEndsWith(DIRECTORY_SEPARATOR . 'tests', $projectRoot);
+        self::assertStringEndsWith(DIRECTORY_SEPARATOR . 'tests', $projectRoot);
     }
 
-    public function testGetMissingDocblockConfig()
+    public function testGetMissingDocblockConfig(): void
     {
         $config = [
             'missingDocblock' => [
@@ -205,13 +201,22 @@ class ConfigLoaderTest extends TestCase
                 'function' => true,
                 'property' => true,
                 'constant' => true,
-                'requireForAllMethods' => true
-            ]
+                'requireForAllMethods' => true,
+            ],
         ];
 
         $missingDocblockConfigDTO = $this->invokeMethod($this->configLoader, 'getMissingDocblockConfig', [$config]);
 
-        $this->assertInstanceOf(MissingDocblockConfigDTO::class, $missingDocblockConfigDTO);
-        $this->assertTrue($missingDocblockConfigDTO->class);
+        self::assertInstanceOf(MissingDocblockConfigDTO::class, $missingDocblockConfigDTO);
+        self::assertTrue($missingDocblockConfigDTO->class);
+    }
+
+    private function invokeMethod(object $object, string $methodName, array $parameters = [])
+    {
+        $reflection = new ReflectionClass($object);
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $parameters);
     }
 }

@@ -48,14 +48,14 @@ final class HtmlReporterTest extends TestCase
 
         $reporter->report($outputDTO);
 
-        $this->assertFileExists($this->reportPath);
+        self::assertFileExists($this->reportPath);
 
         $htmlContent = file_get_contents($this->reportPath);
-        $this->assertStringContainsString('<title>Comment Density Report</title>', $htmlContent);
-        $this->assertStringContainsString('<h1>Comment Density Report</h1>', $htmlContent);
-        $this->assertStringContainsString('<p><strong>Execution Time:</strong> 123 ms</p>', $htmlContent);
-        $this->assertStringContainsString('<p><strong>CDS:</strong> 0.45</p>', $htmlContent);
-        $this->assertStringContainsString('<td style=\'color: #000000;\'>docblock</td>', $htmlContent);
-        $this->assertStringContainsString('<td>This is a docblock comment</td>', $htmlContent);
+        self::assertStringContainsString('<title>Comment Density Report</title>', $htmlContent);
+        self::assertStringContainsString('<h1>Comment Density Report</h1>', $htmlContent);
+        self::assertStringContainsString('<p><strong>Execution Time:</strong> 123 ms</p>', $htmlContent);
+        self::assertStringContainsString('<p><strong>CDS:</strong> 0.45</p>', $htmlContent);
+        self::assertStringContainsString('<td style=\'color: #000000;\'>docblock</td>', $htmlContent);
+        self::assertStringContainsString('<td>This is a docblock comment</td>', $htmlContent);
     }
 }

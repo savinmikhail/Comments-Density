@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\Baseline\Storage;
 
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+
 use const DIRECTORY_SEPARATOR;
 
 final class TreePhpBaselineStorage implements BaselineStorageInterface

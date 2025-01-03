@@ -12,6 +12,7 @@ use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\OutputDTO;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function array_map;
 
 final readonly class ConsoleReporter implements ReporterInterface

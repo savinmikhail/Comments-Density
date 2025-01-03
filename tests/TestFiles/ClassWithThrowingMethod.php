@@ -9,7 +9,6 @@ use Exception;
 final readonly class ClassWithThrowingMethod
 {
     /**
-     * @return void
      * @throws Exception
      */
     public function bar(): never

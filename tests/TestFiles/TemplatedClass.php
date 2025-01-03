@@ -9,7 +9,5 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
  */
 final readonly class TemplatedClass
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 }

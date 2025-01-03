@@ -6,6 +6,7 @@ namespace SavinMikhail\Tests\CommentsDensity\Comments;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use SavinMikhail\CommentsDensity\Comments\Comment;
 use SavinMikhail\CommentsDensity\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
@@ -14,14 +15,14 @@ use SavinMikhail\CommentsDensity\Comments\LicenseComment;
 use SavinMikhail\CommentsDensity\Comments\RegularComment;
 use SavinMikhail\CommentsDensity\Comments\TodoComment;
 
-class CommentTest extends TestCase
+final class CommentTest extends TestCase
 {
     public static function regularCommentRegexDataProvider(): array
     {
         return [
-            ['//dd()',  RegularComment::class],
-            ['#something',  RegularComment::class],
-            ['/* bla bal */',  RegularComment::class],
+            ['//dd()', RegularComment::class],
+            ['#something', RegularComment::class],
+            ['/* bla bal */', RegularComment::class],
             ['/** @var string $name */', DocBlockComment::class],
             ['//todo: asdf', TodoComment::class],
             ['// TODO asdf', TodoComment::class],
@@ -29,14 +30,6 @@ class CommentTest extends TestCase
             ['// FIXME asdf', FixMeComment::class],
             ['/** License MIT */', LicenseComment::class],
         ];
-    }
-
-    #[DataProvider('regularCommentRegexDataProvider')]
-    public function testRegularCommentRegex(string $comment, string $class): void
-    {
-        $factory = new CommentFactory();
-        $commentType = $factory->classifyComment($comment);
-        $this->assertTrue($commentType instanceof $class);
     }
 
     public static function isWithinThresholdDataProvider(): array
@@ -55,15 +48,6 @@ class CommentTest extends TestCase
         ];
     }
 
-    #[DataProvider('isWithinThresholdDataProvider')]
-    public function testIsWithinThreshold(string $class, int $count, array $thresholds, bool $expected): void
-    {
-        /** @var Comment $comment */
-        $comment = new $class();
-        $result = $this->invokeMethod($comment, 'isWithinThreshold', [$count, $thresholds]);
-        $this->assertEquals($expected, $result);
-    }
-
     public static function isExceededThresholdDataProvider(): array
     {
         return [
@@ -80,15 +64,6 @@ class CommentTest extends TestCase
         ];
     }
 
-    #[DataProvider('isExceededThresholdDataProvider')]
-    public function testIsExceededThreshold(string $class, int $count, array $thresholds, bool $expected): void
-    {
-        /** @var Comment $comment */
-        $comment = new $class();
-        $this->invokeMethod($comment, 'getStatColor', [$count, $thresholds]);
-        $this->assertEquals($expected, $comment->hasExceededThreshold());
-    }
-
     public static function getStatColorDataProvider(): array
     {
         return [
@@ -98,29 +73,55 @@ class CommentTest extends TestCase
         ];
     }
 
+    #[DataProvider('regularCommentRegexDataProvider')]
+    public function testRegularCommentRegex(string $comment, string $class): void
+    {
+        $factory = new CommentFactory();
+        $commentType = $factory->classifyComment($comment);
+        self::assertInstanceOf($class, $commentType);
+    }
+
+    #[DataProvider('isWithinThresholdDataProvider')]
+    public function testIsWithinThreshold(string $class, int $count, array $thresholds, bool $expected): void
+    {
+        /** @var Comment $comment */
+        $comment = new $class();
+        $result = $this->invokeMethod($comment, 'isWithinThreshold', [$count, $thresholds]);
+        self::assertEquals($expected, $result);
+    }
+
+    #[DataProvider('isExceededThresholdDataProvider')]
+    public function testIsExceededThreshold(string $class, int $count, array $thresholds, bool $expected): void
+    {
+        /** @var Comment $comment */
+        $comment = new $class();
+        $this->invokeMethod($comment, 'getStatColor', [$count, $thresholds]);
+        self::assertEquals($expected, $comment->hasExceededThreshold());
+    }
+
     #[DataProvider('getStatColorDataProvider')]
     public function testGetStatColor(string $class, int $count, array $thresholds, string $expectedColor): void
     {
         $comment = new $class();
         $color = $comment->getStatColor($count, $thresholds);
-        $this->assertEquals($expectedColor, $color);
+        self::assertEquals($expectedColor, $color);
     }
 
     public function testToString(): void
     {
         $comment = new RegularComment();
-        $this->assertEquals('regular', (string) $comment);
+        self::assertEquals('regular', (string) $comment);
 
         $comment = new DocBlockComment();
-        $this->assertEquals('docBlock', (string) $comment);
+        self::assertEquals('docBlock', (string) $comment);
     }
 
     /**
-     * Helper method to invoke protected/private methods
+     * Helper method to invoke protected/private methods.
      */
     private function invokeMethod(object $object, string $methodName, array $parameters = [])
     {
-        $reflection = new \ReflectionClass($object);
+        $reflection = new ReflectionClass($object);
         $method = $reflection->getMethod($methodName);
         $method->setAccessible(true);
 

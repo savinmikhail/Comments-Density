@@ -6,9 +6,11 @@ namespace SavinMikhail\CommentsDensity\Config;
 
 use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
+
 use function defined;
 use function dirname;
 use function file_exists;
+
 use const DIRECTORY_SEPARATOR;
 
 final readonly class ConfigLoader

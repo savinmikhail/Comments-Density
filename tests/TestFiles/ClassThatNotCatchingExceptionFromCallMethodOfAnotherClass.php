@@ -11,10 +11,10 @@ final readonly class ClassThatNotCatchingExceptionFromCallMethodOfAnotherClass
     public function baz(): void
     {
         $bar = new ClassWithThrowingMethod();
+
         try {
             $bar->bar();
         } catch (Exception) {
-
         }
     }
 }

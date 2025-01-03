@@ -19,6 +19,7 @@ use function file_get_contents;
 use function in_array;
 use function is_array;
 use function token_get_all;
+
 use const T_COMMENT;
 use const T_DOC_COMMENT;
 
@@ -48,9 +49,7 @@ final readonly class AnalyzeFileTask
 
         $fileComments = $this->cache->get(
             $cacheKey,
-            function () use ($filePath): iterable {
-                return $this->analyzeFile($filePath);
-            }
+            fn(): iterable => $this->analyzeFile($filePath),
         );
 
         $totalLinesOfCode = $this->countTotalLines($file->getRealPath());
@@ -93,7 +92,7 @@ final readonly class AnalyzeFileTask
             || in_array(
                 $this->missingDocBlock->getName(),
                 $this->configDTO->getAllowedTypes(),
-                true
+                true,
             );
     }
 

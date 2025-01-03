@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity\Commands;
 
 use FilesystemIterator;
+use Generator;
 use PHPUnit\Framework\TestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
@@ -16,8 +19,10 @@ use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SavinMikhail\CommentsDensity\Commands\BaselineCommand;
 use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
+use SplFileInfo;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+
 use function ini_set;
 use function is_dir;
 use function mkdir;
@@ -35,39 +40,13 @@ final class BaselineCommandTest extends TestCase
 
         // Create a temporary cache directory for each test
         $this->tempCacheDir = sys_get_temp_dir() . '/cache_' . uniqid();
-        mkdir($this->tempCacheDir, 0777, true);
+        mkdir($this->tempCacheDir, 0o777, true);
     }
 
     protected function tearDown(): void
     {
         // Clean up the temporary cache directory after each test
         $this->removeDirectory($this->tempCacheDir);
-    }
-
-    private function removeDirectory(string $dir): void
-    {
-        if (!is_dir($dir)) {
-            return;
-        }
-
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($files as $fileinfo) {
-            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
-            $todo($fileinfo->getRealPath());
-        }
-
-        rmdir($dir);
-    }
-
-    private function createGenerator(array $items): \Generator
-    {
-        foreach ($items as $item) {
-            yield $item;
-        }
     }
 
     public function testExecute(): void
@@ -80,7 +59,7 @@ final class BaselineCommandTest extends TestCase
             true,
             true,
             true,
-            true
+            true,
         );
 
         $configDto = $this->createMock(ConfigDTO::class);
@@ -104,7 +83,7 @@ final class BaselineCommandTest extends TestCase
             new PerformanceMetricsDTO(0, 0),
             new ComToLocDTO(0, 'red'),
             new CdsDTO(0, 'red'),
-            false
+            false,
         );
         $analyzer
             ->method('analyze')
@@ -123,7 +102,7 @@ final class BaselineCommandTest extends TestCase
         $command->method('getConfigDto')->willReturn($configDto);
         $command
             ->method('getFilesFromDirectories')
-            ->willReturn($this->createGenerator([new \SplFileInfo(__FILE__)]));
+            ->willReturn($this->createGenerator([new SplFileInfo(__FILE__)]));
 
         $application = new Application();
         $application->add($command);
@@ -132,7 +111,33 @@ final class BaselineCommandTest extends TestCase
 
         $result = $commandTester->execute([], ['interactive' => false]);
 
-        $this->assertSame(0, $result);
-        $this->assertStringContainsString('Baseline generated successfully!', $commandTester->getDisplay());
+        self::assertSame(0, $result);
+        self::assertStringContainsString('Baseline generated successfully!', $commandTester->getDisplay());
+    }
+
+    private function removeDirectory(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST,
+        );
+
+        foreach ($files as $fileinfo) {
+            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+            $todo($fileinfo->getRealPath());
+        }
+
+        rmdir($dir);
+    }
+
+    private function createGenerator(array $items): Generator
+    {
+        foreach ($items as $item) {
+            yield $item;
+        }
     }
 }

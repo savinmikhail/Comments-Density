@@ -17,8 +17,8 @@ final class ComToLocTest extends TestCase
 
         $comToLocDTO = $comToLoc->prepareComToLoc($commentStat, 2);
 
-        $this->assertEquals($comToLocDTO->comToLoc, 1);
-        $this->assertEquals($comToLocDTO->color, 'green');
+        self::assertEquals($comToLocDTO->comToLoc, 1);
+        self::assertEquals($comToLocDTO->color, 'green');
     }
 
     public function testPrepareComToLocWithoutThreshold(): void
@@ -27,8 +27,8 @@ final class ComToLocTest extends TestCase
         $commentStat = [new CommentStatisticsDTO('red', 'missingDocblock', 2, 'red', 3)];
         $comToLocDTO = $comToLoc->prepareComToLoc($commentStat, 2);
 
-        $this->assertEquals($comToLocDTO->comToLoc, 1);
-        $this->assertEquals($comToLocDTO->color, 'white');
+        self::assertEquals($comToLocDTO->comToLoc, 1);
+        self::assertEquals($comToLocDTO->color, 'white');
     }
 
     public function testPrepareComToLocColorWhenExceedThreshold(): void
@@ -38,8 +38,8 @@ final class ComToLocTest extends TestCase
 
         $comToLocDTO = $comToLoc->prepareComToLoc($commentStat, 2);
 
-        $this->assertEquals($comToLocDTO->comToLoc, 0.5);
-        $this->assertEquals($comToLocDTO->color, 'red');
+        self::assertEquals($comToLocDTO->comToLoc, 0.5);
+        self::assertEquals($comToLocDTO->color, 'red');
     }
 
     public function testPrepareComToLocWithZeroLinesOfCode(): void
@@ -49,8 +49,8 @@ final class ComToLocTest extends TestCase
 
         $comToLocDTO = $comToLoc->prepareComToLoc($commentStat, 0);
 
-        $this->assertEquals($comToLocDTO->comToLoc, 0);
-        $this->assertEquals($comToLocDTO->color, 'red');
+        self::assertEquals($comToLocDTO->comToLoc, 0);
+        self::assertEquals($comToLocDTO->color, 'red');
     }
 
     public function testPrepareComToLocExceedThreshold(): void
@@ -60,6 +60,6 @@ final class ComToLocTest extends TestCase
 
         $comToLoc->prepareComToLoc($commentStat, 2);
         $exceededThreshold = $comToLoc->hasExceededThreshold();
-        $this->assertEquals(true, $exceededThreshold);
+        self::assertTrue($exceededThreshold);
     }
 }

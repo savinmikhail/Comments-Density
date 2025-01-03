@@ -6,13 +6,11 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
 use Iterator;
 
-class UserCollection implements Iterator
+final class UserCollection implements Iterator
 {
     private int $position = 0;
 
-    public function __construct(private array $users)
-    {
-    }
+    public function __construct(private array $users) {}
 
     public function current(): User
     {
@@ -40,7 +38,4 @@ class UserCollection implements Iterator
     }
 }
 
-class User
-{
-
-}
+final class User {}

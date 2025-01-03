@@ -35,7 +35,7 @@ final class AnalyzerFactoryTest extends TestCase
         $analyzer = $factory->getAnalyzer($configDto, $output, $baselineStorage);
 
         // Assert that the returned object is an instance of Analyzer
-        $this->assertInstanceOf(Analyzer::class, $analyzer);
+        self::assertInstanceOf(Analyzer::class, $analyzer);
 
         // Use reflection to access the private property 'cache'
         $reflection = new ReflectionClass($analyzer);
@@ -43,6 +43,6 @@ final class AnalyzerFactoryTest extends TestCase
         $cacheProperty->setAccessible(true);
 
         // Assert that the Cache instance is set correctly in the Analyzer
-        $this->assertInstanceOf(Cache::class, $cacheProperty->getValue($analyzer));
+        self::assertInstanceOf(Cache::class, $cacheProperty->getValue($analyzer));
     }
 }

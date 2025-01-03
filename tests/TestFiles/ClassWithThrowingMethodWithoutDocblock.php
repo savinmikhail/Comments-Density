@@ -8,9 +8,6 @@ use Exception;
 
 final readonly class ClassWithThrowingMethodWithoutDocblock
 {
-    /**
-     * @return void
-     */
     public function bar(): never
     {
         throw new Exception();

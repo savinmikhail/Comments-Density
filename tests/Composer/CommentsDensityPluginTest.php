@@ -9,11 +9,12 @@ use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Mockery;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use SavinMikhail\CommentsDensity\Composer\CommentsDensityPlugin;
 
 final class CommentsDensityPluginTest extends TestCase
 {
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         Mockery::close();
     }
@@ -26,7 +27,7 @@ final class CommentsDensityPluginTest extends TestCase
         $plugin = new CommentsDensityPlugin();
         $plugin->activate($composer, $io);
 
-        $this->assertTrue(true); // No activation logic to test
+        self::assertTrue(true); // No activation logic to test
     }
 
     public function testDeactivate(): void
@@ -37,7 +38,7 @@ final class CommentsDensityPluginTest extends TestCase
         $plugin = new CommentsDensityPlugin();
         $plugin->deactivate($composer, $io);
 
-        $this->assertTrue(true); // No deactivation logic to test
+        self::assertTrue(true); // No deactivation logic to test
     }
 
     public function testUninstall(): void
@@ -48,7 +49,7 @@ final class CommentsDensityPluginTest extends TestCase
         $plugin = new CommentsDensityPlugin();
         $plugin->uninstall($composer, $io);
 
-        $this->assertTrue(true); // No uninstallation logic to test
+        self::assertTrue(true); // No uninstallation logic to test
     }
 
     public function testGetSubscribedEvents(): void
@@ -59,7 +60,7 @@ final class CommentsDensityPluginTest extends TestCase
             ScriptEvents::POST_UPDATE_CMD => 'promptForSetup',
         ];
 
-        $this->assertSame($expectedEvents, $events);
+        self::assertSame($expectedEvents, $events);
     }
 
     public function testPromptForSetup(): void
@@ -76,10 +77,9 @@ final class CommentsDensityPluginTest extends TestCase
         $event->shouldReceive('getIO')->andReturn($io);
 
         CommentsDensityPlugin::promptForSetup($event);
-        //mockery assertions aint being counted by coverage
-        $this->assertTrue(true);
+        // mockery assertions aint being counted by coverage
+        self::assertTrue(true);
     }
-
 
     public function testPromptForConfigFile(): void
     {
@@ -91,11 +91,11 @@ final class CommentsDensityPluginTest extends TestCase
 
         $plugin = new CommentsDensityPlugin();
 
-        $reflection = new \ReflectionClass($plugin);
+        $reflection = new ReflectionClass($plugin);
         $method = $reflection->getMethod('promptForConfigFile');
         $method->setAccessible(true);
         $method->invoke($plugin, $io);
 
-        $this->assertFileExists('comments_density.php');
+        self::assertFileExists('comments_density.php');
     }
 }

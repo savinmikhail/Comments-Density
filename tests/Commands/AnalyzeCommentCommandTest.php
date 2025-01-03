@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace SavinMikhail\Tests\CommentsDensity\Commands;
 
 use FilesystemIterator;
+use Generator;
 use PHPUnit\Framework\TestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
@@ -19,10 +22,11 @@ use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\Config\DTO\OutputDTO as InputOutputDTO;
 use SavinMikhail\CommentsDensity\Reporters\ConsoleReporter;
 use SavinMikhail\CommentsDensity\Reporters\ReporterFactory;
+use SplFileInfo;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class AnalyzeCommentCommandTest extends TestCase
+final class AnalyzeCommentCommandTest extends TestCase
 {
     private string $tempCacheDir;
 
@@ -32,32 +36,13 @@ class AnalyzeCommentCommandTest extends TestCase
 
         // Create a temporary cache directory for each test
         $this->tempCacheDir = sys_get_temp_dir() . '/cache_' . uniqid();
-        mkdir($this->tempCacheDir, 0777, true);
+        mkdir($this->tempCacheDir, 0o777, true);
     }
 
     protected function tearDown(): void
     {
         // Clean up the temporary cache directory after each test
         $this->removeDirectory($this->tempCacheDir);
-    }
-
-    private function removeDirectory(string $dir): void
-    {
-        if (!is_dir($dir)) {
-            return;
-        }
-
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($files as $fileinfo) {
-            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
-            $todo($fileinfo->getRealPath());
-        }
-
-        rmdir($dir);
     }
 
     public function testExecuteSuccess(): void
@@ -70,7 +55,7 @@ class AnalyzeCommentCommandTest extends TestCase
             true,
             true,
             true,
-            true
+            true,
         );
 
         $configDto = $this->createMock(ConfigDTO::class);
@@ -94,7 +79,7 @@ class AnalyzeCommentCommandTest extends TestCase
             new PerformanceMetricsDTO(0, 0),
             new ComToLocDTO(0, 'red'),
             new CdsDTO(0, 'red'),
-            false
+            false,
         );
         $analyzer
             ->method('analyze')
@@ -106,7 +91,7 @@ class AnalyzeCommentCommandTest extends TestCase
         $reporter = $this->createMock(ConsoleReporter::class);
         $reporter
             ->method('report')
-            ->with($this->equalTo($outputDTO));
+            ->with(self::equalTo($outputDTO));
 
         $reporterFactory = $this->createMock(ReporterFactory::class);
         $reporterFactory->method('createReporter')->willReturn($reporter);
@@ -118,7 +103,7 @@ class AnalyzeCommentCommandTest extends TestCase
         $command->method('getConfigDto')->willReturn($configDto);
         $command
             ->method('getFilesFromDirectories')
-            ->willReturn($this->createGenerator([new \SplFileInfo(__FILE__)]));
+            ->willReturn($this->createGenerator([new SplFileInfo(__FILE__)]));
 
         $application = new Application();
         $application->add($command);
@@ -127,8 +112,8 @@ class AnalyzeCommentCommandTest extends TestCase
 
         $result = $commandTester->execute([], ['interactive' => false]);
 
-        $this->assertSame(0, $result);
-        $this->assertStringContainsString('Comment thresholds are passed!', $commandTester->getDisplay());
+        self::assertSame(0, $result);
+        self::assertStringContainsString('Comment thresholds are passed!', $commandTester->getDisplay());
     }
 
     public function testExecuteFailure(): void
@@ -141,7 +126,7 @@ class AnalyzeCommentCommandTest extends TestCase
             true,
             true,
             true,
-            true
+            true,
         );
         $configDto = $this->createMock(ConfigDTO::class);
         $configDto->docblockConfigDTO = $docblockConfigDTO;
@@ -163,7 +148,7 @@ class AnalyzeCommentCommandTest extends TestCase
             new PerformanceMetricsDTO(0, 0),
             new ComToLocDTO(0, 'red'),
             new CdsDTO(0, 'red'),
-            true
+            true,
         );
 
         $analyzer = $this->createMock(Analyzer::class);
@@ -177,7 +162,7 @@ class AnalyzeCommentCommandTest extends TestCase
         $reporter = $this->createMock(ConsoleReporter::class);
         $reporter
             ->method('report')
-            ->with($this->equalTo($outputDTO));
+            ->with(self::equalTo($outputDTO));
 
         $reporterFactory = $this->createMock(ReporterFactory::class);
         $reporterFactory->method('createReporter')->willReturn($reporter);
@@ -187,7 +172,7 @@ class AnalyzeCommentCommandTest extends TestCase
             ->getMock();
 
         $command->method('getConfigDto')->willReturn($configDto);
-        $command->method('getFilesFromDirectories')->willReturn($this->createGenerator([new \SplFileInfo(__FILE__)]));
+        $command->method('getFilesFromDirectories')->willReturn($this->createGenerator([new SplFileInfo(__FILE__)]));
 
         $application = new Application();
         $application->add($command);
@@ -196,11 +181,30 @@ class AnalyzeCommentCommandTest extends TestCase
 
         $result = $commandTester->execute([], ['interactive' => false]);
 
-        $this->assertSame(1, $result);
-        $this->assertStringContainsString('Comment thresholds were exceeded!', $commandTester->getDisplay());
+        self::assertSame(1, $result);
+        self::assertStringContainsString('Comment thresholds were exceeded!', $commandTester->getDisplay());
     }
 
-    private function createGenerator(array $items): \Generator
+    private function removeDirectory(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST,
+        );
+
+        foreach ($files as $fileinfo) {
+            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+            $todo($fileinfo->getRealPath());
+        }
+
+        rmdir($dir);
+    }
+
+    private function createGenerator(array $items): Generator
     {
         foreach ($items as $item) {
             yield $item;

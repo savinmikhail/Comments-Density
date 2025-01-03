@@ -4,7 +4,7 @@ tasks:
     cmd: 'vendor/bin/phpunit --coverage-html coverage {{.CLI_ARGS}}'
 
   cs-fix:
-    cmd: 'vendor/bin/php-cs-fixer fix --diff --verbose --stop-on-violation {{.CLI_ARGS}}'
+    cmd: 'vendor/bin/php-cs-fixer fix --diff --verbose {{.CLI_ARGS}}'
 
   cs:
     cmds:
@@ -60,8 +60,8 @@ tasks:
 
   check:
     cmds:
-      - task: lint
-      - task: psalm
+      - task: cs
+      - task: stan
       - task: rector
       - task: deptrac-directories
       - task: test
