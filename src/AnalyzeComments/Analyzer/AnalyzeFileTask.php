@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
+use Psr\Cache\InvalidArgumentException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
@@ -29,11 +30,11 @@ final readonly class AnalyzeFileTask
         private MissingDocBlockAnalyzer $missingDocBlock,
         private CommentFactory $commentFactory,
         private ConfigDTO $configDTO,
-        private OutputInterface $output,
     ) {}
 
     /**
      * @return array{'lines': int, 'comments': array<array-key, array<string, int>>}
+     * @throws InvalidArgumentException
      */
     public function run(SplFileInfo $file): array
     {
@@ -69,8 +70,6 @@ final readonly class AnalyzeFileTask
      */
     private function analyzeFile(string $filename): array
     {
-        $this->output->writeln("<info>Analyzing {$filename}</info>");
-
         $code = file_get_contents($filename);
         $tokens = token_get_all($code);
 

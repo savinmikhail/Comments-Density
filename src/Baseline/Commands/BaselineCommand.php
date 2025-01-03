@@ -41,7 +41,7 @@ final class BaselineCommand extends Command
         $configDto = $this->configLoader->getConfigDto();
         $files = $this->getFilesFromDirectories($configDto->directories);
 
-        $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $output, $this->storage);
+        $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $this->storage);
         $report = $analyzer->analyze($files);
 
         $this->storage->setComments($report->comments); // todo create some baseline reporter

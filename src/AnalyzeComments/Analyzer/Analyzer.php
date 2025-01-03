@@ -9,6 +9,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStat
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
@@ -26,7 +27,6 @@ final class Analyzer
         private readonly CommentFactory $commentFactory,
         private readonly MissingDocBlockAnalyzer $missingDocBlock,
         private readonly MetricsFacade $metrics,
-        private readonly OutputInterface $output,
         private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
         private readonly BaselineStorageInterface $baselineStorage,
         private readonly CacheInterface $cache,
@@ -35,6 +35,7 @@ final class Analyzer
 
     /**
      * @param SplFileInfo[] $files
+     * @throws CommentsDensityException
      */
     public function analyze(iterable $files): Report
     {
@@ -49,7 +50,6 @@ final class Analyzer
                 $this->missingDocBlock,
                 $this->commentFactory,
                 $this->configDTO,
-                $this->output,
             );
 
             $response = $task->run($file);

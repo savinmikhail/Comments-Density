@@ -19,7 +19,6 @@ final readonly class AnalyzerFactory
 {
     public function getAnalyzer(
         ConfigDTO $configDto,
-        OutputInterface $output,
         BaselineStorageInterface $baselineStorage,
     ): Analyzer {
         $commentFactory = new CommentFactory($configDto->getAllowedTypes());
@@ -37,7 +36,6 @@ final readonly class AnalyzerFactory
             $commentFactory,
             $missingDocBlock,
             $metrics,
-            $output,
             $missingDocBlock,
             $baselineStorage,
             new FilesystemAdapter(directory: $configDto->cacheDir),

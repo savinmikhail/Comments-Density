@@ -53,7 +53,7 @@ final class AnalyzeCommentCommand extends Command
         }
         $formatter = $formatters[$configDto->output->type] ?? $formatters['console'];
 
-        $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $output, $this->storage);
+        $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $this->storage);
 
         $report = $analyzer->analyze($files);
 
