@@ -13,7 +13,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
@@ -75,7 +75,7 @@ final class BaselineCommandTest extends TestCase
         $baselineStorage->method('filterComments')->willReturn([]);
 
         $analyzer = $this->createMock(Analyzer::class);
-        $outputDTO = new OutputDTO(
+        $outputDTO = new Report(
             0,
             [],
             [],

@@ -10,7 +10,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Reporters\ReporterFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\FormatterFactory;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SplFileInfo;
 use Symfony\Component\Console\Command\Command;

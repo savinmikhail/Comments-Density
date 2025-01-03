@@ -13,13 +13,13 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\OutputDTO as InputOutputDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Reporters\ConsoleReporter;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Reporters\ReporterFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\ConsoleFormatter;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\FormatterFactory;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SavinMikhail\CommentsDensity\Commands\AnalyzeFilesCommand;
 use Symfony\Component\Console\Application;
@@ -77,7 +77,7 @@ final class AnalyzeFilesCommandTest extends TestCase
         $baselineStorage->method('filterComments')->willReturn([]);
 
         $analyzer = $this->createMock(Analyzer::class);
-        $outputDTO = new OutputDTO(
+        $outputDTO = new Report(
             0,
             [],
             [],
@@ -93,12 +93,12 @@ final class AnalyzeFilesCommandTest extends TestCase
         $analyzerFactory = $this->createMock(AnalyzerFactory::class);
         $analyzerFactory->method('getAnalyzer')->willReturn($analyzer);
 
-        $reporter = $this->createMock(ConsoleReporter::class);
+        $reporter = $this->createMock(ConsoleFormatter::class);
         $reporter
             ->method('report')
             ->with(self::equalTo($outputDTO));
 
-        $reporterFactory = $this->createMock(ReporterFactory::class);
+        $reporterFactory = $this->createMock(FormatterFactory::class);
         $reporterFactory->method('createReporter')->willReturn($reporter);
 
         $command = $this->getMockBuilder(AnalyzeFilesCommand::class)
@@ -145,7 +145,7 @@ final class AnalyzeFilesCommandTest extends TestCase
         $baselineStorage->method('filterComments')->willReturn([]);
 
         $analyzer = $this->createMock(Analyzer::class);
-        $outputDTO = new OutputDTO(
+        $outputDTO = new Report(
             0,
             [],
             [],
@@ -161,12 +161,12 @@ final class AnalyzeFilesCommandTest extends TestCase
         $analyzerFactory = $this->createMock(AnalyzerFactory::class);
         $analyzerFactory->method('getAnalyzer')->willReturn($analyzer);
 
-        $reporter = $this->createMock(ConsoleReporter::class);
+        $reporter = $this->createMock(ConsoleFormatter::class);
         $reporter
             ->method('report')
             ->with(self::equalTo($outputDTO));
 
-        $reporterFactory = $this->createMock(ReporterFactory::class);
+        $reporterFactory = $this->createMock(FormatterFactory::class);
         $reporterFactory->method('createReporter')->willReturn($reporter);
 
         $command = $this->getMockBuilder(AnalyzeFilesCommand::class)

@@ -6,7 +6,7 @@ namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\MetricsFacade;
@@ -36,7 +36,7 @@ final class Analyzer
     /**
      * @param SplFileInfo[] $files
      */
-    public function analyze(iterable $files): OutputDTO
+    public function analyze(iterable $files): Report
     {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];
@@ -96,14 +96,14 @@ final class Analyzer
         array $comments,
         array $preparedStatistics,
         int $filesAnalyzed,
-    ): OutputDTO {
+    ): Report {
         $comToLoc = $this->metrics->prepareComToLoc($preparedStatistics, $this->totalLinesOfCode);
         $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($preparedStatistics));
         $exceedThreshold = $this->checkThresholdsExceeded();
         $this->metrics->stopPerformanceMonitoring();
         $performanceMetrics = $this->metrics->getPerformanceMetrics();
 
-        return new OutputDTO(
+        return new Report(
             $filesAnalyzed,
             $preparedStatistics,
             $comments,

@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\AnalyzeComments\Reporters;
+namespace SavinMikhail\CommentsDensity\AnalyzeComments\Formatter;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 use function array_map;
 
-final readonly class ConsoleReporter implements ReporterInterface
+final readonly class ConsoleFormatter implements FormatterInterface
 {
     public function __construct(
         private OutputInterface $output,
     ) {}
 
-    public function report(OutputDTO $dto): void
+    public function report(Report $dto): void
     {
         $this->printDetailedComments($dto->comments);
         $this->printTable($dto->commentsStatistics);

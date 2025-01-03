@@ -9,9 +9,9 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Reporters\HtmlReporter;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\HtmlFormatter;
 
 final class HtmlReporterTest extends TestCase
 {
@@ -31,7 +31,7 @@ final class HtmlReporterTest extends TestCase
 
     public function testReportGeneration(): void
     {
-        $reporter = new HtmlReporter($this->reportPath);
+        $reporter = new HtmlFormatter($this->reportPath);
 
         $performanceDTO = new PerformanceMetricsDTO(123, 1.23);
         $cdsDTO = new CdsDTO(0.45, 'red');
@@ -44,7 +44,7 @@ final class HtmlReporterTest extends TestCase
             new CommentDTO('docblock', '#000000', 'some/file.php', 10, 'This is a docblock comment'),
             new CommentDTO('inline', '#FF0000', 'another/file.php', 20, 'This is an inline comment'),
         ];
-        $outputDTO = new OutputDTO(2, $commentsStatistics, $comments, $performanceDTO, $comToLocDTO, $cdsDTO, false);
+        $outputDTO = new Report(2, $commentsStatistics, $comments, $performanceDTO, $comToLocDTO, $cdsDTO, false);
 
         $reporter->report($outputDTO);
 

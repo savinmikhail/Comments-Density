@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\AnalyzeComments\Reporters;
+namespace SavinMikhail\CommentsDensity\AnalyzeComments\Formatter;
 
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\OutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use function file_put_contents;
 use function htmlspecialchars;
 use function nl2br;
 use const ENT_QUOTES;
 use const ENT_SUBSTITUTE;
 
-final readonly class HtmlReporter implements ReporterInterface
+final readonly class HtmlFormatter implements FormatterInterface
 {
     public function __construct(private string $reportPath) {}
 
-    public function report(OutputDTO $dto): void
+    public function report(Report $dto): void
     {
         $html = "<html><head><meta charset='UTF-8'><title>Comment Density Report</title>";
         $html .= '<style>
@@ -33,7 +33,7 @@ final readonly class HtmlReporter implements ReporterInterface
         file_put_contents($this->reportPath, $html);
     }
 
-    private function generateHeader(OutputDTO $dto): string
+    private function generateHeader(Report $dto): string
     {
         return '<h1>Comment Density Report</h1>'
             . "<p><strong>Execution Time:</strong> {$dto->performanceDTO->executionTime} ms</p>"
@@ -43,7 +43,7 @@ final readonly class HtmlReporter implements ReporterInterface
             . "<p><strong>Files analyzed:</strong> {$dto->filesAnalyzed}</p>";
     }
 
-    private function generateCommentStatisticsTable(OutputDTO $dto): string
+    private function generateCommentStatisticsTable(Report $dto): string
     {
         $html = '<h2>Comment Statistics</h2>';
         $html .= '<table><tr><th>Comment Type</th><th>Lines</th><th>Times</th></tr>';
@@ -63,7 +63,7 @@ final readonly class HtmlReporter implements ReporterInterface
         return $html;
     }
 
-    private function generateDetailedCommentsTable(OutputDTO $dto): string
+    private function generateDetailedCommentsTable(Report $dto): string
     {
         $html = '<h2>Detailed Comments</h2>';
         $html .= '<table>

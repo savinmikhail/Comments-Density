@@ -10,7 +10,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Reporters\ReporterFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\FormatterFactory;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
@@ -20,11 +20,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class AnalyzeCommentCommand extends Command
 {
     public function __construct(
-        private readonly ConfigLoader $configLoader = new ConfigLoader(),
+        private readonly ConfigLoader           $configLoader = new ConfigLoader(),
         private readonly TreePhpBaselineStorage $storage = new TreePhpBaselineStorage(),
-        private readonly ReporterFactory $reporterFactory = new ReporterFactory(),
-        private readonly AnalyzerFactory $analyzerFactory = new AnalyzerFactory(),
-        ?string $name = null,
+        private readonly FormatterFactory       $reporterFactory = new FormatterFactory(),
+        private readonly AnalyzerFactory        $analyzerFactory = new AnalyzerFactory(),
+        ?string                                 $name = null,
     )
     {
         parent::__construct($name);
