@@ -31,7 +31,7 @@ final readonly class CommentFinder
     /**
      * @return CommentDTO[]
      */
-    public function run(string $content, string $filename): array
+    public function __invoke(string $content, string $filename): array
     {
         $traverser = new NodeTraverser();
 
