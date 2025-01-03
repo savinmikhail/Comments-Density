@@ -59,10 +59,10 @@ tasks:
     cmd: 'vendor/bin/composer-unused {{.CLI_ARGS}}'
 
   run:
-    cmd: './bin/comments_density analyze:comments'
+    cmd: './bin/comments_density analyze'
 
   base:
-    cmd: './bin/comments_density generate:baseline'
+    cmd: './bin/comments_density baseline'
 
   check:
     cmds:
