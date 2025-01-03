@@ -7,7 +7,7 @@ namespace SavinMikhail\Tests\CommentsDensity\Cache;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\Cache\Cache;
 
 final class CacheTest extends TestCase

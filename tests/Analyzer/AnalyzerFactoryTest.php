@@ -6,12 +6,12 @@ namespace SavinMikhail\Tests\CommentsDensity\Analyzer;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use SavinMikhail\CommentsDensity\Analyzer\Analyzer;
-use SavinMikhail\CommentsDensity\Analyzer\AnalyzerFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Analyzer;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SavinMikhail\CommentsDensity\Cache\Cache;
-use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
-use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class AnalyzerFactoryTest extends TestCase

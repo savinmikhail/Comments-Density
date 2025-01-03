@@ -7,13 +7,11 @@ namespace SavinMikhail\Tests\CommentsDensity;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use SavinMikhail\CommentsDensity\Config\ConfigLoader;
-use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
-use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
-
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 use function define;
-
 use const DIRECTORY_SEPARATOR;
 
 final class ConfigLoaderTest extends TestCase

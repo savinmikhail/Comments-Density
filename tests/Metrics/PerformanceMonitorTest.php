@@ -6,8 +6,8 @@ namespace SavinMikhail\Tests\CommentsDensity\Metrics;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\PerformanceMetricsDTO;
-use SavinMikhail\CommentsDensity\Metrics\ResourceUtilization;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\ResourceUtilization;
 
 final class PerformanceMonitorTest extends TestCase
 {

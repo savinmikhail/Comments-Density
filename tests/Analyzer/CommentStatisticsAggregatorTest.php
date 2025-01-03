@@ -6,16 +6,16 @@ namespace SavinMikhail\Tests\CommentsDensity\Analyzer;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\Analyzer\CommentStatisticsAggregator;
-use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
-use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\Comments\Comment;
-use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
-use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\Config\DTO\OutputDTO as OutputConfigDTO;
-use SavinMikhail\CommentsDensity\Exception\CommentsDensityException;
-use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\CommentStatisticsAggregator;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\Comment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\OutputDTO as OutputConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
+use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 
 final class CommentStatisticsAggregatorTest extends TestCase
 {

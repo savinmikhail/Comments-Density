@@ -4,8 +4,8 @@
 declare(strict_types=1);
 
 use Composer\XdebugHandler\XdebugHandler;
-use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
-use SavinMikhail\CommentsDensity\Commands\BaselineCommand;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Commands\AnalyzeCommentCommand;
+use SavinMikhail\CommentsDensity\Baseline\Commands\BaselineCommand;
 use Symfony\Component\Console\Application;
 
 // Display all errors and warnings

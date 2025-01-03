@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Baseline\Storage;
 
-use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 
 interface BaselineStorageInterface
 {

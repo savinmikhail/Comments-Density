@@ -58,6 +58,12 @@ tasks:
     deps: [install]
     cmd: 'vendor/bin/composer-unused {{.CLI_ARGS}}'
 
+  run:
+    cmd: './bin/comments_density analyze:comments'
+
+  base:
+    cmd: './bin/comments_density generate:baseline'
+
   check:
     cmds:
       - task: cs

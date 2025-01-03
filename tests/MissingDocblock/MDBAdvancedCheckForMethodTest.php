@@ -7,11 +7,9 @@ namespace SavinMikhail\Tests\CommentsDensity\MissingDocblock;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
-
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 use function file_get_contents;
-
 use const DIRECTORY_SEPARATOR;
 
 final class MDBAdvancedCheckForMethodTest extends TestCase

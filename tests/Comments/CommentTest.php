@@ -7,13 +7,13 @@ namespace SavinMikhail\Tests\CommentsDensity\Comments;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use SavinMikhail\CommentsDensity\Comments\Comment;
-use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\Comments\DocBlockComment;
-use SavinMikhail\CommentsDensity\Comments\FixMeComment;
-use SavinMikhail\CommentsDensity\Comments\LicenseComment;
-use SavinMikhail\CommentsDensity\Comments\RegularComment;
-use SavinMikhail\CommentsDensity\Comments\TodoComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\Comment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\DocBlockComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\FixMeComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\LicenseComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\RegularComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\TodoComment;
 
 final class CommentTest extends TestCase
 {

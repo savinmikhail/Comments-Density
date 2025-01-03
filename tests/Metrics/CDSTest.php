@@ -6,10 +6,10 @@ namespace SavinMikhail\Tests\CommentsDensity\Metrics;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CdsDTO;
-use SavinMikhail\CommentsDensity\Analyzer\DTO\Output\CommentStatisticsDTO;
-use SavinMikhail\CommentsDensity\Comments\CommentFactory;
-use SavinMikhail\CommentsDensity\Metrics\CDS;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\CDS;
 
 final class CDSTest extends TestCase
 {

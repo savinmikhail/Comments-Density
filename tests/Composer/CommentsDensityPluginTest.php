@@ -10,7 +10,7 @@ use Composer\Script\ScriptEvents;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use SavinMikhail\CommentsDensity\Composer\CommentsDensityPlugin;
+use SavinMikhail\CommentsDensity\ComposerPlugin\CommentsDensityPlugin;
 
 final class CommentsDensityPluginTest extends TestCase
 {

@@ -7,8 +7,8 @@ namespace SavinMikhail\Tests\CommentsDensity\MissingDocblock;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\MissingDocblock\MissingDocBlockAnalyzer;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 
 final class MissingDocBlockAnalyzerTest extends TestCase
 {

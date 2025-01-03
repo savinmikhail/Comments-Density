@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-use SavinMikhail\CommentsDensity\Config\DTO\ConfigDTO;
-use SavinMikhail\CommentsDensity\Config\DTO\ConsoleOutputDTO;
-use SavinMikhail\CommentsDensity\Config\DTO\MissingDocblockConfigDTO;
-use SavinMikhail\CommentsDensity\Config\DTO\OutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConsoleOutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 
 return new ConfigDTO(
     thresholds: [
