@@ -16,19 +16,15 @@ use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SplFileInfo;
 use Symfony\Contracts\Cache\CacheInterface;
 
-use function array_push;
-
-final class Analyzer
+final readonly class Analyzer
 {
-    private int $totalLinesOfCode = 0;
-
     public function __construct(
-        private readonly ConfigDTO $configDTO,
-        private readonly CommentTypeFactory $commentFactory,
-        private readonly MetricsFacade $metrics,
-        private readonly BaselineStorageInterface $baselineStorage,
-        private readonly CacheInterface $cache,
-        private readonly CommentStatisticsAggregator $statisticsAggregator,
+        private ConfigDTO                   $configDTO,
+        private CommentTypeFactory          $commentFactory,
+        private MetricsFacade               $metrics,
+        private BaselineStorageInterface    $baselineStorage,
+        private CacheInterface              $cache,
+        private CommentStatisticsAggregator $statisticsAggregator,
     ) {}
 
     /**
@@ -40,26 +36,27 @@ final class Analyzer
         $this->metrics->startPerformanceMonitoring();
         $comments = [];
         $filesAnalyzed = 0;
+        $totalLinesOfCode = 0;
 
         foreach ($files as $file) {
             $contentExtractor = new FileContentExtractor($file, $this->configDTO);
             if ($contentExtractor->shouldSkipFile()) {
                 continue;
             }
-            $task = new CommentFinder(
+            $commentFinder = new CommentFinder(
                 $this->commentFactory,
                 $this->configDTO,
             );
 
             $fileComments = $this->cache->get(
                 $this->getCacheKey($file),
-                static fn(): array => $task->run($contentExtractor->getContent(), $file->getRealPath()),
+                static fn(): array => $commentFinder($contentExtractor->getContent(), $file->getRealPath()),
             );
 
-            $lines = (new FileTotalLinesCounter())->run($file);
+            $lines = (new FileTotalLinesCounter($file))();
 
-            array_push($comments, ...$fileComments);
-            $this->totalLinesOfCode += $lines;
+            $comments = [...$comments, ...$fileComments];
+            $totalLinesOfCode += $lines;
             ++$filesAnalyzed;
         }
 
@@ -69,7 +66,7 @@ final class Analyzer
 
         $commentStatistics = $this->statisticsAggregator->calculateCommentStatistics($comments);
 
-        return $this->createOutputDTO($comments, $commentStatistics, $filesAnalyzed);
+        return $this->createReport($comments, $commentStatistics, $filesAnalyzed, $totalLinesOfCode);
     }
 
     private function getCacheKey(SplFileInfo $file): string
@@ -98,12 +95,13 @@ final class Analyzer
      * @param CommentDTO[] $comments
      * @param CommentStatisticsDTO[] $preparedStatistics
      */
-    private function createOutputDTO(
+    private function createReport(
         array $comments,
         array $preparedStatistics,
         int $filesAnalyzed,
+        int $totalLinesOfCode,
     ): Report {
-        $comToLoc = $this->metrics->prepareComToLoc($preparedStatistics, $this->totalLinesOfCode);
+        $comToLoc = $this->metrics->prepareComToLoc($preparedStatistics, $totalLinesOfCode);
         $cds = $this->metrics->prepareCDS($this->metrics->calculateCDS($preparedStatistics));
         $exceedThreshold = $this->checkThresholdsExceeded();
         $this->metrics->stopPerformanceMonitoring();
