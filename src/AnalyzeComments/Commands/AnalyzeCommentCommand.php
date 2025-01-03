@@ -19,6 +19,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class AnalyzeCommentCommand extends Command
 {
+    public function __construct(
+        private readonly ConfigLoader $configLoader = new ConfigLoader(),
+        private readonly TreePhpBaselineStorage $storage = new TreePhpBaselineStorage(),
+        private readonly ReporterFactory $reporterFactory = new ReporterFactory(),
+        private readonly AnalyzerFactory $analyzerFactory = new AnalyzerFactory(),
+        ?string $name = null,
+    )
+    {
+        parent::__construct($name);
+    }
+
     protected function configure(): void
     {
         $this->setName('analyze:comments')
@@ -28,19 +39,16 @@ final class AnalyzeCommentCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $configLoader = new ConfigLoader();
-        $path = $configLoader->getProjectRoot() . '/baseline.php';
+        $path = $this->configLoader->getProjectRoot() . '/baseline.php';
 
-        $storage = new TreePhpBaselineStorage();
-        $storage->init($path);
+        $this->storage->init($path);
 
-        $configDto = $configLoader->getConfigDto();
+        $configDto = $this->configLoader->getConfigDto();
         $files = $this->getFilesFromDirectories($configDto->directories);
 
-        $reporter = (new ReporterFactory())->createReporter($output, $configDto);
-        $analyzerFactory = new AnalyzerFactory();
+        $reporter = $this->reporterFactory->createReporter($output, $configDto);
 
-        $analyzer = $analyzerFactory->getAnalyzer($configDto, $output, $storage);
+        $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $output, $this->storage);
 
         $outputDTO = $analyzer->analyze($files);
 

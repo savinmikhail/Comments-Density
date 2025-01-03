@@ -61,6 +61,7 @@ final readonly class CommentStatisticsAggregator
 
     /**
      * @param array{'lines': int, 'count': int} $stat
+     * @throws CommentsDensityException
      */
     private function prepareCommentStatistic(string $type, array $stat): CommentStatisticsDTO
     {
