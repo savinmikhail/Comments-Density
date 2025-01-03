@@ -9,8 +9,8 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\HtmlFormatter;
 
 final class HtmlReporterTest extends TestCase

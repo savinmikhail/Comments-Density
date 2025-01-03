@@ -13,15 +13,17 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\OutputDTO;
 use SavinMikhail\CommentsDensity\Baseline\Commands\BaselineCommand;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
 use SplFileInfo;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+
 use function ini_set;
 use function is_dir;
 use function mkdir;
@@ -68,7 +70,7 @@ final class BaselineCommandTest extends TestCase
         $configDto->cacheDir = $this->tempCacheDir;
         $configDto->directories = [__DIR__];
         $configDto->exclude = [];
-        $configDto->output = new \SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\OutputDTO('console', '');
+        $configDto->output = new OutputDTO('console', '');
         $configDto->useBaseline = false;
 
         $baselineStorage = $this->createMock(TreePhpBaselineStorage::class);

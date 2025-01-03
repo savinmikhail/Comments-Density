@@ -8,10 +8,11 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CdsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function array_map;
 
 final readonly class ConsoleFormatter implements FormatterInterface

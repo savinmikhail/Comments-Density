@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
+use Psr\Cache\InvalidArgumentException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
@@ -14,8 +15,8 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SplFileInfo;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+
 use function array_push;
 
 final class Analyzer
@@ -35,7 +36,7 @@ final class Analyzer
 
     /**
      * @param SplFileInfo[] $files
-     * @throws CommentsDensityException
+     * @throws CommentsDensityException|InvalidArgumentException
      */
     public function analyze(iterable $files): Report
     {

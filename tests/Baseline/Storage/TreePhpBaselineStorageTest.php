@@ -8,7 +8,9 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
+
 use function ltrim;
+
 use const DIRECTORY_SEPARATOR;
 
 final class TreePhpBaselineStorageTest extends TestCase

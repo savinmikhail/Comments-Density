@@ -13,7 +13,6 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\ResourceUtilization;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Console\Output\OutputInterface;
 
 final readonly class AnalyzerFactory
 {

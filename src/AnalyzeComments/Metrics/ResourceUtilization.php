@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Metrics;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
+
 use function memory_get_peak_usage;
 use function microtime;
 use function round;

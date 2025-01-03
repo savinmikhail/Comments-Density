@@ -10,8 +10,8 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
 use SplFileInfo;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+
 use function array_merge;
 use function count;
 use function file;
@@ -19,6 +19,7 @@ use function file_get_contents;
 use function in_array;
 use function is_array;
 use function token_get_all;
+
 use const T_COMMENT;
 use const T_DOC_COMMENT;
 

@@ -10,7 +10,9 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\MissingDocblock\MissingDocBlockAnalyzer;
+
 use function substr_count;
+
 use const PHP_EOL;
 
 final readonly class CommentStatisticsAggregator

@@ -21,10 +21,10 @@ final class BaselineCommand extends Command
         private readonly TreePhpBaselineStorage $storage = new TreePhpBaselineStorage(),
         private readonly AnalyzerFactory $analyzerFactory = new AnalyzerFactory(),
         ?string $name = null,
-    )
-    {
+    ) {
         parent::__construct($name);
     }
+
     protected function configure(): void
     {
         $this->setName('baseline')

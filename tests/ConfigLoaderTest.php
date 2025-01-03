@@ -11,7 +11,9 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
+
 use function define;
+
 use const DIRECTORY_SEPARATOR;
 
 final class ConfigLoaderTest extends TestCase

@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\AnalyzeComments\Metrics;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO;
+
 use function round;
 
 final class ComToLoc
