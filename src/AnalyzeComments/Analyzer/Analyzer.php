@@ -44,17 +44,22 @@ final class Analyzer
         $filesAnalyzed = 0;
 
         foreach ($files as $file) {
-            $task = new FileCommentFinder(
-                $this->cache,
+            $contentExtractor = new FileContentExtractor($file, $this->configDTO);
+            if ($contentExtractor->shouldSkipFile()) {
+                continue;
+            }
+            $task = new CommentFinder(
                 $this->commentFactory,
                 $this->configDTO,
                 $this->missingDocBlockAnalyzer,
             );
 
-            $response = $task->run($file);
+            $fileComments = $this->cache->get(
+                $this->getCacheKey($file),
+                fn(): array => $task->run($contentExtractor->getContent(), $file->getRealPath()),
+            );
 
-            $fileComments = $response['comments'];
-            $lines = $response['lines'];
+            $lines = (new FileTotalLinesCounter())->run($file);
 
             array_push($comments, ...$fileComments);
             $this->totalLinesOfCode += $lines;
@@ -68,6 +73,13 @@ final class Analyzer
         $commentStatistics = $this->statisticsAggregator->calculateCommentStatistics($comments);
 
         return $this->createOutputDTO($comments, $commentStatistics, $filesAnalyzed);
+    }
+
+    private function getCacheKey(SplFileInfo $file): string
+    {
+        $filePath = $file->getRealPath();
+        $lastModified = filemtime($filePath);
+        return md5($filePath . $lastModified);
     }
 
     private function checkThresholdsExceeded(): bool
