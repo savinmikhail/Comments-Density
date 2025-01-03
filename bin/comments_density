@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 use Composer\XdebugHandler\XdebugHandler;
 use SavinMikhail\CommentsDensity\Commands\AnalyzeCommentCommand;
-use SavinMikhail\CommentsDensity\Commands\AnalyzeFilesCommand;
 use SavinMikhail\CommentsDensity\Commands\BaselineCommand;
 use Symfony\Component\Console\Application;
 
@@ -35,7 +34,9 @@ if (!ini_get('date.timezone')) {
 if (!isset($_SERVER['argv']) && !isset($argv)) {
     fwrite(STDERR, 'Please enable the "register_argc_argv" directive in your php.ini' . PHP_EOL);
     exit(1);
-} elseif (!isset($argv)) {
+}
+
+if (!isset($argv)) {
     $argv = $_SERVER['argv'];
 }
 
@@ -70,7 +71,6 @@ if (COMMENTS_DENSITY_ENVIRONMENT === 'prod') {
 // Setup commands
 $app = new Application();
 $app->add(new AnalyzeCommentCommand());
-$app->add(new AnalyzeFilesCommand());
 $app->add(new BaselineCommand());
 
 // Run the application
