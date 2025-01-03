@@ -6,3 +6,4 @@
 /baseline.sqlite
 /baseline.php
 /.task
+/vendor-bin/**/vendor/
