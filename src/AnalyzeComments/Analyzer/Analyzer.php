@@ -26,9 +26,8 @@ final class Analyzer
     public function __construct(
         private readonly ConfigDTO $configDTO,
         private readonly CommentFactory $commentFactory,
-        private readonly MissingDocBlockAnalyzer $missingDocBlock,
         private readonly MetricsFacade $metrics,
-        private readonly MissingDocBlockAnalyzer $docBlockAnalyzer,
+        private readonly MissingDocBlockAnalyzer $missingDocBlockAnalyzer,
         private readonly BaselineStorageInterface $baselineStorage,
         private readonly CacheInterface $cache,
         private readonly CommentStatisticsAggregator $statisticsAggregator,
@@ -45,12 +44,11 @@ final class Analyzer
         $filesAnalyzed = 0;
 
         foreach ($files as $file) {
-            $task = new AnalyzeFileTask(
+            $task = new FileCommentFinder(
                 $this->cache,
-                $this->docBlockAnalyzer,
-                $this->missingDocBlock,
                 $this->commentFactory,
                 $this->configDTO,
+                $this->missingDocBlockAnalyzer,
             );
 
             $response = $task->run($file);
@@ -77,7 +75,7 @@ final class Analyzer
         if ($this->metrics->hasExceededThreshold()) {
             return true;
         }
-        if ($this->missingDocBlock->hasExceededThreshold()) {
+        if ($this->missingDocBlockAnalyzer->hasExceededThreshold()) {
             return true;
         }
         foreach ($this->commentFactory->getCommentTypes() as $commentType) {

@@ -33,7 +33,6 @@ final readonly class AnalyzerFactory
         return new Analyzer(
             $configDto,
             $commentFactory,
-            $missingDocBlock,
             $metrics,
             $missingDocBlock,
             $baselineStorage,

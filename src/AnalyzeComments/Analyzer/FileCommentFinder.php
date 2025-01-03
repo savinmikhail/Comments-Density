@@ -23,14 +23,13 @@ use function token_get_all;
 use const T_COMMENT;
 use const T_DOC_COMMENT;
 
-final readonly class AnalyzeFileTask
+final readonly class FileCommentFinder
 {
     public function __construct(
         private CacheInterface $cache,
-        private MissingDocBlockAnalyzer $docBlockAnalyzer,
-        private MissingDocBlockAnalyzer $missingDocBlock,
         private CommentFactory $commentFactory,
         private ConfigDTO $configDTO,
+        private MissingDocBlockAnalyzer $missingDocBlockAnalyzer
     ) {}
 
     /**
@@ -76,7 +75,7 @@ final readonly class AnalyzeFileTask
 
         $comments = $this->getCommentsFromFile($tokens, $filename);
         if ($this->shouldAnalyzeMissingDocBlocks()) {
-            $missingDocBlocks = $this->docBlockAnalyzer->getMissingDocblocks($code, $filename);
+            $missingDocBlocks = $this->missingDocBlockAnalyzer->getMissingDocblocks($code, $filename);
             $comments = array_merge($missingDocBlocks, $comments);
         }
 
@@ -88,7 +87,7 @@ final readonly class AnalyzeFileTask
         return
             $this->configDTO->getAllowedTypes() === []
             || in_array(
-                $this->missingDocBlock->getName(),
+                $this->missingDocBlockAnalyzer->getName(),
                 $this->configDTO->getAllowedTypes(),
                 true,
             );
