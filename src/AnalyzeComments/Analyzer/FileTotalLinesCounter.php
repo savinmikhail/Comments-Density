@@ -11,10 +11,8 @@ use function count;
 final readonly class FileTotalLinesCounter
 {
     public function __construct(
-        private SplFileInfo $file
-    )
-    {
-    }
+        private SplFileInfo $file,
+    ) {}
 
     public function __invoke(): int
     {
