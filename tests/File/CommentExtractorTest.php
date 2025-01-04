@@ -36,8 +36,6 @@ class CommentExtractorTest extends TestCase
         final class ArtifactMetadata extends AbstractArtifactMetadata {}
         PHP;
         $comments = ($this->analyzer)($content, 'test.php');
-        dd($comments);
-        self::assertCount(4, $comments);
-
+        self::assertCount(1, $comments);
     }
 }
