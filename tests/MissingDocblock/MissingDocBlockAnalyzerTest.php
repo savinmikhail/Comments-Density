@@ -7,25 +7,33 @@ namespace SavinMikhail\Tests\CommentsDensity\MissingDocblock;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\MissingDocBlock;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\CommentFinder;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConsoleOutputDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 
 final class MissingDocBlockAnalyzerTest extends TestCase
 {
-    private MissingDocBlock $analyzer;
+    private CommentFinder $analyzer;
 
     protected function setUp(): void
     {
-        $this->analyzer = new MissingDocBlock(
-            new MissingDocblockConfigDTO(
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
+        $this->analyzer = new CommentFinder(
+            new CommentTypeFactory(),
+            new Config(
+                output: ConsoleOutputDTO::create(),
+                directories: [],
+                docblockConfigDTO: new MissingDocblockConfigDTO(
+                    class: true,
+                    interface: true,
+                    trait: true,
+                    enum: true,
+                    function: true,
+                    property: true,
+                    constant: true,
+                ),
             ),
         );
     }
@@ -33,19 +41,18 @@ final class MissingDocBlockAnalyzerTest extends TestCase
     public static function methodDeclarationDataProvider(): Generator
     {
         yield 'public method' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class TestClass {
                     public function testMethod() {
-                        // method body
                     }
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'static method' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class TestClass {
@@ -53,11 +60,11 @@ final class MissingDocBlockAnalyzerTest extends TestCase
                         // method body
                     }
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'private method' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class TestClass {
@@ -65,11 +72,11 @@ final class MissingDocBlockAnalyzerTest extends TestCase
                         // method body
                     }
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'protected method' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class TestClass {
@@ -77,7 +84,7 @@ final class MissingDocBlockAnalyzerTest extends TestCase
                         // method body
                     }
                 }
-                CODE, 1,
+                PHP, 1,
         ];
     }
 
@@ -110,147 +117,147 @@ final class MissingDocBlockAnalyzerTest extends TestCase
     public static function classDeclarationDataProvider(): Generator
     {
         yield 'simple class' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 class TestClass {}
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'final class' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 final class TestClass {}
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'readonly class' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 readonly class TestClass {}
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'final readonly class' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 final readonly class TestClass {}
-                CODE, 1,
+                PHP, 1,
         ];
     }
 
     public static function traitDeclarationDataProvider(): Generator
     {
         yield 'simple trait' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 trait TestTrait {}
-                CODE, 1,
+                PHP, 1,
         ];
     }
 
     public static function interfaceDeclarationDataProvider(): Generator
     {
         yield 'simple interface' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 interface TestInterface {}
-                CODE, 1,
+                PHP, 1,
         ];
     }
 
     public static function anonymousClassDeclarationDataProvider(): Generator
     {
         yield 'simple anonymous class' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 $instance = new class {};
-                CODE, 0,
+                PHP, 0,
         ];
 
         yield 'anonymous class with inheritance' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 return $baseHydrator->bindTo(new class() extends \Error {
                 });
-                CODE, 0,
+                PHP, 0,
         ];
     }
 
     public static function enumDeclarationDataProvider(): Generator
     {
         yield 'simple enum' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 enum Status {
                     case COMPLETED;
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'typed enum' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 enum Status: string {
                     case COMPLETED = 'string';
                 }
-                CODE, 1,
+                PHP, 1,
         ];
     }
 
     public static function propertyDataProvider(): Generator
     {
         yield 'public int property' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class Foo {
                     public int $public;
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'public readonly string property' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class Foo {
                     public readonly string $publicReadonly;
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'public static array property' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class Foo {
                     public static array $publicStatic;
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'protected DateTime property' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class Foo {
                     protected DateTime $protected;
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'private int property' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class Foo {
                     private int $private;
                 }
-                CODE, 1,
+                PHP, 1,
         ];
 
         yield 'method with local variable' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class Foo {
@@ -263,20 +270,20 @@ final class MissingDocBlockAnalyzerTest extends TestCase
                         $regVar = 2;
                     }
                 }
-                CODE, 0,
+                PHP, 0,
         ];
 
         yield 'untyped variable' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
 
                 foo($bar);
 
-                CODE, 0,
+                PHP, 0,
         ];
 
         yield 'construct property declaration' => [
-            <<<'CODE'
+            <<<'PHP'
                 <?php
                 /**  */
                 class Foo
@@ -299,33 +306,37 @@ final class MissingDocBlockAnalyzerTest extends TestCase
                     )
                     {}
                 }
-                CODE, 0,
+                PHP, 0,
         ];
     }
 
     public function testFunctionDeclaration(): void
     {
-        $code = <<<'CODE'
+        $content = <<<'PHP'
             <?php
             function testFunction() {
                 // function body
             }
-            CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+            PHP;
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
 
         self::assertCount(1, $missingDocBlocks);
     }
 
     #[DataProvider('methodDeclarationDataProvider')]
-    public function testMethodDeclaration(string $code, int $expectedCount): void
+    public function testMethodDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $comments = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = array_filter(
+            $comments,
+            static fn(CommentDTO $commentDTO): bool => $commentDTO->commentType === 'missingDocBlock',
+        );
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     public function testFunctionImport(): void
     {
-        $code = <<<'CODE'
+        $content = <<<'PHP'
             <?php
 
             declare(strict_types=1);
@@ -334,64 +345,64 @@ final class MissingDocBlockAnalyzerTest extends TestCase
 
             use function in_array;
             use function is_array;
-            CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+            PHP;
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
 
         self::assertCount(0, $missingDocBlocks);
     }
 
     #[DataProvider('closureDataProvider')]
-    public function testClosuresAndArrowFunctions(string $code): void
+    public function testClosuresAndArrowFunctions(string $content): void
     {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
         self::assertCount(0, $missingDocBlocks);
     }
 
     #[DataProvider('classDeclarationDataProvider')]
-    public function testClassDeclaration(string $code, int $expectedCount): void
+    public function testClassDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('traitDeclarationDataProvider')]
-    public function testTraitDeclaration(string $code, int $expectedCount): void
+    public function testTraitDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('interfaceDeclarationDataProvider')]
-    public function testInterfaceDeclaration(string $code, int $expectedCount): void
+    public function testInterfaceDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('anonymousClassDeclarationDataProvider')]
-    public function testAnonymousClassDeclaration(string $code, int $expectedCount): void
+    public function testAnonymousClassDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('enumDeclarationDataProvider')]
-    public function testEnumDeclaration(string $code, int $expectedCount): void
+    public function testEnumDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('propertyDataProvider')]
-    public function testProperties(string $code, int $expectedCount): void
+    public function testProperties(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     public function testConstant(): void
     {
-        $code = <<<'CODE'
+        $content = <<<'PHP'
             <?php
 
             const METHOD = 'foo';
@@ -405,51 +416,9 @@ final class MissingDocBlockAnalyzerTest extends TestCase
               protected const int TYPED = 4;
               private const PRIVATE = 5;
             }
-            CODE;
-        $missingDocBlocks = $this->analyzer->getMissingDocblocks($code, 'test.php');
+            PHP;
+        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
 
         self::assertCount(4, $missingDocBlocks);
-    }
-
-    public function testGetColor(): void
-    {
-        self::assertEquals('red', $this->analyzer->getColor());
-    }
-
-    public function testGetStatColor(): void
-    {
-        $thresholds = [
-            'missingDocBlock' => 10,
-        ];
-
-        // Case 1: Count below threshold
-        self::assertEquals('green', $this->analyzer->getStatColor(5, $thresholds));
-        self::assertFalse($this->analyzer->hasExceededThreshold());
-
-        // Case 2: Count at threshold
-        self::assertEquals('green', $this->analyzer->getStatColor(10, $thresholds));
-        self::assertFalse($this->analyzer->hasExceededThreshold());
-
-        // Case 3: Count above threshold
-        self::assertEquals('red', $this->analyzer->getStatColor(15, $thresholds));
-        self::assertTrue($this->analyzer->hasExceededThreshold());
-
-        // Case 4: Threshold not set
-        self::assertEquals('white', $this->analyzer->getStatColor(15, []));
-    }
-
-    public function testHasExceededThreshold(): void
-    {
-        $thresholds = [
-            'missingDocBlock' => 10,
-        ];
-
-        $this->analyzer->getStatColor(15, $thresholds);
-        self::assertTrue($this->analyzer->hasExceededThreshold());
-    }
-
-    public function testGetName(): void
-    {
-        self::assertEquals('missingDocblock', $this->analyzer->getName());
     }
 }

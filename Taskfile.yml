@@ -69,7 +69,7 @@ tasks:
       - task: stan
       - task: rector
 #      - task: deptrac-directories
-#      - task: test
+      - task: test
 #      - task: infection
       - task: composer-validate
       - task: composer-audit

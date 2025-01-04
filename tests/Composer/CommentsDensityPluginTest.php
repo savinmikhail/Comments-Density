@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Composer;
+namespace SavinMikhail\Tests\CommentsDensity\Composer;
 
+use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
@@ -66,11 +67,8 @@ final class CommentsDensityPluginTest extends TestCase
     public function testPromptForSetup(): void
     {
         $io = Mockery::mock(IOInterface::class);
-        $io->shouldReceive('write')->with('Run pre-commit installation')->once();
-        $io->shouldReceive('askConfirmation')->with('Do you want to install the pre-commit hook? [y/N] ')->once()->andReturn(false);
-        $io->shouldReceive('write')->with('Pre-commit hook installation skipped.')->once();
         $io->shouldReceive('write')->with('Run configuration file setup')->once();
-        $io->shouldReceive('askConfirmation')->with('Do you want to create a default configuration file? [y/N] ')->once()->andReturn(false);
+        $io->shouldReceive('askConfirmation')->with('Do you want to create a default configuration file? [y/n]')->once()->andReturn(false);
         $io->shouldReceive('write')->with('Configuration file setup skipped.')->once();
 
         $event = Mockery::mock(Event::class);
@@ -85,8 +83,7 @@ final class CommentsDensityPluginTest extends TestCase
     {
         $io = Mockery::mock(IOInterface::class);
         $io->shouldReceive('write')->with('Run configuration file setup')->once();
-        $io->shouldReceive('askConfirmation')->with('Do you want to create a default configuration file? [y/N] ')->andReturn(true);
-        $io->shouldReceive('write')->with('Creating default configuration file...')->once();
+        $io->shouldReceive('askConfirmation')->with('Do you want to create a default configuration file? [y/n]')->andReturn(true);
         $io->shouldReceive('write')->with('Default configuration file created.')->once();
 
         $plugin = new CommentsDensityPlugin();

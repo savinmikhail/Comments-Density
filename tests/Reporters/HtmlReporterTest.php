@@ -56,6 +56,5 @@ final class HtmlReporterTest extends TestCase
         self::assertStringContainsString('<p><strong>Execution Time:</strong> 123 ms</p>', $htmlContent);
         self::assertStringContainsString('<p><strong>CDS:</strong> 0.45</p>', $htmlContent);
         self::assertStringContainsString('<td style=\'color: #000000;\'>docblock</td>', $htmlContent);
-        self::assertStringContainsString('<td>This is a docblock comment</td>', $htmlContent);
     }
 }

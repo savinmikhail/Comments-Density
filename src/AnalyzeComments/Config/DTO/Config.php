@@ -20,14 +20,14 @@ final readonly class Config
      * @param string[] $disable
      */
     public function __construct(
-        /** Limit occurrences of each comment type */
-        public array $thresholds,
-        /** Directories to be ignored during scanning */
-        public array $exclude,
         public OutputDTO $output,
         /** Directories to be scanned for comments */
         public array $directories,
-        public MissingDocblockConfigDTO $docblockConfigDTO,
+        public MissingDocblockConfigDTO $docblockConfigDTO = new MissingDocblockConfigDTO(),
+        /** Limit occurrences of each comment type */
+        public array $thresholds = [],
+        /** Directories to be ignored during scanning */
+        public array $exclude = [],
         /** Filter collected comments against the baseline stored in baseline.php */
         public bool $useBaseline = true,
         public string $cacheDir = 'var/cache/comments-density',
