@@ -72,7 +72,7 @@ final class CommentsDensityPlugin implements PluginInterface, EventSubscriberInt
             $interface->error('Configuration file setup failed.');
         }
 
-        $interface->info('Default configuration file created.');
+        $interface->write('Default configuration file created.');
     }
 
     /**

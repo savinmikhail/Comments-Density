@@ -16,6 +16,7 @@ use const DIRECTORY_SEPARATOR;
 final class ConfigLoader
 {
     private const CONFIG_FILE = 'comments_density.php';
+
     private int $dirLevel = 3;
 
     /**
@@ -42,6 +43,15 @@ final class ConfigLoader
         return $config;
     }
 
+    public function getProjectRoot(): string
+    {
+        if (COMMENTS_DENSITY_ENVIRONMENT === 'prod') {
+            $this->dirLevel = 6; // if installed directly via composer
+        }
+
+        return dirname(__DIR__, $this->dirLevel);
+    }
+
     /**
      * @throws CommentsDensityException
      */
@@ -56,16 +66,9 @@ final class ConfigLoader
         if (file_exists($newConfigFileLocation)) {
             return $configFile;
         }
-        throw new CommentsDensityException(
-            'Config file does not exists! Looking for ' . $configFile . ' and ' . $newConfigFileLocation
-        );
-    }
 
-    public function getProjectRoot(): string
-    {
-        if (COMMENTS_DENSITY_ENVIRONMENT === 'prod' ) {
-            $this->dirLevel = 6; // if installed directly via composer
-        }
-        return dirname(__DIR__, $this->dirLevel);
+        throw new CommentsDensityException(
+            'Config file does not exists! Looking for ' . $configFile . ' and ' . $newConfigFileLocation,
+        );
     }
 }
