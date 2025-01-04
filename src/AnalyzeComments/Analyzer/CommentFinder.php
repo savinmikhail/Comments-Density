@@ -12,6 +12,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\Checkers\Node
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\CommentVisitor;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\MissingDocBlockVisitor;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\MissingDocBlock;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 
 use function in_array;
@@ -39,7 +40,7 @@ final readonly class CommentFinder
             $filename,
             new NodeNeedsDocblockChecker($this->configDTO->docblockConfigDTO),
         );
-        if (in_array('missingDocBlock', $this->configDTO->getAllowedTypes(), true)) {
+        if (in_array(MissingDocBlock::NAME, $this->configDTO->getAllowedTypes(), true)) {
             $traverser->addVisitor($missingDocBlockVisitor);
         }
 

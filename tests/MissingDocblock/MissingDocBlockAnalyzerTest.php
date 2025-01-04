@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\CommentFinder;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\MissingDocBlock;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConsoleOutputDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
@@ -318,7 +319,7 @@ final class MissingDocBlockAnalyzerTest extends TestCase
                 // function body
             }
             PHP;
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
 
         self::assertCount(1, $missingDocBlocks);
     }
@@ -326,12 +327,7 @@ final class MissingDocBlockAnalyzerTest extends TestCase
     #[DataProvider('methodDeclarationDataProvider')]
     public function testMethodDeclaration(string $content, int $expectedCount): void
     {
-        $comments = ($this->analyzer)($content, 'test.php');
-        $missingDocBlocks = array_filter(
-            $comments,
-            static fn(CommentDTO $commentDTO): bool => $commentDTO->commentType === 'missingDocBlock',
-        );
-        self::assertCount($expectedCount, $missingDocBlocks);
+        self::assertCount($expectedCount, $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php')));
     }
 
     public function testFunctionImport(): void
@@ -346,7 +342,7 @@ final class MissingDocBlockAnalyzerTest extends TestCase
             use function in_array;
             use function is_array;
             PHP;
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
 
         self::assertCount(0, $missingDocBlocks);
     }
@@ -354,49 +350,49 @@ final class MissingDocBlockAnalyzerTest extends TestCase
     #[DataProvider('closureDataProvider')]
     public function testClosuresAndArrowFunctions(string $content): void
     {
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
         self::assertCount(0, $missingDocBlocks);
     }
 
     #[DataProvider('classDeclarationDataProvider')]
     public function testClassDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('traitDeclarationDataProvider')]
     public function testTraitDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('interfaceDeclarationDataProvider')]
     public function testInterfaceDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('anonymousClassDeclarationDataProvider')]
     public function testAnonymousClassDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('enumDeclarationDataProvider')]
     public function testEnumDeclaration(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
     #[DataProvider('propertyDataProvider')]
     public function testProperties(string $content, int $expectedCount): void
     {
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
         self::assertCount($expectedCount, $missingDocBlocks);
     }
 
@@ -417,8 +413,16 @@ final class MissingDocBlockAnalyzerTest extends TestCase
               private const PRIVATE = 5;
             }
             PHP;
-        $missingDocBlocks = ($this->analyzer)($content, 'test.php');
+        $missingDocBlocks = $this->getMissingDocBlocks(($this->analyzer)($content, 'test.php'));
 
         self::assertCount(4, $missingDocBlocks);
+    }
+
+    private function getMissingDocBlocks(array $comments): array
+    {
+        return array_filter(
+            $comments,
+            static fn(CommentDTO $commentDTO): bool => $commentDTO->commentType === MissingDocBlock::NAME,
+        );
     }
 }
