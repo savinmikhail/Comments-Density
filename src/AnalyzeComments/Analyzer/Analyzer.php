@@ -41,12 +41,13 @@ final readonly class Analyzer
         $comments = [];
         $filesAnalyzed = 0;
         $totalLinesOfCode = 0;
-        foreach ((new FileFinder($this->configDTO))() as $file) {
+        $fileFinder = new FileFinder($this->configDTO);
+        foreach ($fileFinder() as $file) {
             $commentFinder = new CommentFinder(
                 $this->commentFactory,
                 $this->configDTO,
             );
-            $contentExtractor = new FileContentExtractor($file, $this->configDTO);
+            $contentExtractor = new FileContentExtractor($file);
 
             $fileComments = $this->cache->get(
                 $this->getCacheKey($file),
