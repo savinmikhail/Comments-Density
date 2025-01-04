@@ -13,19 +13,23 @@
     </a>
 </p>
 
-<h1 align="center">Comments Density Analyzer</h1>
+# Comments Density Analyzer
 
-<p align="center">A tool to analyze the comment density and quality in PHP source code files, helping to maintain and improve code documentation quality.</p>
+A tool to analyze the comment density and quality in PHP source code files
+
+You might want to use it to control in CI/CD spreading of todos and fixmes in the codebase.
+
+Or you might want to spot simple (regular) comments, which might be there to explain some shitty code or be the commented out code
+
+Or you might want to enforce some docblocks (I worked in companies, where each class and method were required to have docblock explaining purpose et al.)
 
 ## Features
 
 - **Multiple Comment Types**: Supports identification and analysis of several comment types including regular, 
 docblocks, TODOs, FIXMEs, and license information.
-- **Missing Documentation Detection**:  Identifies missing docblocks, @throws tags, and generics that improve type safety and code documentation.
 - **Detailed Reporting**: Quickly find code spots where changes might be necessary.
 - **Quality Check**: Set up a configuration file, and if thresholds aren't met, the exit code will be returned with the report.
 - **Configurable Reports**:  Get results in either console or HTML file.
-- **Pre-commit hook**: Validate only the files that are about to be committed.
 - **Baseline**:  Filter collected comments against a baseline to ignore old technical debt and focus on new issues.
 
 ### Output Example 
@@ -60,43 +64,32 @@ Customize your analysis by editing a comments_density.php configuration file:
 ```php
 <?php
 
-return [
-    'directories' => [
-        'src', // Directories to be scanned for comments
-    ],
-    'exclude' => [
-        'src/DTO', // Directories to be ignored during scanning
-    ],
-    'thresholds' => [
-        // Limit occurrences of each comment type
-        'docBlock' => 90, 
+declare(strict_types=1);
+
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConsoleOutputDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
+
+return new Config(
+    thresholds: [
+        'docBlock' => 1000,
         'regular' => 5,
-        'todo' => 5,
+        'todo' => 1,
         'fixme' => 5,
-        'missingDocBlock' => 10,
-        // Additional metrics thresholds
-        'Com/LoC' => 0.1, // Comments per Lines of Code
-        'CDS' => 0.1, // Comment Density Score
+        'missingDocBlock' => 1,
+        'Com/LoC' => 0.1,
+        'CDS' => 0.1,
     ],
-    'only' => [
-        'missingDocblock', // Only this type will be analyzed; set to empty array for full statistics
+    exclude: [
+        'src/DTO',
     ],
-    'output' => [
-        'type' => 'console', // Supported values: 'console', 'html'
-        'file' => 'output.html', // File path for HTML output (only used if type is 'html')
+    output: ConsoleOutputDTO::create(),
+    directories: [
+        'src',
     ],
-    'missingDocblock' => [
-        'class' => true, // Check for missing docblocks in classes
-        'interface' => true, // Check for missing docblocks in interfaces
-        'trait' => true, // Check for missing docblocks in traits
-        'enum' => true, // Check for missing docblocks in enums
-        'property' => true, // Check for missing docblocks in properties
-        'constant' => true, // Check for missing docblocks in constants
-        'function' => true, // Check for missing docblocks in functions
-        'requireForAllMethods' => true, // If false, only methods where @throws tag or generic can be applied will be checked
-    ],
-    'use_baseline' => true, // Filter collected comments against the baseline stored in comments_density.sqlite
-];
+    docblockConfigDTO: new MissingDocblockConfigDTO(class: true),
+    disable: []
+);
 
 ```
 
