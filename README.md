@@ -48,12 +48,12 @@ composer require --dev savinmikhail/comments-density
 Analyze the comment density in your PHP files with:
 
 ```bash
-php vendor/bin/comments_density analyze:comments
+php vendor/bin/comments_density analyze
 ```
 
 Generate baseline with:
 ```bash
-php vendor/bin/comments_density generate:baseline
+php vendor/bin/comments_density baseline
 ```
 
 ### Configuration
