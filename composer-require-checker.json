@@ -1,0 +1,4 @@
+{
+  "scan-files" : ["bin/comments_density"],
+  "symbol-whitelist" : ["opcache_get_configuration"]
+}

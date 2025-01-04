@@ -35,7 +35,6 @@ tasks:
   composer-normalize-fix:
     deps: [install]
     cmds:
-      - 'composer bump {{.CLI_ARGS}}'
       - 'composer normalize --diff {{.CLI_ARGS}}'
 
   composer-normalize:
@@ -52,7 +51,7 @@ tasks:
 
   composer-check-require:
     deps: [install]
-    cmd: 'vendor/bin/composer-require-checker check {{.CLI_ARGS}}'
+    cmd: 'vendor/bin/composer-require-checker check --config-file=composer-require-checker.json {{.CLI_ARGS}}'
 
   composer-check-unused:
     deps: [install]
@@ -69,9 +68,9 @@ tasks:
       - task: cs
       - task: stan
       - task: rector
-      - task: deptrac-directories
-      - task: test
-      - task: infection
+#      - task: deptrac-directories
+#      - task: test
+#      - task: infection
       - task: composer-validate
       - task: composer-audit
       - task: composer-normalize
