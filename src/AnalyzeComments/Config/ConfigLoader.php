@@ -45,10 +45,6 @@ final class ConfigLoader
 
     public function getProjectRoot(): string
     {
-        if (COMMENTS_DENSITY_ENVIRONMENT === 'prod') {
-            $this->dirLevel = 6; // if installed directly via composer
-        }
-
         return dirname(__DIR__, $this->dirLevel);
     }
 
@@ -57,14 +53,19 @@ final class ConfigLoader
      */
     private function getConfigPath(): string
     {
+        if (COMMENTS_DENSITY_ENVIRONMENT === 'prod') {
+            $this->dirLevel = 6; // if installed directly via composer
+        }
+
         $configFile = $this->getProjectRoot() . DIRECTORY_SEPARATOR . self::CONFIG_FILE;
         if (file_exists($configFile)) {
             return $configFile;
         }
+
         $this->dirLevel = 8; // if installed via barmani/composer-bin-plugin
         $newConfigFileLocation = $this->getProjectRoot() . DIRECTORY_SEPARATOR . self::CONFIG_FILE;
         if (file_exists($newConfigFileLocation)) {
-            return $configFile;
+            return $newConfigFileLocation;
         }
 
         throw new CommentsDensityException(
