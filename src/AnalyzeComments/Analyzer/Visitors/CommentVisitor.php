@@ -21,7 +21,7 @@ final class CommentVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        $comments = array_filter([$node->getDocComment(), ...$node->getComments()]);
+        $comments = array_unique(array_filter([$node->getDocComment(), ...$node->getComments()]));
         foreach ($comments as $comment) {
             $commentType = $this->commentFactory->classifyComment($comment->getText());
             if ($commentType === null) {
