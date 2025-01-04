@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
+namespace SavinMikhail\CommentsDensity\AnalyzeComments\File;
 
 use SplFileInfo;
 

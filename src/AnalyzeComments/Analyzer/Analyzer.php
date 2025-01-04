@@ -11,6 +11,10 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
+use SavinMikhail\CommentsDensity\AnalyzeComments\File\CommentFinder;
+use SavinMikhail\CommentsDensity\AnalyzeComments\File\FileContentExtractor;
+use SavinMikhail\CommentsDensity\AnalyzeComments\File\FileFinder;
+use SavinMikhail\CommentsDensity\AnalyzeComments\File\FileTotalLinesCounter;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SplFileInfo;
@@ -28,25 +32,21 @@ final readonly class Analyzer
     ) {}
 
     /**
-     * @param SplFileInfo[] $files
-     * @throws CommentsDensityException|InvalidArgumentException
+     * @throws CommentsDensityException
+     * @throws InvalidArgumentException
      */
-    public function analyze(iterable $files): Report
+    public function analyze(): Report
     {
         $this->metrics->startPerformanceMonitoring();
         $comments = [];
         $filesAnalyzed = 0;
         $totalLinesOfCode = 0;
-
-        foreach ($files as $file) {
-            $contentExtractor = new FileContentExtractor($file, $this->configDTO);
-            if ($contentExtractor->shouldSkipFile()) {
-                continue;
-            }
+        foreach ((new FileFinder($this->configDTO))() as $file) {
             $commentFinder = new CommentFinder(
                 $this->commentFactory,
                 $this->configDTO,
             );
+            $contentExtractor = new FileContentExtractor($file, $this->configDTO);
 
             $fileComments = $this->cache->get(
                 $this->getCacheKey($file),

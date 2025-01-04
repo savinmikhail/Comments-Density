@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\Baseline\Commands;
 
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
-use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -39,29 +36,14 @@ final class BaselineCommand extends Command
         $this->storage->init($path);
 
         $configDto = $this->configLoader->getConfigDto();
-        $files = $this->getFilesFromDirectories($configDto->directories);
 
         $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $this->storage);
-        $report = $analyzer->analyze($files);
+        $report = $analyzer->analyze();
 
         $this->storage->setComments($report->comments); // todo create some baseline reporter
 
         $output->writeln('<info>Baseline generated successfully!</info>');
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @param string[] $directories
-     * @return SplFileInfo[]
-     */
-    protected function getFilesFromDirectories(array $directories): iterable
-    {
-        foreach ($directories as $directory) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
-            foreach ($iterator as $file) {
-                yield $file;
-            }
-        }
     }
 }

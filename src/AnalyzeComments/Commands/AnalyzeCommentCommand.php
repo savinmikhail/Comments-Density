@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Commands;
 
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\HtmlOutputDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\ConsoleFormatter;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\HtmlFormatter;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
-use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -42,7 +39,6 @@ final class AnalyzeCommentCommand extends Command
         $this->storage->init($path);
 
         $configDto = $this->configLoader->getConfigDto();
-        $files = $this->getFilesFromDirectories($configDto->directories);
 
         $formatters = ['console' => new ConsoleFormatter($output)];
         if ($configDto->output instanceof HtmlOutputDTO) {
@@ -52,7 +48,7 @@ final class AnalyzeCommentCommand extends Command
 
         $analyzer = $this->analyzerFactory->getAnalyzer($configDto, $this->storage);
 
-        $report = $analyzer->analyze($files);
+        $report = $analyzer->analyze();
 
         $formatter->report($report);
 
@@ -64,19 +60,5 @@ final class AnalyzeCommentCommand extends Command
         $output->writeln('<info>Comment thresholds are passed!</info>');
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @param string[] $directories
-     * @return SplFileInfo[]
-     */
-    protected function getFilesFromDirectories(array $directories): iterable
-    {
-        foreach ($directories as $directory) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
-            foreach ($iterator as $file) {
-                yield $file;
-            }
-        }
     }
 }
