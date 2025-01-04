@@ -10,7 +10,7 @@ final readonly class ViolatingCommentsOnlyFilter
 {
     public function filter(Report $report): array
     {
-        // Identify comment types with threshold violations (color 'red').
+        // Identify comment types with threshold violations
         $violatingTypes = array_map(
             static fn(CommentStatisticsDTO $commentStatisticsDTO): string => $commentStatisticsDTO->type,
             array_filter(
@@ -21,7 +21,9 @@ final readonly class ViolatingCommentsOnlyFilter
 
         return array_filter(
             $report->comments,
-            static fn(CommentDTO $commentDTO): bool => in_array($commentDTO->commentType, $violatingTypes, true)
+            static fn(CommentDTO $commentDTO): bool =>
+                in_array($commentDTO->commentType, $violatingTypes, true)
+                && $commentDTO->commentTypeColor === 'red'
         );
     }
 }

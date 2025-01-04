@@ -6,6 +6,7 @@ namespace SavinMikhail\CommentsDensity\AnalyzeComments\Formatter;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 
+use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\Filter\ViolatingCommentsOnlyFilter;
 use function file_put_contents;
 use function htmlspecialchars;
 use function nl2br;
@@ -15,7 +16,10 @@ use const ENT_SUBSTITUTE;
 
 final readonly class HtmlFormatter implements FormatterInterface
 {
-    public function __construct(private string $reportPath) {}
+    public function __construct(
+        private string $reportPath,
+        private ViolatingCommentsOnlyFilter $violatingCommentsOnlyFilter = new ViolatingCommentsOnlyFilter(),
+    ) {}
 
     public function report(Report $report): void
     {
@@ -65,7 +69,7 @@ final readonly class HtmlFormatter implements FormatterInterface
         return $html;
     }
 
-    private function generateDetailedCommentsTable(Report $dto): string
+    private function generateDetailedCommentsTable(Report $report): string
     {
         $html = '<h2>Detailed Comments</h2>';
         $html .= '<table>
@@ -75,7 +79,8 @@ final readonly class HtmlFormatter implements FormatterInterface
                 <th>Line</th>
                 <th>Content</th>
             </tr>';
-        foreach ($dto->comments as $comment) {
+
+        foreach ($this->violatingCommentsOnlyFilter->filter($report) as $comment) {
             $commentType = htmlspecialchars($comment->commentType, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $commentTypeColor = htmlspecialchars($comment->commentTypeColor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $file = htmlspecialchars($comment->file, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

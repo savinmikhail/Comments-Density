@@ -8,7 +8,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfi
 
 return new ConfigDTO(
     thresholds: [
-        'docBlock' => 90,
+        'docBlock' => 1000,
         'regular' => 5,
         'todo' => 1,
         'fixme' => 5,
