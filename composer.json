@@ -67,6 +67,6 @@
         "sort-packages": true
     },
     "extra": {
-        "class": "SavinMikhail\\CommentsDensity\\Composer\\CommentsDensityPlugin"
+        "class": "SavinMikhail\\CommentsDensity\\ComposerPlugin\\CommentsDensityPlugin"
     }
 }
