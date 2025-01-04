@@ -22,8 +22,8 @@ final readonly class CommentFinder
 
     public function __construct(
         private CommentTypeFactory $commentFactory,
-        private Config             $configDTO,
-        ?Parser                    $parser = null,
+        private Config $configDTO,
+        ?Parser $parser = null,
     ) {
         $this->parser = $parser ?? (new ParserFactory())->createForHostVersion();
     }

@@ -16,7 +16,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 final readonly class AnalyzerFactory
 {
     public function getAnalyzer(
-        Config                   $configDto,
+        Config $configDto,
         BaselineStorageInterface $baselineStorage,
     ): Analyzer {
         $commentFactory = new CommentTypeFactory($configDto->getAllowedTypes());

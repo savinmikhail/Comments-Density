@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Formatter;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
-
 use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\Filter\ViolatingCommentsOnlyFilter;
+
 use function file_put_contents;
 use function htmlspecialchars;
 use function nl2br;

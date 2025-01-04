@@ -11,7 +11,7 @@ final readonly class FileContentExtractor
 {
     public function __construct(
         private SplFileInfo $file,
-        private Config      $configDTO,
+        private Config $configDTO,
     ) {}
 
     public function getContent(): string

@@ -17,7 +17,7 @@ use const PHP_EOL;
 final readonly class CommentStatisticsAggregator
 {
     public function __construct(
-        private Config             $configDTO,
+        private Config $configDTO,
         private CommentTypeFactory $commentFactory,
     ) {}
 

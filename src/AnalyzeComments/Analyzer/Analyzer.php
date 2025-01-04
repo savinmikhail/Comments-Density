@@ -19,11 +19,11 @@ use Symfony\Contracts\Cache\CacheInterface;
 final readonly class Analyzer
 {
     public function __construct(
-        private Config                      $configDTO,
-        private CommentTypeFactory          $commentFactory,
-        private MetricsFacade               $metrics,
-        private BaselineStorageInterface    $baselineStorage,
-        private CacheInterface              $cache,
+        private Config $configDTO,
+        private CommentTypeFactory $commentFactory,
+        private MetricsFacade $metrics,
+        private BaselineStorageInterface $baselineStorage,
+        private CacheInterface $cache,
         private CommentStatisticsAggregator $statisticsAggregator,
     ) {}
 
