@@ -13,10 +13,10 @@ use function file_exists;
 
 use const DIRECTORY_SEPARATOR;
 
-final readonly class ConfigLoader
+final class ConfigLoader
 {
     private const CONFIG_FILE = 'comments_density.php';
-    private const DIR_LEVEL = COMMENTS_DENSITY_ENVIRONMENT === 'dev' ? 3 : 6;
+    private int $dirLevel = 3;
 
     /**
      * @throws CommentsDensityException
@@ -33,11 +33,7 @@ final readonly class ConfigLoader
      */
     public function getConfigDto(): Config
     {
-        $configFile = $this->getProjectRoot() . DIRECTORY_SEPARATOR . self::CONFIG_FILE;
-        if (!file_exists($configFile)) {
-            throw new CommentsDensityException('Config file does not exists! Looking for ' . $configFile);
-        }
-        $config = require $configFile;
+        $config = require $this->getConfigPath();
 
         if (!$config instanceof Config) {
             throw new CommentsDensityException('Config file must return an instance of ConfigDTO');
@@ -46,8 +42,30 @@ final readonly class ConfigLoader
         return $config;
     }
 
+    /**
+     * @throws CommentsDensityException
+     */
+    private function getConfigPath(): string
+    {
+        $configFile = $this->getProjectRoot() . DIRECTORY_SEPARATOR . self::CONFIG_FILE;
+        if (file_exists($configFile)) {
+            return $configFile;
+        }
+        $this->dirLevel = 8; // if installed via barmani/composer-bin-plugin
+        $newConfigFileLocation = $this->getProjectRoot() . DIRECTORY_SEPARATOR . self::CONFIG_FILE;
+        if (file_exists($newConfigFileLocation)) {
+            return $configFile;
+        }
+        throw new CommentsDensityException(
+            'Config file does not exists! Looking for ' . $configFile . ' and ' . $newConfigFileLocation
+        );
+    }
+
     public function getProjectRoot(): string
     {
-        return dirname(__DIR__, self::DIR_LEVEL);
+        if (COMMENTS_DENSITY_ENVIRONMENT === 'prod' ) {
+            $this->dirLevel = 6; // if installed directly via composer
+        }
+        return dirname(__DIR__, $this->dirLevel);
     }
 }
