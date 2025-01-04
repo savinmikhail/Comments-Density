@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Analyzer;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
 use SavinMikhail\CommentsDensity\Cache\Cache;
@@ -19,7 +19,7 @@ final class AnalyzerFactoryTest extends TestCase
     public function testGetAnalyzer(): void
     {
         // Mock the dependencies
-        $configDto = $this->createMock(ConfigDTO::class);
+        $configDto = $this->createMock(Config::class);
         $configDto->docblockConfigDTO = $this->createMock(MissingDocblockConfigDTO::class);
         $configDto->only = [];
         $configDto->thresholds = [];

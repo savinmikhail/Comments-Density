@@ -9,7 +9,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\MetricsFacade;
 use SavinMikhail\CommentsDensity\Baseline\Storage\BaselineStorageInterface;
@@ -19,11 +19,11 @@ use Symfony\Contracts\Cache\CacheInterface;
 final readonly class Analyzer
 {
     public function __construct(
-        private ConfigDTO $configDTO,
-        private CommentTypeFactory $commentFactory,
-        private MetricsFacade $metrics,
-        private BaselineStorageInterface $baselineStorage,
-        private CacheInterface $cache,
+        private Config                      $configDTO,
+        private CommentTypeFactory          $commentFactory,
+        private MetricsFacade               $metrics,
+        private BaselineStorageInterface    $baselineStorage,
+        private CacheInterface              $cache,
         private CommentStatisticsAggregator $statisticsAggregator,
     ) {}
 

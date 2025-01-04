@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Config;
 
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 
 use function defined;
@@ -31,7 +31,7 @@ final readonly class ConfigLoader
     /**
      * @throws CommentsDensityException
      */
-    public function getConfigDto(): ConfigDTO
+    public function getConfigDto(): Config
     {
         $configFile = $this->getProjectRoot() . DIRECTORY_SEPARATOR . self::CONFIG_FILE;
         if (!file_exists($configFile)) {
@@ -39,7 +39,7 @@ final readonly class ConfigLoader
         }
         $config = require $configFile;
 
-        if (!$config instanceof ConfigDTO) {
+        if (!$config instanceof Config) {
             throw new CommentsDensityException('Config file must return an instance of ConfigDTO');
         }
 

@@ -12,7 +12,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\Checkers\Node
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\CommentVisitor;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\Visitors\MissingDocBlockVisitor;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 
 use function in_array;
 
@@ -22,8 +22,8 @@ final readonly class CommentFinder
 
     public function __construct(
         private CommentTypeFactory $commentFactory,
-        private ConfigDTO $configDTO,
-        ?Parser $parser = null,
+        private Config             $configDTO,
+        ?Parser                    $parser = null,
     ) {
         $this->parser = $parser ?? (new ParserFactory())->createForHostVersion();
     }

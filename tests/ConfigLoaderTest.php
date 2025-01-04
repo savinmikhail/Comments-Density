@@ -8,7 +8,7 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 
@@ -138,7 +138,7 @@ final class ConfigLoaderTest extends TestCase
 
         $configDto = $configLoaderMock->getConfigDto();
 
-        self::assertInstanceOf(ConfigDTO::class, $configDto);
+        self::assertInstanceOf(Config::class, $configDto);
     }
 
     public function testGetDirectoriesThrowsExceptionWhenDirectoryDoesNotExist(): void

@@ -7,7 +7,7 @@ namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStatisticsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
 
 use function substr_count;
@@ -17,7 +17,7 @@ use const PHP_EOL;
 final readonly class CommentStatisticsAggregator
 {
     public function __construct(
-        private ConfigDTO $configDTO,
+        private Config             $configDTO,
         private CommentTypeFactory $commentFactory,
     ) {}
 

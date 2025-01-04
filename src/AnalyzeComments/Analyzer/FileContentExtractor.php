@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SplFileInfo;
 
 final readonly class FileContentExtractor
 {
     public function __construct(
         private SplFileInfo $file,
-        private ConfigDTO $configDTO,
+        private Config      $configDTO,
     ) {}
 
     public function getContent(): string

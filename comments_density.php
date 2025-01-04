@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConsoleOutputDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 
-return new ConfigDTO(
+return new Config(
     thresholds: [
         'docBlock' => 1000,
         'regular' => 5,

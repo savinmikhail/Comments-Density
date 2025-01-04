@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer;
 
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\CDS;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\ComToLoc;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Metrics\MetricsFacade;
@@ -16,7 +16,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 final readonly class AnalyzerFactory
 {
     public function getAnalyzer(
-        ConfigDTO $configDto,
+        Config                   $configDto,
         BaselineStorageInterface $baselineStorage,
     ): Analyzer {
         $commentFactory = new CommentTypeFactory($configDto->getAllowedTypes());

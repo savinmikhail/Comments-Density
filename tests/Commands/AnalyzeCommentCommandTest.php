@@ -16,7 +16,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\ComToLocDTO
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\PerformanceMetricsDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Commands\AnalyzeCommentCommand;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\OutputDTO as InputOutputDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\ConsoleFormatter;
@@ -58,7 +58,7 @@ final class AnalyzeCommentCommandTest extends TestCase
             true,
         );
 
-        $configDto = $this->createMock(ConfigDTO::class);
+        $configDto = $this->createMock(Config::class);
         $configDto->docblockConfigDTO = $docblockConfigDTO;
         $configDto->only = [];
         $configDto->thresholds = [];
@@ -128,7 +128,7 @@ final class AnalyzeCommentCommandTest extends TestCase
             true,
             true,
         );
-        $configDto = $this->createMock(ConfigDTO::class);
+        $configDto = $this->createMock(Config::class);
         $configDto->docblockConfigDTO = $docblockConfigDTO;
         $configDto->only = [];
         $configDto->thresholds = ['CDS' => 1];

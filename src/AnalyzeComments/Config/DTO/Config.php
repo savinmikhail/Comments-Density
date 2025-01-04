@@ -4,7 +4,14 @@ declare(strict_types=1);
 
 namespace SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO;
 
-final readonly class ConfigDTO
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\DocBlockComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\FixMeComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\LicenseComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\MissingDocBlock;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\RegularComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\TodoComment;
+
+final readonly class Config
 {
     /**
      * @param array<string, float> $thresholds
@@ -31,12 +38,12 @@ final readonly class ConfigDTO
     public function getAllowedTypes(): array
     {
         $types = [
-            'docBlock',
-            'regular',
-            'license',
-            'todo',
-            'fixme',
-            'missingDocBlock',
+            DocBlockComment::NAME,
+            RegularComment::NAME,
+            LicenseComment::NAME,
+            TodoComment::NAME,
+            FixMeComment::NAME,
+            MissingDocBlock::NAME,
         ];
 
         return array_diff($types, $this->disable);

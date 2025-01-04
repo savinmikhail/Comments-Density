@@ -12,7 +12,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentStat
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\Comment;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\CommentTypeFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\MissingDocBlock;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConfigDTO;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\OutputDTO as OutputConfigDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Exception\CommentsDensityException;
@@ -27,7 +27,7 @@ final class CommentStatisticsAggregatorTest extends TestCase
 
     protected function setUp(): void
     {
-        $configDTO = new ConfigDTO(
+        $configDTO = new Config(
             thresholds: [],
             exclude: ['/excluded/dir'],
             output: new OutputConfigDTO('console', 'output.html'),
