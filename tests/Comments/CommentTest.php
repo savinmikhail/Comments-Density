@@ -17,7 +17,7 @@ use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\TodoComment;
 
 final class CommentTest extends TestCase
 {
-    public static function regularCommentRegexDataProvider(): array
+    public static function commentDataProvider(): array
     {
         return [
             ['//dd()', RegularComment::class],
@@ -73,7 +73,7 @@ final class CommentTest extends TestCase
         ];
     }
 
-    #[DataProvider('regularCommentRegexDataProvider')]
+    #[DataProvider('commentDataProvider')]
     public function testRegularCommentRegex(string $comment, string $class): void
     {
         $factory = new CommentTypeFactory();
