@@ -16,12 +16,12 @@ final readonly class CommentTypeFactory
      */
     public function __construct(private array $allowedTypes = [])
     {
-        $this->commentTypes =  [
+        $this->commentTypes =  [ // the order is important (might be fix with more sophisticated regexps though
+            new LicenseComment(),
+            new DocBlockComment(),
             new TodoComment(),
             new FixMeComment(),
             new RegularComment(),
-            new LicenseComment(),
-            new DocBlockComment(),
             new MissingDocBlock(),
         ];
     }
