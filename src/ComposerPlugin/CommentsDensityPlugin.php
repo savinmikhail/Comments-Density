@@ -74,9 +74,13 @@ final class CommentsDensityPlugin implements PluginInterface, EventSubscriberInt
             return;
         }
 
-        file_put_contents('comments_density.php', self::CONFIG);
+        $res = file_put_contents('../../comments_density.php', self::CONFIG);
 
-        $interface->write('Default configuration file created.');
+        if ($res === false) {
+            $interface->error('Configuration file setup failed.');
+        }
+
+        $interface->info('Default configuration file created.');
     }
 
     /**
