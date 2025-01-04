@@ -29,7 +29,7 @@ final readonly class ViolatingCommentsOnlyFilter
         return array_filter(
             $report->comments,
             static fn(CommentDTO $commentDTO): bool => in_array($commentDTO->commentType, $violatingTypes, true)
-                && $commentDTO->commentTypeColor === 'red',
+                && in_array($commentDTO->commentTypeColor, ['red', 'yellow'], true), // fixme move all colors to formatters level
         );
     }
 }
