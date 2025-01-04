@@ -23,7 +23,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 final readonly class Analyzer
 {
     public function __construct(
-        private Config $configDTO,
+        private Config $config,
         private CommentTypeFactory $commentFactory,
         private MetricsFacade $metrics,
         private BaselineStorageInterface $baselineStorage,
@@ -41,11 +41,11 @@ final readonly class Analyzer
         $comments = [];
         $filesAnalyzed = 0;
         $totalLinesOfCode = 0;
-        $fileFinder = new FileFinder($this->configDTO);
+        $fileFinder = new FileFinder($this->config);
         foreach ($fileFinder() as $file) {
             $commentFinder = new CommentFinder(
                 $this->commentFactory,
-                $this->configDTO,
+                $this->config,
             );
             $contentExtractor = new FileContentExtractor($file);
 
@@ -61,13 +61,21 @@ final readonly class Analyzer
             ++$filesAnalyzed;
         }
 
-        if ($this->configDTO->useBaseline) {
+        if ($this->config->useBaseline) {
             $comments = $this->baselineStorage->filterComments($comments);
         }
 
         $commentStatistics = $this->statisticsAggregator->calculateCommentStatistics($comments);
+        $report = $this->createReport($comments, $commentStatistics, $filesAnalyzed, $totalLinesOfCode);
 
-        return $this->createReport($comments, $commentStatistics, $filesAnalyzed, $totalLinesOfCode);
+        $config = $this->config;
+        defer($_, static function () use ($report, $config): void { // todo figure out how much sense it makes
+            foreach ($config->plugins as $plugin) {
+                $plugin->handle($report, $config);
+            }
+        });
+
+        return $report;
     }
 
     private function getCacheKey(SplFileInfo $file): string

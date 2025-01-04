@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fe1fb820c0e9ab09fd6188e7df2db9e",
+    "content-hash": "ab0b8096e71da43f71dd6fea7598990a",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -766,6 +766,53 @@
                 "source": "https://github.com/nikic/PHP-Parser/tree/v5.1.0"
             },
             "time": "2024-07-01T20:03:41+00:00"
+        },
+        {
+            "name": "php-defer/php-defer",
+            "version": "v5.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-defer/php-defer.git",
+                "reference": "9f4183d6039e8337fefc3b5e73ed4ede58ee0bf7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-defer/php-defer/zipball/9f4183d6039e8337fefc3b5e73ed4ede58ee0bf7",
+                "reference": "9f4183d6039e8337fefc3b5e73ed4ede58ee0bf7",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/functions.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bartłomiej Krukowski",
+                    "email": "bartlomiej@krukowski.me"
+                }
+            ],
+            "description": "Golang's defer statement for PHP",
+            "keywords": [
+                "defer",
+                "golang"
+            ],
+            "support": {
+                "issues": "https://github.com/php-defer/php-defer/issues",
+                "source": "https://github.com/php-defer/php-defer/tree/v5.0.7"
+            },
+            "time": "2023-09-21T16:38:54+00:00"
         },
         {
             "name": "psr/cache",
@@ -7354,7 +7401,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -7362,7 +7409,7 @@
         "ext-tokenizer": "*",
         "composer-plugin-api": "^2.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.2"
     },
