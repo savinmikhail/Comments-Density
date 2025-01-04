@@ -8,6 +8,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\AnalyzerFactory;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\ConfigLoader;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\HtmlOutputDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\ConsoleFormatter;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Formatter\HtmlFormatter;
 use SavinMikhail\CommentsDensity\Baseline\Storage\TreePhpBaselineStorage;
@@ -44,7 +45,7 @@ final class AnalyzeCommentCommand extends Command
         $files = $this->getFilesFromDirectories($configDto->directories);
 
         $formatters = ['console' => new ConsoleFormatter($output)];
-        if ($configDto->output->type === 'html') {
+        if ($configDto->output instanceof HtmlOutputDTO) {
             $formatters['html'] = new HtmlFormatter($configDto->output->file);
         }
         $formatter = $formatters[$configDto->output->type] ?? $formatters['console'];

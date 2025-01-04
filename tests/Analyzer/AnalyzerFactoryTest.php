@@ -32,7 +32,7 @@ final class AnalyzerFactoryTest extends TestCase
         $factory = new AnalyzerFactory();
 
         // Get the Analyzer instance
-        $analyzer = $factory->getAnalyzer($configDto, $output, $baselineStorage);
+        $analyzer = $factory->getAnalyzer($configDto, $output);
 
         // Assert that the returned object is an instance of Analyzer
         self::assertInstanceOf(Analyzer::class, $analyzer);

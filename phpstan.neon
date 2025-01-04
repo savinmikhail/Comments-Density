@@ -9,4 +9,4 @@ parameters:
 	ignoreErrors:
 		- message: "#Constant COMMENTS_DENSITY_ENVIRONMENT not found.#"
 		  paths:
-		  - src/ConfigLoader.php
+		  - src/AnalyzeComments/Config/ConfigLoader.php

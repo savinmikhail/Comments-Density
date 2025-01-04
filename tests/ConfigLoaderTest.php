@@ -99,7 +99,7 @@ final class ConfigLoaderTest extends TestCase
         self::assertEmpty($thresholds);
     }
 
-    public function testGetConfigDto(): void
+    public function testGetConfigDto(): never
     {
         self::markTestIncomplete();
         $root = vfsStream::setup('root', null, [
@@ -153,7 +153,7 @@ final class ConfigLoaderTest extends TestCase
         $this->invokeMethod($this->configLoader, 'getDirectories', [$config]);
     }
 
-    public function testGetDirectories(): void
+    public function testGetDirectories(): never
     {
         self::markTestIncomplete();
 
@@ -174,7 +174,7 @@ final class ConfigLoaderTest extends TestCase
         self::assertCount(2, $directories);
     }
 
-    public function testGetProjectRoot(): void
+    public function testGetProjectRoot(): never
     {
         self::markTestIncomplete();
 

@@ -6,7 +6,7 @@ namespace SavinMikhail\Tests\CommentsDensity\TestFiles;
 
 final readonly class ClassWithCallForThrowingMethodInDifferentClass
 {
-    public function baz(): void
+    public function baz(): never
     {
         $bar = new ClassWithThrowingMethod();
         $bar->bar();

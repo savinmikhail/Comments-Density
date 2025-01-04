@@ -12,6 +12,9 @@ use function in_array;
 
 final readonly class ViolatingCommentsOnlyFilter
 {
+    /**
+     * @return CommentDTO[]
+     */
     public function filter(Report $report): array
     {
         // Identify comment types with threshold violations

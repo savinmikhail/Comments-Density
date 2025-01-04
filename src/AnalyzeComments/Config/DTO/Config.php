@@ -35,6 +35,9 @@ final readonly class Config
         public array $disable = [],
     ) {}
 
+    /**
+     * @return non-empty-string[]
+     */
     public function getAllowedTypes(): array
     {
         $types = [
