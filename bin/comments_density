@@ -18,8 +18,6 @@ if (function_exists('opcache_get_configuration')) {
     if (isset($opcacheConfig['directives']['opcache.save_comments']) && !$opcacheConfig['directives']['opcache.save_comments']) {
         fwrite(STDERR, 'Warning: The "opcache.save_comments" directive is disabled. Doc comments will not be available.' . PHP_EOL);
     }
-} else {
-    fwrite(STDERR, 'Warning: Opcache is not enabled or "opcache_get_configuration" function is not available.' . PHP_EOL);
 }
 
 // Ensure timezone is set
