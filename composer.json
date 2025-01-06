@@ -21,7 +21,6 @@
         "composer/composer": "^2.8",
         "composer/xdebug-handler": "^3.0.5",
         "nikic/php-parser": "^5.1",
-        "php-defer/php-defer": "^5.0",
         "savinmikhail/primitive_wrappers": "^1.2",
         "symfony/cache": "^7.2",
         "symfony/cache-contracts": "^3.5",

@@ -68,12 +68,9 @@ final readonly class Analyzer
         $commentStatistics = $this->statisticsAggregator->calculateCommentStatistics($comments);
         $report = $this->createReport($comments, $commentStatistics, $filesAnalyzed, $totalLinesOfCode);
 
-        $config = $this->config;
-        defer($_, static function () use ($report, $config): void { // todo figure out how much sense it makes
-            foreach ($config->plugins as $plugin) {
-                $plugin->handle($report, $config);
-            }
-        });
+        foreach ($this->config->plugins as $plugin) { // todo make it async
+            $plugin->handle($report, $this->config);
+        }
 
         return $report;
     }
