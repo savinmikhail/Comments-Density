@@ -15,13 +15,13 @@
 
 # Comments Density Analyzer
 
-A tool to analyze the comment density and quality in PHP source code files
-
 You might want to use it to control in CI/CD spreading of todos and fixmes in the codebase.
 
 Or you might want to spot simple (regular) comments, which might be there to explain some shitty code or be the commented out code
 
 Or you might want to enforce some docblocks (I worked in companies, where each class and method were required to have docblock explaining purpose et al.)
+
+All of this is possible by utilizing plugins system (see example in docs)
 
 ## Features
 
@@ -31,6 +31,7 @@ docblocks, TODOs, FIXMEs, and license information.
 - **Quality Check**: Set up a configuration file, and if thresholds aren't met, the exit code will be returned with the report.
 - **Configurable Reports**:  Get results in either console or HTML file.
 - **Baseline**:  Filter collected comments against a baseline to ignore old technical debt and focus on new issues.
+- **Plugins**: You can implement any logic for processing found comments in your plugins via simple interface
 
 ### Output Example 
 ![Output Example](./example_for_readme.png)
