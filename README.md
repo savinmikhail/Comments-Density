@@ -1,3 +1,4 @@
+
 <p align="center">
     <a href="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/?branch=main">
         <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/quality-score.png?b=main" alt="Quality Score">
@@ -6,61 +7,68 @@
         <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/coverage.png?b=main" alt="Code Coverage">
     </a>
     <a href="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/?branch=main">
-        <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/build.png?b=main" alt="Build status">
+        <img src="https://scrutinizer-ci.com/g/savinmikhail/Comments-Density/badges/build.png?b=main" alt="Build Status">
     </a>
     <a href="https://dashboard.stryker-mutator.io/reports/github.com/savinmikhail/Comments-Density/main">
-        <img src="https://img.shields.io/endpoint?style=flat&amp;url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fsavinmikhail%2FComments-Density%2Fmain" alt="Mutation testing badge">
+        <img src="https://img.shields.io/endpoint?style=flat&amp;url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fsavinmikhail%2FComments-Density%2Fmain" alt="Mutation Testing Badge">
     </a>
 </p>
 
 # Comments Density Analyzer
 
-You might want to use it to control in CI/CD spreading of todos and fixmes in the codebase.
+The **Comments Density Analyzer** is a tool to help you monitor and manage comments in your codebase.
 
-Or you might want to spot simple (regular) comments, which might be there to explain some shitty code or be the commented out code
+### Why Use It?
 
-Or you might want to enforce some docblocks (I worked in companies, where each class and method were required to have docblock explaining purpose et al.)
+- **Control TODOs and FIXMEs in CI/CD**: Ensure these comments are not proliferating unchecked in your codebase.
+- **Spot Problematic Comments**: Identify regular comments explaining "shitty code" or remnants of commented-out code.
+- **Enforce Documentation Standards**: Require docblocks for classes and methods to maintain clear, consistent documentation.
 
-All of this is possible by utilizing plugins system (see example in docs)
+All of this is made possible with a powerful **plugin system** (see the documentation for examples).
 
 ## Features
 
-- **Multiple Comment Types**: Supports identification and analysis of several comment types including regular, 
-docblocks, TODOs, FIXMEs, and license information.
-- **Detailed Reporting**: Quickly find code spots where changes might be necessary.
-- **Quality Check**: Set up a configuration file, and if thresholds aren't met, the exit code will be returned with the report.
-- **Configurable Reports**:  Get results in either console or HTML file.
-- **Baseline**:  Filter collected comments against a baseline to ignore old technical debt and focus on new issues.
-- **Plugins**: You can implement any logic for processing found comments in your plugins via simple interface
+- **Multiple Comment Types**: Detect and analyze regular comments, docblocks, TODOs, FIXMEs, and license headers.
+- **Plugin Support**: Extend functionality by creating custom plugins via a simple interface.
+- **Detailed Reporting**: Quickly identify areas of your code that need attention.
+- **Thresholds and Exit Codes**: Set thresholds for comment types and return an exit code when they are exceeded.
+- **Configurable Reports**: Output results to the console or as an HTML report.
+- **Baseline Support**: Filter out known technical debt using a baseline file and focus on new issues.
 
-### Output Example 
+### Output Example
 ![Output Example](./example_for_readme.png)
 
-### Installation
+---
 
-To install Comment Density Analyzer, run the following command in your terminal:
+## Installation
+
+Install **Comments Density Analyzer** as a development dependency via Composer:
 
 ```bash
 composer require --dev savinmikhail/comments-density
 ```
 
-### Usage
+---
 
-Analyze the comment density in your PHP files with:
+## Usage
+
+Analyze the comments in your PHP files:
 
 ```bash
 php vendor/bin/comments_density analyze
 ```
 
-Generate baseline with:
+Generate a baseline to ignore existing technical debt:
+
 ```bash
 php vendor/bin/comments_density baseline
 ```
 
-### Configuration
+---
 
-On installation, you can allow plugin to create its configuration file.
-Customize your analysis by editing a comments_density.php configuration file:
+## Configuration
+
+During installation, the tool can generate a default configuration file. Customize your analysis by editing the `comments_density.php` file:
 
 ```php
 <?php
@@ -82,20 +90,22 @@ return new Config(
         FixMeComment::NAME => 0,
     ],
 );
-
 ```
+
+---
 
 ## Acknowledgments
 
-This project was inspired by Yegor Bugayenko. See [opensource ideas](https://gist.github.com/yegor256/5bddb12ce88a6cba44d578c567031508).
+This project was inspired by Yegor Bugayenko. See [Open Source Ideas](https://gist.github.com/yegor256/5bddb12ce88a6cba44d578c567031508).
+
+---
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are always welcome! Feel free to submit a pull request with improvements or new features.
+
+---
 
 ## License
 
-This library is released under the [MIT license](LICENSE).
-
-___
-    
+This library is licensed under the [MIT License](LICENSE).  
