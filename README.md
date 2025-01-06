@@ -66,21 +66,20 @@ Customize your analysis by editing a comments_density.php configuration file:
 
 declare(strict_types=1);
 
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\FixMeComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\RegularComment;
+use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\TodoComment;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\ConsoleOutputDTO;
-use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\MissingDocblockConfigDTO;
 
 return new Config(
-    output: ConsoleOutputDTO::create(),
     directories: [
         'src',
     ],
     thresholds: [
-        'regular' => 0,
-        'todo' => 0,
-        'fixme' => 0,
+        RegularComment::NAME => 0,
+        TodoComment::NAME => 0,
+        FixMeComment::NAME => 0,
     ],
-    exclude: [],
 );
 
 ```
