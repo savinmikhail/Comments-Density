@@ -14,12 +14,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class OpenIssue implements PluginInterface
 {
-    private const YOUTRACK_URL = 'https://yt.kr.digital';
-    private const AUTHORIZATION_TOKEN = 'perm:bXNhdmlu.NjctMjg=.cAwxwx1bebsCApr3yoyU1OJYaHiPQh';
+    private const YOUTRACK_URL = 'https://yt';
+    private const AUTHORIZATION_TOKEN = '';
     private const PROJECT_ID = '59-178';
     private const STAGE = 'Второй этап';
     private const BRANCH_NAME = 'develop';
-    private const GITLAB_PROJECT_URL = 'https://gitlab.kr.digital/dit/sphere/sphere-backend';
+    private const GITLAB_PROJECT_URL = 'https://gitlab/backend';
 
     public function handle(Report $report, Config $config): void
     {
