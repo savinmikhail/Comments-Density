@@ -2,29 +2,28 @@
 
 namespace App\Main\Plugin;
 
-use PhpToken;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\CommentDTO;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Analyzer\DTO\Output\Report;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\FixMeComment;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Comments\TodoComment;
 use SavinMikhail\CommentsDensity\AnalyzeComments\Config\DTO\Config;
+use SavinMikhail\CommentsDensity\AnalyzeComments\File\FileEditor;
 use SavinMikhail\CommentsDensity\Plugin\PluginInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class OpenIssue implements PluginInterface
 {
-    private const YOUTRACK_URL = 'https://yt';
-    private const AUTHORIZATION_TOKEN = '';
+    private const YOUTRACK_URL = 'https://yt.kr.digital';
+    private const AUTHORIZATION_TOKEN = 'perm:bXNhdmlu.NjctMjg=.cAwxwx1bebsCApr3yoyU1OJYaHiPQh';
     private const PROJECT_ID = '59-178';
     private const STAGE = 'Второй этап';
     private const BRANCH_NAME = 'develop';
-    private const GITLAB_PROJECT_URL = 'https://gitlab/backend';
+    private const GITLAB_PROJECT_URL = 'https://gitlab.kr.digital/dit/sphere/sphere-backend';
 
     public function handle(Report $report, Config $config): void
     {
         $httpClient = HttpClient::create();
-
         foreach ($report->comments as $comment) {
             if (!in_array($comment->commentType, [TodoComment::NAME, FixMeComment::NAME], true)) {
                 continue;
@@ -37,7 +36,14 @@ final readonly class OpenIssue implements PluginInterface
             $draftId = $this->createDraft($httpClient, $comment);
             $issueId = $this->createIssueFromDraft($httpClient, $draftId);
             $issueUrl = self::YOUTRACK_URL . '/issue/' . $issueId;
-            $this->updateCommentInFile($comment, $issueUrl);
+            $newComment = new CommentDTO(
+                commentType: $comment->commentType,
+                commentTypeColor: $comment->commentTypeColor,
+                file: $comment->file,
+                line: $comment->line,
+                content: rtrim($comment->content) . " ($issueUrl)",
+            );
+            (new FileEditor())->updateCommentInFile($newComment);
         }
     }
 
@@ -93,40 +99,11 @@ final readonly class OpenIssue implements PluginInterface
             ]
         );
         $response = $response->toArray();
-        return $response['idReadable']; // looks like backend-287
+        return $response['idReadable']; // looks like mossphere-287
     }
 
     private function hasIssueUrl(string $commentContent): bool
     {
         return (bool)preg_match('/https:\/\/yt\.kr\.digital\/issue\/\w+-\d+/', $commentContent);
-    }
-
-    private function updateCommentInFile(CommentDTO $comment, string $issueUrl): void
-    {
-        $fileContent = file_get_contents($comment->file);
-        $tokens = \PhpToken::tokenize($fileContent);
-        $changed = false;
-        foreach ($tokens as $token) {
-            if ($token->line === $comment->line && $token->is([T_COMMENT, T_DOC_COMMENT]) ) {
-                $token->text = rtrim($token->text) . " ($issueUrl)";
-                $changed = true;
-            }
-        }
-        if (!$changed) {
-            return;
-        }
-        $this->save($comment->file, $tokens);
-    }
-
-    /**
-     * @param PhpToken[] $tokens
-     */
-    private function save(string $file, array $tokens): void
-    {
-        $content = implode('', array_map(static fn(\PhpToken $token) => $token->text, $tokens));
-        $res = file_put_contents($file, $content);
-        if ($res === false) {
-            throw new \Exception('failed to write to file: ' . $file);
-        }
     }
 }
