@@ -10,7 +10,7 @@ tasks:
     cmds:
       - task: cs-fix
         vars:
-          CLI_ARGS: "--dry-run --stop-on-violation {{.CLI_ARGS}}"
+          CLI_ARGS: "--dry-run {{.CLI_ARGS}}"
 
   rector-fix:
     cmd: 'vendor/bin/rector process {{.CLI_ARGS}}'
