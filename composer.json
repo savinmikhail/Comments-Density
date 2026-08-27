@@ -1,10 +1,12 @@
 {
     "name": "savinmikhail/comments-density",
-    "description": "PHP static-analysis CLI and Composer plugin for measuring comment density, enforcing TODO/FIXME and DocBlock thresholds, and generating reports.",
+    "description": "PHP code comments analyzer and Composer plugin for measuring comment density, enforcing TODO/FIXME and DocBlock thresholds, and generating reports.",
     "license": "MIT",
     "type": "composer-plugin",
     "keywords": [
+        "analyzer",
         "ci",
+        "code comments",
         "code quality",
         "comment",
         "comment density",
