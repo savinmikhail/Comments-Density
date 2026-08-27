@@ -1,12 +1,17 @@
 {
     "name": "savinmikhail/comments-density",
-    "description": "CommentDensityAnalyzer is a tool designed to analyze the comment density and quality in source code files in php. It helps maintain and improve the quality of code documentation by evaluating different types of comments and providing insights into their effectiveness and appropriateness.",
+    "description": "PHP static-analysis CLI and Composer plugin for measuring comment density, enforcing TODO/FIXME and DocBlock thresholds, and generating reports.",
     "license": "MIT",
     "type": "composer-plugin",
     "keywords": [
-        "static analysis",
+        "ci",
+        "code quality",
         "comment",
-        "density"
+        "comment density",
+        "documentation",
+        "fixme",
+        "static analysis",
+        "todo"
     ],
     "authors": [
         {
